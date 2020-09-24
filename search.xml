@@ -1,22 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>解决INSTALL_FAILED_INSUFFICIENT_STORAGE错误</title>
-    <url>/2017/01/07/INSTALL-FAILED-INSUFFICIENT-STORAGE/</url>
-    <content><![CDATA[<p>&emsp;&emsp;今天在一部手机上安装应用会一直返回INSTALL_FAILED_INSUFFICIENT_STORAGE错误，但是用df命令看手机储存空间又是足够的，一直想不通为什么。<br>&emsp;&emsp;隐隐觉得双清一下手机是可以解决问题，但是这样没法找到报错的根源。\n然后试了其他一些应用，发现都是能装上的，怀疑就和这个应用有关。<br>&emsp;&emsp;使用logcat查看安装过程中的日志，发现有这样一条  </p>
-<blockquote>
-<p>E/PackageManager(994): Cannot rename native library directory /data/app-lib/vmdl786013163 to /data/app-lib/com.tencent.mobileqq-1  </p>
-</blockquote>
-<p>&emsp;&emsp;顿时觉得问题出在这个目录上面，删除了这个目录之后，果然应用能够正常安装了</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>install</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>让adb识别到不能识别的设备</title>
     <url>/2017/01/07/adb-new-device/</url>
     <content><![CDATA[<p>有些设备tadb等第三方adb工具能识别，但是sdk中提供的adb却不能识别。这种情况可以通过修改<code>adb_usb.ini</code>来让adb识别。<br>该文件位于<code>C:\Users\{username}\.android\adb_usb.ini</code></p>
@@ -42,81 +26,19 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       </tags>
   </entry>
   <entry>
-    <title>解决手机unauthorized错误</title>
-    <url>/2017/01/07/android-unauthorized-error/</url>
-    <content><![CDATA[<p>一般插入4.1以上版本的手机会弹出验证界面，但是我某台PC上就始终弹不出这个界面，找了很多方法都没有解决。</p>
-<p>最后发现原来是<strong>ANDROID_SDK_HOME</strong>这个环境变量配的路径不存在，我之前把SDK的路径挪了下地方，就导致了这个问题。删除这个环境变量就OK了。</p>
+    <title>解决INSTALL_FAILED_INSUFFICIENT_STORAGE错误</title>
+    <url>/2017/01/07/INSTALL-FAILED-INSUFFICIENT-STORAGE/</url>
+    <content><![CDATA[<p>&emsp;&emsp;今天在一部手机上安装应用会一直返回INSTALL_FAILED_INSUFFICIENT_STORAGE错误，但是用df命令看手机储存空间又是足够的，一直想不通为什么。<br>&emsp;&emsp;隐隐觉得双清一下手机是可以解决问题，但是这样没法找到报错的根源。\n然后试了其他一些应用，发现都是能装上的，怀疑就和这个应用有关。<br>&emsp;&emsp;使用logcat查看安装过程中的日志，发现有这样一条  </p>
+<blockquote>
+<p>E/PackageManager(994): Cannot rename native library directory /data/app-lib/vmdl786013163 to /data/app-lib/com.tencent.mobileqq-1  </p>
+</blockquote>
+<p>&emsp;&emsp;顿时觉得问题出在这个目录上面，删除了这个目录之后，果然应用能够正常安装了</p>
 ]]></content>
       <categories>
         <category>Android</category>
       </categories>
       <tags>
-        <tag>adb</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Android模拟器中替换系统应用的方法</title>
-    <url>/2017/04/27/android-emulator-replace-system-app/</url>
-    <content><![CDATA[<p>Android模拟器6.0版本进入系统时，桌面应用com.android.launcher3会发生随机Crash。</p>
-<blockquote>
-<p>W/System.err( 1611): java.lang.IllegalArgumentException:<br>Wrong state class, expecting View State but received class<br>android.appwidget.AppWidgetHostView$ParcelableSparseArray instead.<br>This usually happens when two views of different type have the same id in the same hierarchy.<br>This view’s id is id/0x3. Make sure other views do not use the same id.</p>
-</blockquote>
-<blockquote>
-<p>W/System.err( 1611):     at android.view.View.onRestoreInstanceState(View.java:13772)<br>W/System.err( 1611):     at android.widget.TextView.onRestoreInstanceState(TextView.java:3784)<br>W/System.err( 1611):     at android.view.View.dispatchRestoreInstanceState(View.java:13748)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.View.restoreHierarchyState(View.java:13726)<br>W/System.err( 1611):     at com.android.internal.policy.impl.PhoneWindow.restoreHierarchyState(PhoneWindow.java:2009)<br>W/System.err( 1611):     at android.app.Activity.onRestoreInstanceState(Activity.java:1074)<br>W/System.err( 1611):     at com.android.launcher3.Launcher.onRestoreInstanceState(Launcher.java:2013)</p>
-</blockquote>
-<p>在<a href="https://github.com/northbright/Notes/blob/master/Android/Launcher/launcher3_runtime_exception_two_views_of_different_type_have_the_same_id.md" target="_blank" rel="noopener">网上</a>找到如下解决方法：</p>
-<p>packages/apps/Launcher3/src/com/android/launcher3/Launcher.java:</p>
-<pre><code>public void onRestoreInstanceState(Bundle state) {
-    // Wrap the code block will throw runtinme exception in try / catch block
-    // ----------------------------------------------------------------------
-    //super.onRestoreInstanceState(state);
-    //for (int page: mSynchronouslyBoundPages) {
-    //    mWorkspace.restoreInstanceStateForChild(page);
-    //}
-
-    try {
-        super.onRestoreInstanceState(state);
-        for (int page: mSynchronouslyBoundPages) {
-            mWorkspace.restoreInstanceStateForChild(page);
-        }
-    } catch (Exception e) {
-        Log.e(TAG, &quot;Exception in onRestoreInstanceState():&quot;);
-        e.printStackTrace();
-    }
-}
-</code></pre><p>编译后替换掉镜像中的文件：</p>
-<blockquote>
-<p>/system/priv-app/Launcher3/Launcher3.apk<br>/system/priv-app/Launcher3/oat/x86/Launcher3.odex</p>
-</blockquote>
-<p>重启后报了另外一个错误：</p>
-<blockquote>
-<p>java.lang.RuntimeException: Unable to get provider com.android.launcher3.LauncherProvider: java.lang.ClassNotFoundException: Didn’t find class “com.android.launcher3.LauncherProvider” on path: DexPathList[[zip file “/system/priv-app/Launcher3/Launcher3.apk”],nativeLibraryDirectories=[/system/priv-app/Launcher3/lib/x86, /vendor/lib, /system/lib]]<br>at android.app.ActivityThread.installProvider(ActivityThread.java:5156)<br>at android.app.ActivityThread.installContentProviders(ActivityThread.java:4748)<br>at android.app.ActivityThread.handleBindApplication(ActivityThread.java:4688)<br>at android.app.ActivityThread.-wrap1(ActivityThread.java)<br>at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1405)<br>at android.os.Handler.dispatchMessage(Handler.java:102)<br>at android.os.Looper.loop(Looper.java:148)<br>at android.app.ActivityThread.main(ActivityThread.java:5417)<br>at java.lang.reflect.Method.invoke(Native Method)<br>at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)<br>at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)<br>Caused by: java.lang.ClassNotFoundException: Didn’t find class “com.android.launcher3.LauncherProvider” on path: DexPathList[[zip file “/system/priv-app/Launcher3/Launcher3.apk”],nativeLibraryDirectories=[/system/priv-app/Launcher3/lib/x86, /vendor/lib, /system/lib]]<br>at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:56)<br>at java.lang.ClassLoader.loadClass(ClassLoader.java:511)<br>at java.lang.ClassLoader.loadClass(ClassLoader.java:469)<br>at android.app.ActivityThread.installProvider(ActivityThread.java:5141)<br>… 10 more<br>Suppressed: java.io.IOException: No original dex files found for dex location /system/priv-app/Launcher3/Launcher3.apk<br>at dalvik.system.DexFile.openDexFileNative(Native Method)<br>at dalvik.system.DexFile.openDexFile(DexFile.java:295)<br>at dalvik.system.DexFile.<init>(DexFile.java:80)<br>at dalvik.system.DexFile.<init>(DexFile.java:59)<br>at dalvik.system.DexPathList.loadDexFile(DexPathList.java:279)<br>at dalvik.system.DexPathList.makePathElements(DexPathList.java:248)<br>at dalvik.system.DexPathList.<init>(DexPathList.java:120)<br>at dalvik.system.BaseDexClassLoader.<init>(BaseDexClassLoader.java:48)<br>at dalvik.system.PathClassLoader.<init>(PathClassLoader.java:65)<br>at android.app.ApplicationLoaders.getClassLoader(ApplicationLoaders.java:58)<br>at android.app.LoadedApk.getClassLoader(LoadedApk.java:376)<br>at android.app.LoadedApk.makeApplication(LoadedApk.java:568)<br>at android.app.ActivityThread.handleBindApplication(ActivityThread.java:4680)<br>… 8 more</init></init></init></init></init></p>
-</blockquote>
-<p>猜测是因为编译时用的art库版本与模拟器中不一致，导致生成的oat文件不匹配。解决方法是把dex文件拷贝到模拟器里，然后使用dex2oat编译下。</p>
-<p>编译出来的dex文件（Launcher3.apk中不包含dex文件）路径是：</p>
-<blockquote>
-<p>out/target/common/obj/APPS/Launcher3_intermediates/classes.dex</p>
-</blockquote>
-<p>使用如下命令可以在/data/local/tmp目录下生成Launcher3.odex文件，/data/local/tmp/Launcher3.dex是要输入的dex文件路径。</p>
-<p>5.0中执行的命令</p>
-<pre><code>&gt; dex2oat --runtime-arg -Xms64m --runtime-arg -Xmx512m --dex-file=/data/local/tmp/Launcher3.dex --dex-location=/system/priv-app/Launcher3/Launcher3.apk --oat-file=/data/local/tmp/Launcher3.odex --android-root=/system --instruction-set=x86 --instruction-set-features=default --include-patch-information --runtime-arg -Xnorelocate --no-include-debug-symbols
-</code></pre><p>6.0中执行的命令</p>
-<pre><code>&gt; dex2oat --runtime-arg -Xms64m --runtime-arg -Xmx512m --dex-file=/data/local/tmp/Launcher3.dex --dex-location=/system/priv-app/Launcher3/Launcher3.apk --oat-file=/data/local/tmp/Launcher3.odex --android-root=/system --instruction-set=x86 --instruction-set-variant=x86 --instruction-set-features=default --include-patch-information --runtime-arg -Xnorelocate --no-generate-debug-info --abort-on-hard-verifier-error
-</code></pre><p>另外一种解决方法是：<br>修改</p>
-<blockquote>
-<p>build/target/board/generic_x86/BoardConfig.mk  </p>
-</blockquote>
-<p>文件，注释掉：</p>
-<blockquote>
-<p>WITH_DEXPREOPT ?= true</p>
-</blockquote>
-<p>这样，编译后的apk中就会包含dex文件，在模拟器第一次开机时会自动进行dexopt操作。</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>emulator</tag>
+        <tag>install</tag>
       </tags>
   </entry>
   <entry>
@@ -279,38 +201,81 @@ final int ret = mInstaller.dexopt(path, sharedGid, !isForwardLocked(pkg),
       </tags>
   </entry>
   <entry>
-    <title>编译Android版本的libjpeg-turbo</title>
-    <url>/2018/03/29/build-libjpeg-turbo-for-android/</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>libjpeg-turbo是一个JPEG编解码库，支持x86, x86-64, ARM等系统下的指令加速，其性能号称是libjpeg的2-6倍。官网地址是：<a href="https://libjpeg-turbo.org/" target="_blank" rel="noopener">https://libjpeg-turbo.org/</a>。github地址是：<a href="https://github.com/libjpeg-turbo/libjpeg-turbo" target="_blank" rel="noopener">https://github.com/libjpeg-turbo/libjpeg-turbo</a>。</p>
-<p>Android中默认提供了libjpeg实现的JPEG编解码接口，但是测试下来性能不是很好，无法满足实际使用需求。因此，准备编译Android版本来用。</p>
-<h2 id="0x01-下载源码"><a href="#0x01-下载源码" class="headerlink" title="0x01 下载源码"></a>0x01 下载源码</h2><p>使用的编译环境是：Ubuntu 16.04 x64</p>
-<p>一开始，我使用的是github上的代码，可以正常编译成linux版本。但是按照<a href="https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/BUILDING.md" target="_blank" rel="noopener">文档</a>上的操作却始终无法编译出Android版本。</p>
-<p>后来发现，官网上的提供的版本编译脚本与github上并不相同。官网的源码包下载地址为：<a href="https://sourceforge.net/projects/libjpeg-turbo/files/" target="_blank" rel="noopener">https://sourceforge.net/projects/libjpeg-turbo/files/</a>。我下的是1.5.3版本<a href="https://sourceforge.net/projects/libjpeg-turbo/files/1.5.3/libjpeg-turbo-1.5.3.tar.gz/download" target="_blank" rel="noopener">源码包</a>。</p>
-<p>解压到本地，根目录下的<code>BUILDING.md</code>文件中包含了编译方法。具体内容如下：<a href="https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/libjpeg-turbo-1.5.3/BUILDING.md" target="_blank" rel="noopener">https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/libjpeg-turbo-1.5.3/BUILDING.md</a></p>
-<h2 id="0x02-编译环境"><a href="#0x02-编译环境" class="headerlink" title="0x02 编译环境"></a>0x02 编译环境</h2><p>编译依赖需要依赖以下库：</p>
-<ul>
-<li>autoconf 2.56 or later</li>
-<li>automake 1.7 or later</li>
-<li>libtool 1.4 or later</li>
-<li>NASM or YASM (if building x86 or x86-64 SIMD extensions)</li>
-</ul>
-<p>Ubuntu下可以使用以下方法安装：</p>
-<pre><code>apt install autoconf
-apt install automake
-apt install libtool
-apt install nasm
-</code></pre><h2 id="0x03-编译"><a href="#0x03-编译" class="headerlink" title="0x03 编译"></a>0x03 编译</h2><p>修改<code>BUILDING.md</code>中提供的编译脚本，编译出目标架构版本。为方便编译，我提供了可以直接编译的脚本: <a href="https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/build.sh" target="_blank" rel="noopener">https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/build.sh</a>。</p>
-<p>使用方法：</p>
-<pre><code>export NDK_PATH=/path/to/ndk
-sh build.sh arm/arm64/x86/x86_64/all
-</code></pre><p>此时，会在当前目录的<code>out</code>目录下生成对应架构的文件。</p>
+    <title>解决手机unauthorized错误</title>
+    <url>/2017/01/07/android-unauthorized-error/</url>
+    <content><![CDATA[<p>一般插入4.1以上版本的手机会弹出验证界面，但是我某台PC上就始终弹不出这个界面，找了很多方法都没有解决。</p>
+<p>最后发现原来是<strong>ANDROID_SDK_HOME</strong>这个环境变量配的路径不存在，我之前把SDK的路径挪了下地方，就导致了这个问题。删除这个环境变量就OK了。</p>
 ]]></content>
       <categories>
         <category>Android</category>
       </categories>
       <tags>
-        <tag>Android</tag>
-        <tag>libjpeg-turbo</tag>
+        <tag>adb</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android模拟器中替换系统应用的方法</title>
+    <url>/2017/04/27/android-emulator-replace-system-app/</url>
+    <content><![CDATA[<p>Android模拟器6.0版本进入系统时，桌面应用com.android.launcher3会发生随机Crash。</p>
+<blockquote>
+<p>W/System.err( 1611): java.lang.IllegalArgumentException:<br>Wrong state class, expecting View State but received class<br>android.appwidget.AppWidgetHostView$ParcelableSparseArray instead.<br>This usually happens when two views of different type have the same id in the same hierarchy.<br>This view’s id is id/0x3. Make sure other views do not use the same id.</p>
+</blockquote>
+<blockquote>
+<p>W/System.err( 1611):     at android.view.View.onRestoreInstanceState(View.java:13772)<br>W/System.err( 1611):     at android.widget.TextView.onRestoreInstanceState(TextView.java:3784)<br>W/System.err( 1611):     at android.view.View.dispatchRestoreInstanceState(View.java:13748)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W/System.err( 1611):     at android.view.View.restoreHierarchyState(View.java:13726)<br>W/System.err( 1611):     at com.android.internal.policy.impl.PhoneWindow.restoreHierarchyState(PhoneWindow.java:2009)<br>W/System.err( 1611):     at android.app.Activity.onRestoreInstanceState(Activity.java:1074)<br>W/System.err( 1611):     at com.android.launcher3.Launcher.onRestoreInstanceState(Launcher.java:2013)</p>
+</blockquote>
+<p>在<a href="https://github.com/northbright/Notes/blob/master/Android/Launcher/launcher3_runtime_exception_two_views_of_different_type_have_the_same_id.md" target="_blank" rel="noopener">网上</a>找到如下解决方法：</p>
+<p>packages/apps/Launcher3/src/com/android/launcher3/Launcher.java:</p>
+<pre><code>public void onRestoreInstanceState(Bundle state) {
+    // Wrap the code block will throw runtinme exception in try / catch block
+    // ----------------------------------------------------------------------
+    //super.onRestoreInstanceState(state);
+    //for (int page: mSynchronouslyBoundPages) {
+    //    mWorkspace.restoreInstanceStateForChild(page);
+    //}
+
+    try {
+        super.onRestoreInstanceState(state);
+        for (int page: mSynchronouslyBoundPages) {
+            mWorkspace.restoreInstanceStateForChild(page);
+        }
+    } catch (Exception e) {
+        Log.e(TAG, &quot;Exception in onRestoreInstanceState():&quot;);
+        e.printStackTrace();
+    }
+}
+</code></pre><p>编译后替换掉镜像中的文件：</p>
+<blockquote>
+<p>/system/priv-app/Launcher3/Launcher3.apk<br>/system/priv-app/Launcher3/oat/x86/Launcher3.odex</p>
+</blockquote>
+<p>重启后报了另外一个错误：</p>
+<blockquote>
+<p>java.lang.RuntimeException: Unable to get provider com.android.launcher3.LauncherProvider: java.lang.ClassNotFoundException: Didn’t find class “com.android.launcher3.LauncherProvider” on path: DexPathList[[zip file “/system/priv-app/Launcher3/Launcher3.apk”],nativeLibraryDirectories=[/system/priv-app/Launcher3/lib/x86, /vendor/lib, /system/lib]]<br>at android.app.ActivityThread.installProvider(ActivityThread.java:5156)<br>at android.app.ActivityThread.installContentProviders(ActivityThread.java:4748)<br>at android.app.ActivityThread.handleBindApplication(ActivityThread.java:4688)<br>at android.app.ActivityThread.-wrap1(ActivityThread.java)<br>at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1405)<br>at android.os.Handler.dispatchMessage(Handler.java:102)<br>at android.os.Looper.loop(Looper.java:148)<br>at android.app.ActivityThread.main(ActivityThread.java:5417)<br>at java.lang.reflect.Method.invoke(Native Method)<br>at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)<br>at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)<br>Caused by: java.lang.ClassNotFoundException: Didn’t find class “com.android.launcher3.LauncherProvider” on path: DexPathList[[zip file “/system/priv-app/Launcher3/Launcher3.apk”],nativeLibraryDirectories=[/system/priv-app/Launcher3/lib/x86, /vendor/lib, /system/lib]]<br>at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:56)<br>at java.lang.ClassLoader.loadClass(ClassLoader.java:511)<br>at java.lang.ClassLoader.loadClass(ClassLoader.java:469)<br>at android.app.ActivityThread.installProvider(ActivityThread.java:5141)<br>… 10 more<br>Suppressed: java.io.IOException: No original dex files found for dex location /system/priv-app/Launcher3/Launcher3.apk<br>at dalvik.system.DexFile.openDexFileNative(Native Method)<br>at dalvik.system.DexFile.openDexFile(DexFile.java:295)<br>at dalvik.system.DexFile.<init>(DexFile.java:80)<br>at dalvik.system.DexFile.<init>(DexFile.java:59)<br>at dalvik.system.DexPathList.loadDexFile(DexPathList.java:279)<br>at dalvik.system.DexPathList.makePathElements(DexPathList.java:248)<br>at dalvik.system.DexPathList.<init>(DexPathList.java:120)<br>at dalvik.system.BaseDexClassLoader.<init>(BaseDexClassLoader.java:48)<br>at dalvik.system.PathClassLoader.<init>(PathClassLoader.java:65)<br>at android.app.ApplicationLoaders.getClassLoader(ApplicationLoaders.java:58)<br>at android.app.LoadedApk.getClassLoader(LoadedApk.java:376)<br>at android.app.LoadedApk.makeApplication(LoadedApk.java:568)<br>at android.app.ActivityThread.handleBindApplication(ActivityThread.java:4680)<br>… 8 more</init></init></init></init></init></p>
+</blockquote>
+<p>猜测是因为编译时用的art库版本与模拟器中不一致，导致生成的oat文件不匹配。解决方法是把dex文件拷贝到模拟器里，然后使用dex2oat编译下。</p>
+<p>编译出来的dex文件（Launcher3.apk中不包含dex文件）路径是：</p>
+<blockquote>
+<p>out/target/common/obj/APPS/Launcher3_intermediates/classes.dex</p>
+</blockquote>
+<p>使用如下命令可以在/data/local/tmp目录下生成Launcher3.odex文件，/data/local/tmp/Launcher3.dex是要输入的dex文件路径。</p>
+<p>5.0中执行的命令</p>
+<pre><code>&gt; dex2oat --runtime-arg -Xms64m --runtime-arg -Xmx512m --dex-file=/data/local/tmp/Launcher3.dex --dex-location=/system/priv-app/Launcher3/Launcher3.apk --oat-file=/data/local/tmp/Launcher3.odex --android-root=/system --instruction-set=x86 --instruction-set-features=default --include-patch-information --runtime-arg -Xnorelocate --no-include-debug-symbols
+</code></pre><p>6.0中执行的命令</p>
+<pre><code>&gt; dex2oat --runtime-arg -Xms64m --runtime-arg -Xmx512m --dex-file=/data/local/tmp/Launcher3.dex --dex-location=/system/priv-app/Launcher3/Launcher3.apk --oat-file=/data/local/tmp/Launcher3.odex --android-root=/system --instruction-set=x86 --instruction-set-variant=x86 --instruction-set-features=default --include-patch-information --runtime-arg -Xnorelocate --no-generate-debug-info --abort-on-hard-verifier-error
+</code></pre><p>另外一种解决方法是：<br>修改</p>
+<blockquote>
+<p>build/target/board/generic_x86/BoardConfig.mk  </p>
+</blockquote>
+<p>文件，注释掉：</p>
+<blockquote>
+<p>WITH_DEXPREOPT ?= true</p>
+</blockquote>
+<p>这样，编译后的apk中就会包含dex文件，在模拟器第一次开机时会自动进行dexopt操作。</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>emulator</tag>
       </tags>
   </entry>
   <entry>
@@ -343,46 +308,38 @@ sh build.sh arm/arm64/x86/x86_64/all
       </tags>
   </entry>
   <entry>
-    <title>Chrome使用Fiddler抓HTTPS包</title>
-    <url>/2017/01/07/chrome-fiddler-https/</url>
-    <content><![CDATA[<p>Chrome从35之前的某一版本开始会检查HTTPS证书，如果不是信任的证书会阻止访问，报：  </p>
-<blockquote>
-<p>Failed to load resource: net::ERR_INSECURE_RESPONSE </p>
-</blockquote>
-<p>所以就没办法使用Fiddler抓HTTPS包了。</p>
-<p>解决方式是启动Chrome的时候加上  </p>
-<blockquote>
-<p>–ignore-certificate-errors</p>
-</blockquote>
-<p>参数，这样Chrome就不会检查证书了。</p>
-]]></content>
-      <categories>
-        <category>Web</category>
-      </categories>
-      <tags>
-        <tag>chrome</tag>
-        <tag>fiddler</tag>
-        <tag>https</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>删除kinguser的su文件</title>
-    <url>/2017/01/07/delete-kinguser-su/</url>
-    <content><![CDATA[<p>安装kinguser后创建的su文件发现无法删除，会提示  </p>
-<blockquote>
-<p>rm: can\’t remove \’su\’: Operation not permitted  </p>
-</blockquote>
-<p>找了好久终于找到原因了<br>是这个文件设置了<em>immutable</em>属性，导致无法rm、chmod、chown<br>只要去掉这个属性就好了  </p>
-<blockquote>
-<p>/system/xbin # chattr -i su<br>/system/xbin # chattr -i su<br>/system/xbin # chattr -a su<br>/system/xbin # rm -f su<br>/system/xbin # rm -f su  </p>
-</blockquote>
-<p>使用lsattr可以查看属性</p>
+    <title>编译Android版本的libjpeg-turbo</title>
+    <url>/2018/03/29/build-libjpeg-turbo-for-android/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>libjpeg-turbo是一个JPEG编解码库，支持x86, x86-64, ARM等系统下的指令加速，其性能号称是libjpeg的2-6倍。官网地址是：<a href="https://libjpeg-turbo.org/" target="_blank" rel="noopener">https://libjpeg-turbo.org/</a>。github地址是：<a href="https://github.com/libjpeg-turbo/libjpeg-turbo" target="_blank" rel="noopener">https://github.com/libjpeg-turbo/libjpeg-turbo</a>。</p>
+<p>Android中默认提供了libjpeg实现的JPEG编解码接口，但是测试下来性能不是很好，无法满足实际使用需求。因此，准备编译Android版本来用。</p>
+<h2 id="0x01-下载源码"><a href="#0x01-下载源码" class="headerlink" title="0x01 下载源码"></a>0x01 下载源码</h2><p>使用的编译环境是：Ubuntu 16.04 x64</p>
+<p>一开始，我使用的是github上的代码，可以正常编译成linux版本。但是按照<a href="https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/BUILDING.md" target="_blank" rel="noopener">文档</a>上的操作却始终无法编译出Android版本。</p>
+<p>后来发现，官网上的提供的版本编译脚本与github上并不相同。官网的源码包下载地址为：<a href="https://sourceforge.net/projects/libjpeg-turbo/files/" target="_blank" rel="noopener">https://sourceforge.net/projects/libjpeg-turbo/files/</a>。我下的是1.5.3版本<a href="https://sourceforge.net/projects/libjpeg-turbo/files/1.5.3/libjpeg-turbo-1.5.3.tar.gz/download" target="_blank" rel="noopener">源码包</a>。</p>
+<p>解压到本地，根目录下的<code>BUILDING.md</code>文件中包含了编译方法。具体内容如下：<a href="https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/libjpeg-turbo-1.5.3/BUILDING.md" target="_blank" rel="noopener">https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/libjpeg-turbo-1.5.3/BUILDING.md</a></p>
+<h2 id="0x02-编译环境"><a href="#0x02-编译环境" class="headerlink" title="0x02 编译环境"></a>0x02 编译环境</h2><p>编译依赖需要依赖以下库：</p>
+<ul>
+<li>autoconf 2.56 or later</li>
+<li>automake 1.7 or later</li>
+<li>libtool 1.4 or later</li>
+<li>NASM or YASM (if building x86 or x86-64 SIMD extensions)</li>
+</ul>
+<p>Ubuntu下可以使用以下方法安装：</p>
+<pre><code>apt install autoconf
+apt install automake
+apt install libtool
+apt install nasm
+</code></pre><h2 id="0x03-编译"><a href="#0x03-编译" class="headerlink" title="0x03 编译"></a>0x03 编译</h2><p>修改<code>BUILDING.md</code>中提供的编译脚本，编译出目标架构版本。为方便编译，我提供了可以直接编译的脚本: <a href="https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/build.sh" target="_blank" rel="noopener">https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/build.sh</a>。</p>
+<p>使用方法：</p>
+<pre><code>export NDK_PATH=/path/to/ndk
+sh build.sh arm/arm64/x86/x86_64/all
+</code></pre><p>此时，会在当前目录的<code>out</code>目录下生成对应架构的文件。</p>
 ]]></content>
       <categories>
         <category>Android</category>
       </categories>
       <tags>
-        <tag>kinguser</tag>
+        <tag>Android</tag>
+        <tag>libjpeg-turbo</tag>
       </tags>
   </entry>
   <entry>
@@ -423,6 +380,29 @@ https://aka.ms/wslstore
       </tags>
   </entry>
   <entry>
+    <title>Chrome使用Fiddler抓HTTPS包</title>
+    <url>/2017/01/07/chrome-fiddler-https/</url>
+    <content><![CDATA[<p>Chrome从35之前的某一版本开始会检查HTTPS证书，如果不是信任的证书会阻止访问，报：  </p>
+<blockquote>
+<p>Failed to load resource: net::ERR_INSECURE_RESPONSE </p>
+</blockquote>
+<p>所以就没办法使用Fiddler抓HTTPS包了。</p>
+<p>解决方式是启动Chrome的时候加上  </p>
+<blockquote>
+<p>–ignore-certificate-errors</p>
+</blockquote>
+<p>参数，这样Chrome就不会检查证书了。</p>
+]]></content>
+      <categories>
+        <category>Web</category>
+      </categories>
+      <tags>
+        <tag>chrome</tag>
+        <tag>fiddler</tag>
+        <tag>https</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MIUI关闭系统自动升级</title>
     <url>/2017/01/07/disable-miui-update/</url>
     <content><![CDATA[<p>&emsp;&emsp;这几天手机老是自动更新到MIUI v6，但是我又不喜欢v6，只好降级，结果降级后又自动升级，只好研究了下禁止升级的方法。<br>&emsp;&emsp;结果发现只能卸载<strong>/system/app/Updater.apk</strong>，不然就算禁止“系统更新”联网也没用，它还是会偷偷下载新版本，然后提示重启升级。此时千万不能重启，要进到recovery里，选择另外一个系统（不显示“最近”的系统），进去，这样进到的还是旧系统。因为MIUI会将新版本放到新系统里，重启后自动进的就是新系统（这也是双系统的好处）。<br>&emsp;&emsp;如果不小心进到新系统里升级了，也不要紧，重启到recovery，清除用户数据，再重启到旧系统就可以了。然后一定要卸载Updater.apk。这样就不会再自动升级了。</p>
@@ -432,6 +412,58 @@ https://aka.ms/wslstore
       </categories>
       <tags>
         <tag>miui</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>删除kinguser的su文件</title>
+    <url>/2017/01/07/delete-kinguser-su/</url>
+    <content><![CDATA[<p>安装kinguser后创建的su文件发现无法删除，会提示  </p>
+<blockquote>
+<p>rm: can\’t remove \’su\’: Operation not permitted  </p>
+</blockquote>
+<p>找了好久终于找到原因了<br>是这个文件设置了<em>immutable</em>属性，导致无法rm、chmod、chown<br>只要去掉这个属性就好了  </p>
+<blockquote>
+<p>/system/xbin # chattr -i su<br>/system/xbin # chattr -i su<br>/system/xbin # chattr -a su<br>/system/xbin # rm -f su<br>/system/xbin # rm -f su  </p>
+</blockquote>
+<p>使用lsattr可以查看属性</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>kinguser</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>修复Linux内核文件丢失问题</title>
+    <url>/2018/02/11/fix-linux-kernel/</url>
+    <content><![CDATA[<p>如果误操作了<code>/boot</code>目录下kernel文件，会导致无法进入系统，此时，必须要借助第三方系统来进行kernel的修复。</p>
+<p><img src="http://images.drunkdream.cn/linux-no-kernel.png" alt></p>
+<p>以下以 Ubuntu 16.04系统为例，介绍修复的方法。以下操作都需要root权限。</p>
+<p>1、 使用<code>Universal USB Installer</code>制作Ubuntu的USB启动盘，重启进入<code>Live</code>模式</p>
+<p>2、 使用<code>mount</code>命令查看系统分区挂载的路径</p>
+<p><img src="http://images.drunkdream.cn/sda1_mount.png" alt></p>
+<p>3、 进入挂载目录</p>
+<pre><code>cd /media/ubuntu/c7b8708f-1e7a-4fd0-9815-97be053dad67
+</code></pre><p>4、 绑定<code>dev</code>、<code>proc</code>、<code>sys</code>等目录</p>
+<pre><code>mount --bind /dev dev
+mount --bind /proc proc
+mount --bind /sys sys
+</code></pre><p>5、 使用<code>chroot</code>将当前目录变为根目录（这样，之后的操作，都是针对待修复系统的分区）</p>
+<pre><code>chroot .
+</code></pre><p><img src="http://images.drunkdream.cn/chroot.png" alt></p>
+<p>6、修复kernel</p>
+<pre><code>apt update
+apt install linux-image-generic
+</code></pre><p><img src="http://images.drunkdream.cn/install_kernel.png" alt></p>
+<p>可以看到，新的kernel已经被安装到boot目录中了。</p>
+<p>此时，重启系统可以正常进去了。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>kernel</tag>
       </tags>
   </entry>
   <entry>
@@ -471,62 +503,6 @@ https://aka.ms/wslstore
       </categories>
       <tags>
         <tag>recovery</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>修复Linux内核文件丢失问题</title>
-    <url>/2018/02/11/fix-linux-kernel/</url>
-    <content><![CDATA[<p>如果误操作了<code>/boot</code>目录下kernel文件，会导致无法进入系统，此时，必须要借助第三方系统来进行kernel的修复。</p>
-<p><img src="http://images.drunkdream.cn/linux-no-kernel.png" alt></p>
-<p>以下以 Ubuntu 16.04系统为例，介绍修复的方法。以下操作都需要root权限。</p>
-<p>1、 使用<code>Universal USB Installer</code>制作Ubuntu的USB启动盘，重启进入<code>Live</code>模式</p>
-<p>2、 使用<code>mount</code>命令查看系统分区挂载的路径</p>
-<p><img src="http://images.drunkdream.cn/sda1_mount.png" alt></p>
-<p>3、 进入挂载目录</p>
-<pre><code>cd /media/ubuntu/c7b8708f-1e7a-4fd0-9815-97be053dad67
-</code></pre><p>4、 绑定<code>dev</code>、<code>proc</code>、<code>sys</code>等目录</p>
-<pre><code>mount --bind /dev dev
-mount --bind /proc proc
-mount --bind /sys sys
-</code></pre><p>5、 使用<code>chroot</code>将当前目录变为根目录（这样，之后的操作，都是针对待修复系统的分区）</p>
-<pre><code>chroot .
-</code></pre><p><img src="http://images.drunkdream.cn/chroot.png" alt></p>
-<p>6、修复kernel</p>
-<pre><code>apt update
-apt install linux-image-generic
-</code></pre><p><img src="http://images.drunkdream.cn/install_kernel.png" alt></p>
-<p>可以看到，新的kernel已经被安装到boot目录中了。</p>
-<p>此时，重启系统可以正常进去了。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>kernel</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>flyme中关闭系统的权限管理</title>
-    <url>/2017/01/07/flyme-close-perm/</url>
-    <content><![CDATA[<p>flyme中通过“安全中心”应用管理应用权限，未找到关闭权限管理的入口。后来发现是一个隐藏的Activity中可以关闭。</p>
-<blockquote>
-<p>am start -n com.meizu.safe/.security.SecSettingsActivity</p>
-</blockquote>
-<p>这个命令可以打开设置界面进行关闭。</p>
-<p>不过重启之后，系统还会自动开启权限管理，目前能找到的解决方法是在手机启动的时候用脚本关闭。</p>
-<pre><code>sleep 30  
-am start -n    com.meizu.safe/.security.SecSettingsActivity &amp;&amp; sleep 1  
-input keyevent 66 &amp;&amp; sleep 1  
-input keyevent 66 &amp;&amp; sleep 1  
-input keyevent 61 &amp;&amp; sleep 1  
-input keyevent 66
-</code></pre><p>将如上代码添加到<strong>/system/etc/install-recovery.sh</strong>脚本后面，这样手机启动后就会自动执行了。</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>flyme</tag>
       </tags>
   </entry>
   <entry>
@@ -588,6 +564,30 @@ To github.com:drunkdream/xxx.git
 ]]></content>
       <tags>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>flyme中关闭系统的权限管理</title>
+    <url>/2017/01/07/flyme-close-perm/</url>
+    <content><![CDATA[<p>flyme中通过“安全中心”应用管理应用权限，未找到关闭权限管理的入口。后来发现是一个隐藏的Activity中可以关闭。</p>
+<blockquote>
+<p>am start -n com.meizu.safe/.security.SecSettingsActivity</p>
+</blockquote>
+<p>这个命令可以打开设置界面进行关闭。</p>
+<p>不过重启之后，系统还会自动开启权限管理，目前能找到的解决方法是在手机启动的时候用脚本关闭。</p>
+<pre><code>sleep 30  
+am start -n    com.meizu.safe/.security.SecSettingsActivity &amp;&amp; sleep 1  
+input keyevent 66 &amp;&amp; sleep 1  
+input keyevent 66 &amp;&amp; sleep 1  
+input keyevent 61 &amp;&amp; sleep 1  
+input keyevent 66
+</code></pre><p>将如上代码添加到<strong>/system/etc/install-recovery.sh</strong>脚本后面，这样手机启动后就会自动执行了。</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>flyme</tag>
       </tags>
   </entry>
   <entry>
@@ -682,49 +682,6 @@ character-set-server = utf8
       <tags>
         <tag>ubuntu</tag>
         <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu部署squid代理服务器</title>
-    <url>/2019/01/28/install-squid-server/</url>
-    <content><![CDATA[<h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p><code>squid</code>是一款高性能的代理缓存服务器，常用来部署<code>HTTP(S)</code>代理服务器。本文是在<code>Ubuntu</code>上使用<code>squid</code>部署<code>HTTP(S)</code>代理服务器的方法总结。</p>
-<p>使用的Ubuntu版本是：<code>Ubuntu 16.04 x64</code>。</p>
-<h1 id="0x01-安装和配置"><a href="#0x01-安装和配置" class="headerlink" title="0x01 安装和配置"></a>0x01 安装和配置</h1><p>使用如下命令安装<code>squid</code>：</p>
-<pre><code>apt install squid -y
-</code></pre><p>安装后，会在<code>/etc/squid</code>目录下生成默认的配置文件<code>squid.conf</code>,需要对其做一些自定义的修改.</p>
-<h2 id="修改默认端口"><a href="#修改默认端口" class="headerlink" title="修改默认端口"></a>修改默认端口</h2><p>将<code>http_port 3128</code>这行中的<code>3128</code>修改为期望的端口号，比如<code>8080</code>，或是非常用端口，这样可以避免服务被<a href="https://www.shodan.io/" target="_blank" rel="noopener">shodan</a>之类的搜索引擎探测到。</p>
-<h2 id="允许外部访问"><a href="#允许外部访问" class="headerlink" title="允许外部访问"></a>允许外部访问</h2><p>squid默认只能从本地访问，是因为它设置了<code>http_access allow localhost</code>。</p>
-<p>但正常情况下，我们都是需要从外部访问的，这就需要添加以下两行配置：</p>
-<pre><code>acl net src 0.0.0.0/0
-http_access allow net
-</code></pre><p>表示接收任意外部地址。</p>
-<h2 id="允许CONNECT所有端口"><a href="#允许CONNECT所有端口" class="headerlink" title="允许CONNECT所有端口"></a>允许<code>CONNECT</code>所有端口</h2><p>squid默认只可以<code>CONNECT</code>443端口，如果要开放所有端口，需要注释掉<code>http_access deny CONNECT !SSL_ports</code>这行。</p>
-<h2 id="修改安全端口"><a href="#修改安全端口" class="headerlink" title="修改安全端口"></a>修改安全端口</h2><p>squid默认策略只允许代理访问以下端口：</p>
-<pre><code>acl Safe_ports port 80        # http
-acl Safe_ports port 21        # ftp
-acl Safe_ports port 443        # https
-acl Safe_ports port 70        # gopher
-acl Safe_ports port 210        # wais
-acl Safe_ports port 1025-65535    # unregistered ports
-acl Safe_ports port 280        # http-mgmt
-acl Safe_ports port 488        # gss-http
-acl Safe_ports port 591        # filemaker
-acl Safe_ports port 777        # multiling http
-</code></pre><p>因此，会有部分端口无法访问，直接返回<code>403 Forbidden</code>。如果需要访问这些端口，可以增加以下配置：</p>
-<pre><code>acl Safe_ports port 1-1024
-</code></pre><h2 id="不允许访问本地网络"><a href="#不允许访问本地网络" class="headerlink" title="不允许访问本地网络"></a>不允许访问本地网络</h2><p>squid默认允许访问本地（<code>localhost</code>）服务，但建议去掉<code>#http_access deny to_localhost</code>的注释</p>
-<h2 id="允许所有访问"><a href="#允许所有访问" class="headerlink" title="允许所有访问"></a>允许所有访问</h2><p>如果觉得以上操作过于繁琐，在<code>不考虑安全性</code>的情况下，也可以修改<code>http_access deny all</code>为<code>http_access allow all</code></p>
-<h2 id="设置访问密码"><a href="#设置访问密码" class="headerlink" title="设置访问密码"></a>设置访问密码</h2><p>为了安全，我们通常会给代理服务器设置密码。</p>
-<p>先安装<code>htpasswd</code>工具，使用如下命令：</p>
-<pre><code>apt install apache2-utils -y
-</code></pre><p>创建密码文件：</p>
-<pre><code>htpasswd -c /etc/squid/passwd proxy_username
-</code></pre><p>在<code>squid.conf</code>中添加以下内容：</p>
-<pre><code>auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/passwd
-</code></pre><h1 id="0x02-启动squid服务"><a href="#0x02-启动squid服务" class="headerlink" title="0x02 启动squid服务"></a>0x02 启动squid服务</h1><pre><code>systemctl start squid
-</code></pre>]]></content>
-      <tags>
-        <tag>ubuntu</tag>
       </tags>
   </entry>
   <entry>
@@ -893,6 +850,62 @@ function
       </tags>
   </entry>
   <entry>
+    <title>怜香辞</title>
+    <url>/2017/01/14/lian-xiang-ci/</url>
+    <content><![CDATA[<p>怜美人之徜徉兮，郁郁而寡欢<br>青丝凌凌而猗靡兮，暗自悲悯欲绝<br>面若初桃兮带雨，腰恰细柳兮销魂<br>残黛双蹙，粉眼凝山<br>朱唇几褪，皓齿贝连<br>冰肌玉骨，风掀翠衫  </p>
+<p>忆曩昔之欢娱兮，愁云弥散<br>携手伴游石城兮，幽亭共凭阑<br>步逍遥而无忧兮，笑语厌厌  </p>
+<p>孰料风云之幻兮，须臾莫辨<br>风雨骤临凄凄兮，软玉难牵<br>孤夜茕独垂泪兮，枕席湿眠<br>何旧人之难却兮，思怨益切<br>詈雄兔之负心兮，雌兔独痴情<br>乐新而弃故兮，顾之于漠漠<br>何怀伤于斯人兮，全不念昔日缠绵  </p>
+<p>羡潘岳之貌美兮，仰少游之文才<br>梦韩寿之窃玉兮，羲之卧于东床<br>叹琼瑶之难报兮，襄王早别巫颠<br>奈子夫之滋泽兮，阿娇依伫长门<br>红颜无脱迟暮兮，斯人至死不解<br>天与地何其渺兮，重觅世间佳婿<br>相随老死不离兮，轻笑长浮脸际 </p>
+<p>忽而伊观余似悟此间，颜顿开，飘然远逝。</p>
+]]></content>
+      <categories>
+        <category>诗词</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Ubuntu部署squid代理服务器</title>
+    <url>/2019/01/28/install-squid-server/</url>
+    <content><![CDATA[<h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p><code>squid</code>是一款高性能的代理缓存服务器，常用来部署<code>HTTP(S)</code>代理服务器。本文是在<code>Ubuntu</code>上使用<code>squid</code>部署<code>HTTP(S)</code>代理服务器的方法总结。</p>
+<p>使用的Ubuntu版本是：<code>Ubuntu 16.04 x64</code>。</p>
+<h1 id="0x01-安装和配置"><a href="#0x01-安装和配置" class="headerlink" title="0x01 安装和配置"></a>0x01 安装和配置</h1><p>使用如下命令安装<code>squid</code>：</p>
+<pre><code>apt install squid -y
+</code></pre><p>安装后，会在<code>/etc/squid</code>目录下生成默认的配置文件<code>squid.conf</code>,需要对其做一些自定义的修改.</p>
+<h2 id="修改默认端口"><a href="#修改默认端口" class="headerlink" title="修改默认端口"></a>修改默认端口</h2><p>将<code>http_port 3128</code>这行中的<code>3128</code>修改为期望的端口号，比如<code>8080</code>，或是非常用端口，这样可以避免服务被<a href="https://www.shodan.io/" target="_blank" rel="noopener">shodan</a>之类的搜索引擎探测到。</p>
+<h2 id="允许外部访问"><a href="#允许外部访问" class="headerlink" title="允许外部访问"></a>允许外部访问</h2><p>squid默认只能从本地访问，是因为它设置了<code>http_access allow localhost</code>。</p>
+<p>但正常情况下，我们都是需要从外部访问的，这就需要添加以下两行配置：</p>
+<pre><code>acl net src 0.0.0.0/0
+http_access allow net
+</code></pre><p>表示接收任意外部地址。</p>
+<h2 id="允许CONNECT所有端口"><a href="#允许CONNECT所有端口" class="headerlink" title="允许CONNECT所有端口"></a>允许<code>CONNECT</code>所有端口</h2><p>squid默认只可以<code>CONNECT</code>443端口，如果要开放所有端口，需要注释掉<code>http_access deny CONNECT !SSL_ports</code>这行。</p>
+<h2 id="修改安全端口"><a href="#修改安全端口" class="headerlink" title="修改安全端口"></a>修改安全端口</h2><p>squid默认策略只允许代理访问以下端口：</p>
+<pre><code>acl Safe_ports port 80        # http
+acl Safe_ports port 21        # ftp
+acl Safe_ports port 443        # https
+acl Safe_ports port 70        # gopher
+acl Safe_ports port 210        # wais
+acl Safe_ports port 1025-65535    # unregistered ports
+acl Safe_ports port 280        # http-mgmt
+acl Safe_ports port 488        # gss-http
+acl Safe_ports port 591        # filemaker
+acl Safe_ports port 777        # multiling http
+</code></pre><p>因此，会有部分端口无法访问，直接返回<code>403 Forbidden</code>。如果需要访问这些端口，可以增加以下配置：</p>
+<pre><code>acl Safe_ports port 1-1024
+</code></pre><h2 id="不允许访问本地网络"><a href="#不允许访问本地网络" class="headerlink" title="不允许访问本地网络"></a>不允许访问本地网络</h2><p>squid默认允许访问本地（<code>localhost</code>）服务，但建议去掉<code>#http_access deny to_localhost</code>的注释</p>
+<h2 id="允许所有访问"><a href="#允许所有访问" class="headerlink" title="允许所有访问"></a>允许所有访问</h2><p>如果觉得以上操作过于繁琐，在<code>不考虑安全性</code>的情况下，也可以修改<code>http_access deny all</code>为<code>http_access allow all</code></p>
+<h2 id="设置访问密码"><a href="#设置访问密码" class="headerlink" title="设置访问密码"></a>设置访问密码</h2><p>为了安全，我们通常会给代理服务器设置密码。</p>
+<p>先安装<code>htpasswd</code>工具，使用如下命令：</p>
+<pre><code>apt install apache2-utils -y
+</code></pre><p>创建密码文件：</p>
+<pre><code>htpasswd -c /etc/squid/passwd proxy_username
+</code></pre><p>在<code>squid.conf</code>中添加以下内容：</p>
+<pre><code>auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/passwd
+</code></pre><h1 id="0x02-启动squid服务"><a href="#0x02-启动squid服务" class="headerlink" title="0x02 启动squid服务"></a>0x02 启动squid服务</h1><pre><code>systemctl start squid
+</code></pre>]]></content>
+      <tags>
+        <tag>ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>浅谈Javascript中的Hook技术</title>
     <url>/2020/06/05/javascript-hook/</url>
     <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Hook是一种动态修改函数执行流程或返回结果的方法，在实际应用中非常广泛。Javascript作为一种动态语言，也可以进行Hook操作。随着Javascript语言的发展，Hook的方法也越来越多，本文介绍了常见的几种Hook方法。</p>
@@ -982,173 +995,6 @@ function
       </categories>
       <tags>
         <tag>hook</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>本地部署Jenkins环境</title>
-    <url>/2019/12/06/local-deploy-jenkins/</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Jenkins是一款使用比较广泛的<code>CI/CD</code>平台，2.0版本开始支持了<code>pipeline</code>，通过<code>jenkinsfile</code>文件进行流水线的控制。本文提供了一种在本地Linux环境中快速搭建Jenkins测试环境的方法。</p>
-<h2 id="0x01-环境部署"><a href="#0x01-环境部署" class="headerlink" title="0x01 环境部署"></a>0x01 环境部署</h2><p>直接使用docker镜像搭建环境是一种比较快捷的方法。编写如下<code>Dockerfile</code>文件：</p>
-<pre><code class="Dockerfile">FROM jenkins/jenkins:lts
-
-USER root
-RUN apt -y update \
-    &amp;&amp; apt -y upgrade \
-    &amp;&amp; apt -y install python-pip
-</code></pre>
-<p>使用命令：<code>docker build -t jenkins .</code>进行镜像编译。</p>
-<p>编译后使用命令：<code>docker run --name jenkins -i -p 8787:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker -v /data/jenkins/jenkins_home:/var/jenkins_home:rw jenkins</code>启动镜像。</p>
-<p><code>/var/run/docker.sock</code>和<code>/usr/bin/docker</code>这两个挂载是为了支持<code>Docker in Docker</code>。<code>/data/jenkins/jenkins_home</code>这个挂载是为了便于保存Jenkins数据，以免容器重启后又要重新配置。</p>
-<h2 id="0x02-初始化Jenkins配置"><a href="#0x02-初始化Jenkins配置" class="headerlink" title="0x02 初始化Jenkins配置"></a>0x02 初始化Jenkins配置</h2><p>使用浏览器访问<code>http:/127.0.0.1:8787/</code>页面，进行初始化操作。</p>
-<h3 id="配置代理"><a href="#配置代理" class="headerlink" title="配置代理"></a>配置代理</h3><h2 id="0x03-编写Jenkinsfile"><a href="#0x03-编写Jenkinsfile" class="headerlink" title="0x03 编写Jenkinsfile"></a>0x03 编写Jenkinsfile</h2><p>文档地址：<a href="https://jenkins.io/zh/doc/book/pipeline/syntax/" target="_blank" rel="noopener">https://jenkins.io/zh/doc/book/pipeline/syntax/</a>。</p>
-<p><code>Jenkinsfile</code>分为<code>声明式</code>和<code>脚本式</code>，这里主要介绍<code>声明式</code>。</p>
-<p>下面是一个简单的模板：</p>
-<pre><code class="Jenkinsfile">pipeline {
-  agent {
-    label &quot;default&quot;
-  }
-
-  stages  {
-    stage(&quot;检出&quot;) {
-      steps {
-        sh &#39;ci-init&#39;
-        checkout(
-          [$class: &#39;GitSCM&#39;, branches: [[name: env.GIT_BUILD_REF]], 
-                  userRemoteConfigs: [[url: env.GIT_REPO_URL]]]
-        )
-      }
-    }
-
-    stage(&quot;构建&quot;) {
-      steps {
-        echo &quot;构建中...&quot;
-        sh &#39;go version&#39;
-        sh &#39;node -v&#39;
-        sh &#39;java -version&#39;
-        sh &#39;php -v&#39;
-        sh &#39;python -V&#39;
-        sh &#39;gcc -v&#39;
-        sh &#39;make -v&#39;
-        // 请在这里放置您项目代码的单元测试调用过程，例如:
-        // sh &#39;mvn package&#39; // mvn 示例
-        // sh &#39;make&#39; // make 示例
-        echo &quot;构建完成.&quot;
-        // archiveArtifacts artifacts: &#39;**/target/*.jar&#39;, fingerprint: true // 收集构建产物
-      }
-    }
-
-    stage(&quot;测试&quot;) {
-      steps {
-        echo &quot;单元测试中...&quot;
-        // 请在这里放置您项目代码的单元测试调用过程，例如:
-        // sh &#39;mvn test&#39; // mvn 示例
-        // sh &#39;make test&#39; // make 示例
-        echo &quot;单元测试完成.&quot;
-        // junit &#39;target/surefire-reports/*.xml&#39; // 收集单元测试报告的调用过程
-      }
-    }
-
-    stage(&quot;部署&quot;) {
-      steps {
-        echo &quot;部署中...&quot;
-        // 请在这里放置收集单元测试报告的调用过程，例如:
-        // sh &#39;mvn tomcat7:deploy&#39; // Maven tomcat7 插件示例：
-        // sh &#39;./deploy.sh&#39; // 自研部署脚本
-        echo &quot;部署完成&quot;
-      }
-    }
-  }
-}
-</code></pre>
-<h3 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h3><h4 id="指定docker镜像"><a href="#指定docker镜像" class="headerlink" title="指定docker镜像"></a>指定docker镜像</h4><pre><code>  agent {
-    docker {
-      image &#39;demo/test/base:latest&#39;
-      registryUrl &#39;https://drunkdream-docker.pkg.coding.net&#39;
-    }
-  }
-</code></pre><h4 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h4><pre><code>  environment {
-    MY_ENV = &#39;test&#39;
-  }
-</code></pre><h4 id="访问环境变量"><a href="#访问环境变量" class="headerlink" title="访问环境变量"></a>访问环境变量</h4><p>Jenkins内置的环境变量列表可以在<code>http://jenkins-server/pipeline-syntax/globals#env</code>地址中获取。</p>
-<p>环境变量可以通过<code>${env.My_ENV}</code>或<code>${My_ENV}</code>或<code>$My_ENV</code>来访问。需要注意的是，使用引号的时候尽量使用<code>&quot;</code>，如：<code>echo &quot;${env.My_ENV}&quot;</code>，否则会无法生效。Jenkins应该是在运行时将变量动态替换成了实际值，使用单引号的话，则不会进行替换。</p>
-<p>而如果写成<code>sh &#39;echo ${MY_ENV}&#39;</code>则是可以正常工作的，因为此时是由<code>shell</code>程序进行环境变量的读取。</p>
-<pre><code>  stage(&#39;测试&#39;) {
-    steps {
-      echo &quot;${env.MY_ENV}&quot;
-      echo &quot;${MY_ENV}&quot;
-      echo &quot;$MY_ENV&quot;
-      sh &#39;echo $MY_ENV&#39;
-      sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;MY_ENV\&#39;])&quot;&#39;
-      echo &#39;${env.MY_ENV}&#39; //输出`${env.MY_ENV}`
-    }
-  }
-</code></pre><p>前五条命令都可以正常输出变量值，但最后一条却无法输出。</p>
-<h4 id="将命令行输出赋值给变量"><a href="#将命令行输出赋值给变量" class="headerlink" title="将命令行输出赋值给变量"></a>将命令行输出赋值给变量</h4><p>Jenkins的<code>${env.My_ENV}</code>方式不支持默认值，也就是<code>bash</code>中的<code>${MY_ENV:-&quot;test&quot;}</code>写法。如果需要这种用法，可以使用以下方式：</p>
-<pre><code>  stage(&#39;测试&#39;) {
-    steps {
-      script {
-        ENV1 = sh(returnStdout: true, script: &#39;echo ${MY_ENV:-&quot;default&quot;}&#39;).trim()
-      }
-      sh &#39;echo ${ENV1}&#39; //可以正常输出
-      sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;ENV1\&#39;])&quot;&#39; //会报错
-    }
-  }
-</code></pre><p><code>trim()</code>方法可以去掉前后的空白字符。</p>
-<blockquote>
-<p>注意：<code>${MY_ENV:-&quot;default&quot;}</code>不能写成<code>${env.MY_ENV:-&quot;default&quot;}</code></p>
-</blockquote>
-<p>虽然这种方式赋值的变量也可以通过<code>${env.ENV1}</code>方式访问，但其实它并不是环境变量。</p>
-<h4 id="动态配置环境变量"><a href="#动态配置环境变量" class="headerlink" title="动态配置环境变量"></a>动态配置环境变量</h4><pre><code>  stage(&#39;测试&#39;) {
-    steps {
-      script {
-        ENV1 = sh(returnStdout: true, script: &#39;echo ${MY_ENV:-&quot;default&quot;}&#39;).trim()
-      }
-      withEnv([&quot;MY_ENV=${ENV1}&quot;]) {
-        sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;MY_ENV\&#39;])&quot;&#39; //输出default
-      }
-    }
-  }
-</code></pre>]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>怜香辞</title>
-    <url>/2017/01/14/lian-xiang-ci/</url>
-    <content><![CDATA[<p>怜美人之徜徉兮，郁郁而寡欢<br>青丝凌凌而猗靡兮，暗自悲悯欲绝<br>面若初桃兮带雨，腰恰细柳兮销魂<br>残黛双蹙，粉眼凝山<br>朱唇几褪，皓齿贝连<br>冰肌玉骨，风掀翠衫  </p>
-<p>忆曩昔之欢娱兮，愁云弥散<br>携手伴游石城兮，幽亭共凭阑<br>步逍遥而无忧兮，笑语厌厌  </p>
-<p>孰料风云之幻兮，须臾莫辨<br>风雨骤临凄凄兮，软玉难牵<br>孤夜茕独垂泪兮，枕席湿眠<br>何旧人之难却兮，思怨益切<br>詈雄兔之负心兮，雌兔独痴情<br>乐新而弃故兮，顾之于漠漠<br>何怀伤于斯人兮，全不念昔日缠绵  </p>
-<p>羡潘岳之貌美兮，仰少游之文才<br>梦韩寿之窃玉兮，羲之卧于东床<br>叹琼瑶之难报兮，襄王早别巫颠<br>奈子夫之滋泽兮，阿娇依伫长门<br>红颜无脱迟暮兮，斯人至死不解<br>天与地何其渺兮，重觅世间佳婿<br>相随老死不离兮，轻笑长浮脸际 </p>
-<p>忽而伊观余似悟此间，颜顿开，飘然远逝。</p>
-]]></content>
-      <categories>
-        <category>诗词</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>logcat无法使用</title>
-    <url>/2017/01/07/logcat-cannot-use/</url>
-    <content><![CDATA[<p>最近为三星Note2|N7100刷入内核版本为3.0.31-1071214的ROM，发现使用logcat时给出如下错误提示：</p>
-<blockquote>
-<p>Unable to open log device \’/dev/log/main\’: No such file or directory    </p>
-</blockquote>
-<p>通过各种搜索分析最终找到针对该机型的解决办法，解决方式如下：  </p>
-<ol>
-<li>从手机进入目录：/system/etc/init.d;  </li>
-<li>在该目录下找到S82logger文件，用记事本打开，可以看到如下语句：rm /dev/log/main，将该语句删除。  </li>
-<li>在该目录下找到04opb-tweaks文件，用记事本打开，找到如下语句：rm /dev/log/main，将该语句删除。  </li>
-<li>重启手机。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>logcat</tag>
       </tags>
   </entry>
   <entry>
@@ -1286,31 +1132,157 @@ int main(int argc,char **argv){
       </tags>
   </entry>
   <entry>
-    <title>让应用ANR的方法</title>
-    <url>/2017/01/07/make-app-anr/</url>
-    <content><![CDATA[<p>今天发现一种让应用弹出ANR窗口的简单方法，记录一下</p>
+    <title>logcat无法使用</title>
+    <url>/2017/01/07/logcat-cannot-use/</url>
+    <content><![CDATA[<p>最近为三星Note2|N7100刷入内核版本为3.0.31-1071214的ROM，发现使用logcat时给出如下错误提示：</p>
 <blockquote>
-<p>kill -19 pid</p>
+<p>Unable to open log device \’/dev/log/main\’: No such file or directory    </p>
 </blockquote>
+<p>通过各种搜索分析最终找到针对该机型的解决办法，解决方式如下：  </p>
+<ol>
+<li>从手机进入目录：/system/etc/init.d;  </li>
+<li>在该目录下找到S82logger文件，用记事本打开，可以看到如下语句：rm /dev/log/main，将该语句删除。  </li>
+<li>在该目录下找到04opb-tweaks文件，用记事本打开，找到如下语句：rm /dev/log/main，将该语句删除。  </li>
+<li>重启手机。</li>
+</ol>
 ]]></content>
       <categories>
         <category>Android</category>
       </categories>
       <tags>
-        <tag>ANR</tag>
+        <tag>logcat</tag>
       </tags>
   </entry>
   <entry>
-    <title>魅族MX4关闭强制GPU渲染的方法</title>
-    <url>/2017/01/07/meizu-mx4-close-gpu/</url>
-    <content><![CDATA[<p>默认在设置里没有该开关，需要<br>在手机拨号界面输入<strong>*#*#6961#*#*</strong><br>再到手机设置里关掉</p>
-]]></content>
+    <title>本地部署Jenkins环境</title>
+    <url>/2019/12/06/local-deploy-jenkins/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Jenkins是一款使用比较广泛的<code>CI/CD</code>平台，2.0版本开始支持了<code>pipeline</code>，通过<code>jenkinsfile</code>文件进行流水线的控制。本文提供了一种在本地Linux环境中快速搭建Jenkins测试环境的方法。</p>
+<h2 id="0x01-环境部署"><a href="#0x01-环境部署" class="headerlink" title="0x01 环境部署"></a>0x01 环境部署</h2><p>直接使用docker镜像搭建环境是一种比较快捷的方法。编写如下<code>Dockerfile</code>文件：</p>
+<pre><code class="Dockerfile">FROM jenkins/jenkins:lts
+
+USER root
+RUN apt -y update \
+    &amp;&amp; apt -y upgrade \
+    &amp;&amp; apt -y install python-pip
+</code></pre>
+<p>使用命令：<code>docker build -t jenkins .</code>进行镜像编译。</p>
+<p>编译后使用命令：<code>docker run --name jenkins -i -p 8787:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker -v /data/jenkins/jenkins_home:/var/jenkins_home:rw jenkins</code>启动镜像。</p>
+<p><code>/var/run/docker.sock</code>和<code>/usr/bin/docker</code>这两个挂载是为了支持<code>Docker in Docker</code>。<code>/data/jenkins/jenkins_home</code>这个挂载是为了便于保存Jenkins数据，以免容器重启后又要重新配置。</p>
+<h2 id="0x02-初始化Jenkins配置"><a href="#0x02-初始化Jenkins配置" class="headerlink" title="0x02 初始化Jenkins配置"></a>0x02 初始化Jenkins配置</h2><p>使用浏览器访问<code>http:/127.0.0.1:8787/</code>页面，进行初始化操作。</p>
+<h3 id="配置代理"><a href="#配置代理" class="headerlink" title="配置代理"></a>配置代理</h3><h2 id="0x03-编写Jenkinsfile"><a href="#0x03-编写Jenkinsfile" class="headerlink" title="0x03 编写Jenkinsfile"></a>0x03 编写Jenkinsfile</h2><p>文档地址：<a href="https://jenkins.io/zh/doc/book/pipeline/syntax/" target="_blank" rel="noopener">https://jenkins.io/zh/doc/book/pipeline/syntax/</a>。</p>
+<p><code>Jenkinsfile</code>分为<code>声明式</code>和<code>脚本式</code>，这里主要介绍<code>声明式</code>。</p>
+<p>下面是一个简单的模板：</p>
+<pre><code class="Jenkinsfile">pipeline {
+  agent {
+    label &quot;default&quot;
+  }
+
+  stages  {
+    stage(&quot;检出&quot;) {
+      steps {
+        sh &#39;ci-init&#39;
+        checkout(
+          [$class: &#39;GitSCM&#39;, branches: [[name: env.GIT_BUILD_REF]], 
+                  userRemoteConfigs: [[url: env.GIT_REPO_URL]]]
+        )
+      }
+    }
+
+    stage(&quot;构建&quot;) {
+      steps {
+        echo &quot;构建中...&quot;
+        sh &#39;go version&#39;
+        sh &#39;node -v&#39;
+        sh &#39;java -version&#39;
+        sh &#39;php -v&#39;
+        sh &#39;python -V&#39;
+        sh &#39;gcc -v&#39;
+        sh &#39;make -v&#39;
+        // 请在这里放置您项目代码的单元测试调用过程，例如:
+        // sh &#39;mvn package&#39; // mvn 示例
+        // sh &#39;make&#39; // make 示例
+        echo &quot;构建完成.&quot;
+        // archiveArtifacts artifacts: &#39;**/target/*.jar&#39;, fingerprint: true // 收集构建产物
+      }
+    }
+
+    stage(&quot;测试&quot;) {
+      steps {
+        echo &quot;单元测试中...&quot;
+        // 请在这里放置您项目代码的单元测试调用过程，例如:
+        // sh &#39;mvn test&#39; // mvn 示例
+        // sh &#39;make test&#39; // make 示例
+        echo &quot;单元测试完成.&quot;
+        // junit &#39;target/surefire-reports/*.xml&#39; // 收集单元测试报告的调用过程
+      }
+    }
+
+    stage(&quot;部署&quot;) {
+      steps {
+        echo &quot;部署中...&quot;
+        // 请在这里放置收集单元测试报告的调用过程，例如:
+        // sh &#39;mvn tomcat7:deploy&#39; // Maven tomcat7 插件示例：
+        // sh &#39;./deploy.sh&#39; // 自研部署脚本
+        echo &quot;部署完成&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<h3 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h3><h4 id="指定docker镜像"><a href="#指定docker镜像" class="headerlink" title="指定docker镜像"></a>指定docker镜像</h4><pre><code>  agent {
+    docker {
+      image &#39;demo/test/base:latest&#39;
+      registryUrl &#39;https://drunkdream-docker.pkg.coding.net&#39;
+    }
+  }
+</code></pre><h4 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h4><pre><code>  environment {
+    MY_ENV = &#39;test&#39;
+  }
+</code></pre><h4 id="访问环境变量"><a href="#访问环境变量" class="headerlink" title="访问环境变量"></a>访问环境变量</h4><p>Jenkins内置的环境变量列表可以在<code>http://jenkins-server/pipeline-syntax/globals#env</code>地址中获取。</p>
+<p>环境变量可以通过<code>${env.My_ENV}</code>或<code>${My_ENV}</code>或<code>$My_ENV</code>来访问。需要注意的是，使用引号的时候尽量使用<code>&quot;</code>，如：<code>echo &quot;${env.My_ENV}&quot;</code>，否则会无法生效。Jenkins应该是在运行时将变量动态替换成了实际值，使用单引号的话，则不会进行替换。</p>
+<p>而如果写成<code>sh &#39;echo ${MY_ENV}&#39;</code>则是可以正常工作的，因为此时是由<code>shell</code>程序进行环境变量的读取。</p>
+<pre><code>  stage(&#39;测试&#39;) {
+    steps {
+      echo &quot;${env.MY_ENV}&quot;
+      echo &quot;${MY_ENV}&quot;
+      echo &quot;$MY_ENV&quot;
+      sh &#39;echo $MY_ENV&#39;
+      sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;MY_ENV\&#39;])&quot;&#39;
+      echo &#39;${env.MY_ENV}&#39; //输出`${env.MY_ENV}`
+    }
+  }
+</code></pre><p>前五条命令都可以正常输出变量值，但最后一条却无法输出。</p>
+<h4 id="将命令行输出赋值给变量"><a href="#将命令行输出赋值给变量" class="headerlink" title="将命令行输出赋值给变量"></a>将命令行输出赋值给变量</h4><p>Jenkins的<code>${env.My_ENV}</code>方式不支持默认值，也就是<code>bash</code>中的<code>${MY_ENV:-&quot;test&quot;}</code>写法。如果需要这种用法，可以使用以下方式：</p>
+<pre><code>  stage(&#39;测试&#39;) {
+    steps {
+      script {
+        ENV1 = sh(returnStdout: true, script: &#39;echo ${MY_ENV:-&quot;default&quot;}&#39;).trim()
+      }
+      sh &#39;echo ${ENV1}&#39; //可以正常输出
+      sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;ENV1\&#39;])&quot;&#39; //会报错
+    }
+  }
+</code></pre><p><code>trim()</code>方法可以去掉前后的空白字符。</p>
+<blockquote>
+<p>注意：<code>${MY_ENV:-&quot;default&quot;}</code>不能写成<code>${env.MY_ENV:-&quot;default&quot;}</code></p>
+</blockquote>
+<p>虽然这种方式赋值的变量也可以通过<code>${env.ENV1}</code>方式访问，但其实它并不是环境变量。</p>
+<h4 id="动态配置环境变量"><a href="#动态配置环境变量" class="headerlink" title="动态配置环境变量"></a>动态配置环境变量</h4><pre><code>  stage(&#39;测试&#39;) {
+    steps {
+      script {
+        ENV1 = sh(returnStdout: true, script: &#39;echo ${MY_ENV:-&quot;default&quot;}&#39;).trim()
+      }
+      withEnv([&quot;MY_ENV=${ENV1}&quot;]) {
+        sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;MY_ENV\&#39;])&quot;&#39; //输出default
+      }
+    }
+  }
+</code></pre>]]></content>
       <categories>
-        <category>Android</category>
+        <category>Linux</category>
       </categories>
       <tags>
-        <tag>meizu</tag>
-        <tag>gpu</tag>
+        <tag>jenkins</tag>
       </tags>
   </entry>
   <entry>
@@ -1438,6 +1410,19 @@ exit(0)
       </categories>
   </entry>
   <entry>
+    <title>魅族MX4关闭强制GPU渲染的方法</title>
+    <url>/2017/01/07/meizu-mx4-close-gpu/</url>
+    <content><![CDATA[<p>默认在设置里没有该开关，需要<br>在手机拨号界面输入<strong>*#*#6961#*#*</strong><br>再到手机设置里关掉</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>meizu</tag>
+        <tag>gpu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MIUI v6稳定版中关闭授权管理</title>
     <url>/2017/01/07/miui-v6-disable-perm/</url>
     <content><![CDATA[<p>在稳定版MIUI v6中，设置=》安全中心 里没有“授权管理”设置的入口，之前都是刷开发版解决该问题。今天突发奇想，我直接调起设置的Activity行不行呢？<br>在一款开发版系统里打开设置界面，获得Activity名称为：  </p>
@@ -1458,6 +1443,21 @@ exit(0)
       </tags>
   </entry>
   <entry>
+    <title>让应用ANR的方法</title>
+    <url>/2017/01/07/make-app-anr/</url>
+    <content><![CDATA[<p>今天发现一种让应用弹出ANR窗口的简单方法，记录一下</p>
+<blockquote>
+<p>kill -19 pid</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>ANR</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>今天学了个新技能</title>
     <url>/2017/01/07/new-web-skill/</url>
     <content><![CDATA[<pre><code>&lt;img/src=\&quot;#\&quot;/onerror=alert(1)&gt;
@@ -1468,18 +1468,6 @@ exit(0)
       </categories>
       <tags>
         <tag>web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nexus5 进入recovery提示“无命令”</title>
-    <url>/2017/01/07/nexus5-recovery/</url>
-    <content><![CDATA[<p>每次都要刷入recovery，然后使用音量键选择“Recovery mode”，按电源键进入</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>Nexus5</tag>
       </tags>
   </entry>
   <entry>
@@ -1608,6 +1596,38 @@ sips -z 1024 1024 pic.png --out tmp.iconset/icon_512x512@2x.png
       </tags>
   </entry>
   <entry>
+    <title>运行ping命令报错误</title>
+    <url>/2017/01/07/ping-error/</url>
+    <content><![CDATA[<p>在三星S4上运行ping -c 4 <a href="http://www.qq.com" target="_blank" rel="noopener">www.qq.com</a> 命令报错  </p>
+<blockquote>
+<p>This version of ping should NOT run with privileges. Aborting  </p>
+</blockquote>
+<p>换成root权限执行也不行<br>原因是ping文件的权限设置有问题  </p>
+<blockquote>
+<p>-rwxr-sr-x root     net_raw     26060 2008-08-01 20:00 ping  </p>
+</blockquote>
+<p>使用<strong>chmod 755 ping</strong>修改权限即可</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>ping</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nexus5 进入recovery提示“无命令”</title>
+    <url>/2017/01/07/nexus5-recovery/</url>
+    <content><![CDATA[<p>每次都要刷入recovery，然后使用音量键选择“Recovery mode”，按电源键进入</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Nexus5</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>NGINX部署HTTPS</title>
     <url>/2018/06/03/nginx-https/</url>
     <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>nginx是一款高性能的Web服务器，可以用作反向代理和负载均衡。随着HTTPS的不断推进，越来越多的网站都开始转到HTTPS方式，HTTP仅仅作为重定向到HTTPS的途径。</p>
@@ -1694,26 +1714,6 @@ server{
         <tag>https</tag>
         <tag>nginx</tag>
         <tag>sni</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>运行ping命令报错误</title>
-    <url>/2017/01/07/ping-error/</url>
-    <content><![CDATA[<p>在三星S4上运行ping -c 4 <a href="http://www.qq.com" target="_blank" rel="noopener">www.qq.com</a> 命令报错  </p>
-<blockquote>
-<p>This version of ping should NOT run with privileges. Aborting  </p>
-</blockquote>
-<p>换成root权限执行也不行<br>原因是ping文件的权限设置有问题  </p>
-<blockquote>
-<p>-rwxr-sr-x root     net_raw     26060 2008-08-01 20:00 ping  </p>
-</blockquote>
-<p>使用<strong>chmod 755 ping</strong>修改权限即可</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>ping</tag>
       </tags>
   </entry>
   <entry>
@@ -2024,28 +2024,83 @@ class MyClass(object):
       </tags>
   </entry>
   <entry>
-    <title>TOS中安装 SuperSU</title>
-    <url>/2017/01/07/tos-supersu/</url>
-    <content><![CDATA[<p>TOS中安装第三方recovery后，刷入SuperSU刷机包，重启后发现无法获取su权限，原因是daemonsu进程没有运行。<br>解决方法是将/system/etc/install-qrom-recovery.sh文件替换成/system/etc/install-recovery.sh，这样，重启手机后才会创建daemonsu进程。同时，还需要删除/system/vendor/bin/su，因为会优先使用这个su。<br>另外，贴一下TOS中每次自动刷recovery的脚本。  </p>
-<pre><code>#!/system/bin/sh  
-if ! applypatch -c EMMC:/dev/block/platform/msm_sdcc.1/by-name/recovery:12238848
-:ff0553f96edc2bffa97e4ee722422a04f2b66504; then  
-  log -t recovery &quot;Installing new recovery image&quot;  
-  # At most 32M, It is enough currently  
-  dd if=/dev/zero of=/dev/block/platform/msm_sdcc.1/by-name/recovery bs=4096 cou
-nt=8192  
-  dd if=/system/etc/recovery.img of=/dev/block/platform/msm_sdcc.1/by-name/recov
-ery || log -t recovery &quot;Dump into /dev/block/platform/msm_sdcc.1/by-name/recover
-y error!&quot;  
-else  
-  log -t recovery &quot;Recovery image already installed&quot;  
-fi
-</code></pre>]]></content>
+    <title>Ubuntu 16.04安装 cuda 9.2</title>
+    <url>/2018/05/17/ubuntu-install-cuda/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>之前在Ubuntu 16.04上安装了[cuda 9.1]，工作也很正常。但是，后来莫名奇妙就出问题了，重装cuda之后还总是进不了系统。因此，寻找到了以下优化的安装方法。</p>
+<h2 id="0x01-安装步骤"><a href="#0x01-安装步骤" class="headerlink" title="0x01 安装步骤"></a>0x01 安装步骤</h2><p>主要优化点：<strong>将之前使用cuda中自带的GPU驱动改为手动安装</strong>。</p>
+<p>以下操作都在<code>root</code>权限下执行：</p>
+<h3 id="1、-安装GPU驱动"><a href="#1、-安装GPU驱动" class="headerlink" title="1、 安装GPU驱动"></a>1、 安装GPU驱动</h3><p>更新源</p>
+<pre><code>add-apt-repository ppa:graphics-drivers/ppa
+apt update
+</code></pre><p>检查当前最佳驱动版本</p>
+<pre><code>root@vm:~# ubuntu-drivers devices
+== /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 ==
+modalias : pci:v000010DEd000011C0sv00001458sd0000354Ebc03sc00i00
+vendor   : NVIDIA Corporation
+model    : GK106 [GeForce GTX 660]
+driver   : nvidia-390 - third-party free
+driver   : nvidia-384 - third-party free
+driver   : nvidia-396 - third-party free recommended
+driver   : xserver-xorg-video-nouveau - distro free builtin
+driver   : nvidia-340 - third-party free
+driver   : nvidia-304 - third-party free
+</code></pre><p>可以看出，目前推荐的驱动版本是<code>nvidia-396</code></p>
+<pre><code>apt install nvidia-396
+</code></pre><p>几分钟后安装完成，使用<code>nvidia-smi</code>命令测试驱动安装是否成功</p>
+<pre><code>root@vm:~# nvidia-smi
+Fri May 18 09:18:28 2018       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 396.24                 Driver Version: 396.24                    |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 660     Off  | 00000000:01:00.0 N/A |                  N/A |
+| 57%   57C    P0    N/A /  N/A |   1871MiB /  1994MiB |     N/A      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|    0                    Not Supported                                       |
++-----------------------------------------------------------------------------+
+</code></pre><h3 id="2、安装cuda-9-2"><a href="#2、安装cuda-9-2" class="headerlink" title="2、安装cuda 9.2"></a>2、安装cuda 9.2</h3><p>点击链接<a href="https://developer.nvidia.com/cuda-downloads?target_os=Linux&amp;target_arch=x86_64&amp;target_distro=Ubuntu&amp;target_version=1604&amp;target_type=runfilelocal" target="_blank" rel="noopener">https://developer.nvidia.com/cuda-downloads?target_os=Linux&amp;target_arch=x86_64&amp;target_distro=Ubuntu&amp;target_version=1604&amp;target_type=runfilelocal</a>，下载cuda安装程序到本地。</p>
+<p><img src="/images/cuda_download.png" alt></p>
+<p>如果本地安装，可以按<code>Ctrl + Alt + F1</code>进入命令行模式；如果是远程访问，可以使用<code>ssh</code>连接过去。</p>
+<pre><code>systemctl stop lightdm
+</code></pre><p>使用上面的命令关闭桌面服务</p>
+<pre><code>chmod 755 cuda_9.2.88_396.26_linux.run
+./cuda_9.2.88_396.26_linux.run
+</code></pre><p>运行下载下来的安装文件</p>
+<pre><code>Install NVIDIA Accelerated Graphics Driver for Linux-x86_64 396.26?
+(y)es/(n)o/(q)uit: 
+</code></pre><p>除了驱动项选择<code>no</code>，其它使用默认值即可</p>
+<h2 id="0x02-后记"><a href="#0x02-后记" class="headerlink" title="0x02 后记"></a>0x02 后记</h2><p>如果下次又出现驱动无法使用，或进不了系统的情况，只要重新安装一下驱动即可，不需要重新安装cuda</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+        <tag>cuda</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>三星S4无法注入的处理</title>
+    <url>/2017/01/07/samsung-s4-inject/</url>
+    <content><![CDATA[<p>三星S4，4.4系统，selinux无法关闭  </p>
+<p>注入时发现dlopen调用返回为0，怀疑是selinux的原因。研究后发现加载的so的context不能是<strong>u:object_r:shell_data_file:s0</strong>，使用chcon命令改为<strong>u:object_r:app_data_file:s0</strong>或<strong>u:object_r:system_file:s0</strong>，注入成功</p>
+<p>另外，以u:r:init:s0创建的进程，创建的localsocket服务端，在PC无法用adb forward命令转发到PC上，怀疑是adbd进程无法访问u:r:init:s0域的原因，使用runcon命令将进程以u:r:shell:s0域创建，locaclsocket可以转发到PC，但是权限可能会降低。  </p>
+<blockquote>
+<p>runcon u:r:shell:s0 sh</p>
+</blockquote>
+]]></content>
       <categories>
         <category>Android</category>
       </categories>
       <tags>
-        <tag>tos</tag>
+        <tag>inject</tag>
       </tags>
   </entry>
   <entry>
@@ -2164,83 +2219,28 @@ exec &quot;$@&quot;
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu 16.04安装 cuda 9.2</title>
-    <url>/2018/05/17/ubuntu-install-cuda/</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>之前在Ubuntu 16.04上安装了[cuda 9.1]，工作也很正常。但是，后来莫名奇妙就出问题了，重装cuda之后还总是进不了系统。因此，寻找到了以下优化的安装方法。</p>
-<h2 id="0x01-安装步骤"><a href="#0x01-安装步骤" class="headerlink" title="0x01 安装步骤"></a>0x01 安装步骤</h2><p>主要优化点：<strong>将之前使用cuda中自带的GPU驱动改为手动安装</strong>。</p>
-<p>以下操作都在<code>root</code>权限下执行：</p>
-<h3 id="1、-安装GPU驱动"><a href="#1、-安装GPU驱动" class="headerlink" title="1、 安装GPU驱动"></a>1、 安装GPU驱动</h3><p>更新源</p>
-<pre><code>add-apt-repository ppa:graphics-drivers/ppa
-apt update
-</code></pre><p>检查当前最佳驱动版本</p>
-<pre><code>root@vm:~# ubuntu-drivers devices
-== /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0 ==
-modalias : pci:v000010DEd000011C0sv00001458sd0000354Ebc03sc00i00
-vendor   : NVIDIA Corporation
-model    : GK106 [GeForce GTX 660]
-driver   : nvidia-390 - third-party free
-driver   : nvidia-384 - third-party free
-driver   : nvidia-396 - third-party free recommended
-driver   : xserver-xorg-video-nouveau - distro free builtin
-driver   : nvidia-340 - third-party free
-driver   : nvidia-304 - third-party free
-</code></pre><p>可以看出，目前推荐的驱动版本是<code>nvidia-396</code></p>
-<pre><code>apt install nvidia-396
-</code></pre><p>几分钟后安装完成，使用<code>nvidia-smi</code>命令测试驱动安装是否成功</p>
-<pre><code>root@vm:~# nvidia-smi
-Fri May 18 09:18:28 2018       
-+-----------------------------------------------------------------------------+
-| NVIDIA-SMI 396.24                 Driver Version: 396.24                    |
-|-------------------------------+----------------------+----------------------+
-| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
-| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
-|===============================+======================+======================|
-|   0  GeForce GTX 660     Off  | 00000000:01:00.0 N/A |                  N/A |
-| 57%   57C    P0    N/A /  N/A |   1871MiB /  1994MiB |     N/A      Default |
-+-------------------------------+----------------------+----------------------+
-
-+-----------------------------------------------------------------------------+
-| Processes:                                                       GPU Memory |
-|  GPU       PID   Type   Process name                             Usage      |
-|=============================================================================|
-|    0                    Not Supported                                       |
-+-----------------------------------------------------------------------------+
-</code></pre><h3 id="2、安装cuda-9-2"><a href="#2、安装cuda-9-2" class="headerlink" title="2、安装cuda 9.2"></a>2、安装cuda 9.2</h3><p>点击链接<a href="https://developer.nvidia.com/cuda-downloads?target_os=Linux&amp;target_arch=x86_64&amp;target_distro=Ubuntu&amp;target_version=1604&amp;target_type=runfilelocal" target="_blank" rel="noopener">https://developer.nvidia.com/cuda-downloads?target_os=Linux&amp;target_arch=x86_64&amp;target_distro=Ubuntu&amp;target_version=1604&amp;target_type=runfilelocal</a>，下载cuda安装程序到本地。</p>
-<p><img src="/images/cuda_download.png" alt></p>
-<p>如果本地安装，可以按<code>Ctrl + Alt + F1</code>进入命令行模式；如果是远程访问，可以使用<code>ssh</code>连接过去。</p>
-<pre><code>systemctl stop lightdm
-</code></pre><p>使用上面的命令关闭桌面服务</p>
-<pre><code>chmod 755 cuda_9.2.88_396.26_linux.run
-./cuda_9.2.88_396.26_linux.run
-</code></pre><p>运行下载下来的安装文件</p>
-<pre><code>Install NVIDIA Accelerated Graphics Driver for Linux-x86_64 396.26?
-(y)es/(n)o/(q)uit: 
-</code></pre><p>除了驱动项选择<code>no</code>，其它使用默认值即可</p>
-<h2 id="0x02-后记"><a href="#0x02-后记" class="headerlink" title="0x02 后记"></a>0x02 后记</h2><p>如果下次又出现驱动无法使用，或进不了系统的情况，只要重新安装一下驱动即可，不需要重新安装cuda</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
-        <tag>cuda</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>三星S4无法注入的处理</title>
-    <url>/2017/01/07/samsung-s4-inject/</url>
-    <content><![CDATA[<p>三星S4，4.4系统，selinux无法关闭  </p>
-<p>注入时发现dlopen调用返回为0，怀疑是selinux的原因。研究后发现加载的so的context不能是<strong>u:object_r:shell_data_file:s0</strong>，使用chcon命令改为<strong>u:object_r:app_data_file:s0</strong>或<strong>u:object_r:system_file:s0</strong>，注入成功</p>
-<p>另外，以u:r:init:s0创建的进程，创建的localsocket服务端，在PC无法用adb forward命令转发到PC上，怀疑是adbd进程无法访问u:r:init:s0域的原因，使用runcon命令将进程以u:r:shell:s0域创建，locaclsocket可以转发到PC，但是权限可能会降低。  </p>
-<blockquote>
-<p>runcon u:r:shell:s0 sh</p>
-</blockquote>
-]]></content>
+    <title>TOS中安装 SuperSU</title>
+    <url>/2017/01/07/tos-supersu/</url>
+    <content><![CDATA[<p>TOS中安装第三方recovery后，刷入SuperSU刷机包，重启后发现无法获取su权限，原因是daemonsu进程没有运行。<br>解决方法是将/system/etc/install-qrom-recovery.sh文件替换成/system/etc/install-recovery.sh，这样，重启手机后才会创建daemonsu进程。同时，还需要删除/system/vendor/bin/su，因为会优先使用这个su。<br>另外，贴一下TOS中每次自动刷recovery的脚本。  </p>
+<pre><code>#!/system/bin/sh  
+if ! applypatch -c EMMC:/dev/block/platform/msm_sdcc.1/by-name/recovery:12238848
+:ff0553f96edc2bffa97e4ee722422a04f2b66504; then  
+  log -t recovery &quot;Installing new recovery image&quot;  
+  # At most 32M, It is enough currently  
+  dd if=/dev/zero of=/dev/block/platform/msm_sdcc.1/by-name/recovery bs=4096 cou
+nt=8192  
+  dd if=/system/etc/recovery.img of=/dev/block/platform/msm_sdcc.1/by-name/recov
+ery || log -t recovery &quot;Dump into /dev/block/platform/msm_sdcc.1/by-name/recover
+y error!&quot;  
+else  
+  log -t recovery &quot;Recovery image already installed&quot;  
+fi
+</code></pre>]]></content>
       <categories>
         <category>Android</category>
       </categories>
       <tags>
-        <tag>inject</tag>
+        <tag>tos</tag>
       </tags>
   </entry>
   <entry>
@@ -2298,19 +2298,6 @@ Fri May 18 09:18:28 2018
       </tags>
   </entry>
   <entry>
-    <title>安全大赛有感</title>
-    <url>/2017/01/07/web-security-thinking/</url>
-    <content><![CDATA[<p>&emsp;&emsp;前几天参加了公司的安全大赛，其中有几题感觉本应该做出来，却没做出来，归根到底还是自己知识面太窄了。<br>&emsp;&emsp;1、找xss漏洞，onclick=\”addMsg(\’<em>\’)\”，</em>表示是参数中可以传入的内容，但是会有过滤，“\”，“\’”，“\””等字符前面会加上“\”，“\’”，“\””会被替换为html编码形式，网页是gbk编码的。<br>&emsp;&emsp;感觉应该是利用gbk编码的漏洞来绕过去，一般来说gbk编码漏洞都是利用GBK双字节中的第二个字符为“\”，如果server把“\”替换为“\\”，返回到浏览器时就变成一个汉字加一个“\”，可是不管怎么弄“\’”还是变成“&#39;”，没法将前面的“\’”闭合。<br>&emsp;&emsp;最后发现答案是：“%c0%5c%27);alert(1);//”，返回的html代码是：“onclick=\”addMsg(\’繺\\&#039;);alert(1);//\’)\””，如果这里还看不出问题的话，用chrome开发者工具看一下就会发现，解析后的html代码是：“onclick=\”addMsg(\’繺\\\’);alert(1);//\’)\””。  &#39;已经被还原成了“\’”，从而闭合了前面的“\’”，这一点我之前是不知道的，而且也没有用开发者工具看一下，这一点太失败了。我离成功真的只有一步之遥了！<br>&emsp;&emsp;有时间好好研究下什么情况下会还原，什么情况下不会还原！这些是原理层面的东西，可惜都不清楚啊！</p>
-<p>&emsp;&emsp;2、传统的从一个页面找下一个页面的游戏，有一个页面是将秘密隐藏在了HTTP响应头中，可我一直都是在html代码中找线索，白白浪费了时间。下次遇到这类题目一定要立马开fiddler。这个失败主要还是思维定势，想问题一定要思路开阔，不能太死！！！</p>
-]]></content>
-      <categories>
-        <category>Web</category>
-      </categories>
-      <tags>
-        <tag>web</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>创建Python3虚拟环境失败问题跟进</title>
     <url>/2019/04/17/win10-python3-virtualenv/</url>
     <content><![CDATA[<h2 id="0x00-问题描述"><a href="#0x00-问题描述" class="headerlink" title="0x00 问题描述"></a>0x00 问题描述</h2><p>今天在Win10上遇到一个很诡异的问题，使用python3的<code>virtualenv</code>创建虚拟环境失败，报错如下：</p>
@@ -2343,74 +2330,66 @@ Note: some Windows users have reported this error when they installed Python for
       </tags>
   </entry>
   <entry>
-    <title>WSL运行Chrome Headless模式</title>
-    <url>/2019/08/29/wsl-chrome-headless/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Google Chrome早就支持了<code>headless</code>模式，但一般都是在Linux上运行，而我则习惯于在<code>WSL</code>上开发，折腾了好久终于找到了可以在WSL上跑<code>headless</code>模式的方法。</p>
-<p>以下以<code>WSL</code>中安装的是<code>Ubuntu 18.04</code>系统为例。</p>
-<h2 id="常见安装方法"><a href="#常见安装方法" class="headerlink" title="常见安装方法"></a>常见安装方法</h2><h3 id="安装依赖库"><a href="#安装依赖库" class="headerlink" title="安装依赖库"></a>安装依赖库</h3><pre><code class="bash">$ sudo apt install gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release xdg-utils
+    <title>WSL2入坑指北</title>
+    <url>/2020/07/27/wsl2-guide/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>随着Win10 2004版本的发布，WSL2的时代也正式到来。使用过WSL的用户，都遇到过一些很不爽的问题，例如：不能直接使用docker，一些系统相关的函数不能调用，netstat命令不能使用等。这些问题在WSL2中都得到了解决，因此，是时候切换到WSL2了。</p>
+<p>不过，WSL2不是万能的，依然有一些问题，甚至有些问题本来在WSL1的时代是不存在的。</p>
+<h2 id="0x01-安装WSL2"><a href="#0x01-安装WSL2" class="headerlink" title="0x01 安装WSL2"></a>0x01 安装WSL2</h2><h3 id="升级系统"><a href="#升级系统" class="headerlink" title="升级系统"></a>升级系统</h3><p>如果系统版本不是2004，需要先升级系统。</p>
+<p>可以使用微软官方提供的升级工具<a href="https://www.microsoft.com/zh-cn/software-download/windows10" target="_blank" rel="noopener"><code>微软 Windows 10 易升</code></a>。</p>
+<h3 id="安装WSL2"><a href="#安装WSL2" class="headerlink" title="安装WSL2"></a>安装WSL2</h3><p>安装WSL2可以参考微软的<a href="https://docs.microsoft.com/zh-cn/windows/wsl/install-win10" target="_blank" rel="noopener">官方文档</a>。</p>
+<p>如果想离线下载Linux镜像，可以参考<a href="https://docs.microsoft.com/en-us/windows/wsl/install-manual#download-using-powershell" target="_blank" rel="noopener">文档</a>。</p>
+<h3 id="访问Linux文件系统"><a href="#访问Linux文件系统" class="headerlink" title="访问Linux文件系统"></a>访问Linux文件系统</h3><p>WSL1中Linux系统文件是直接以文件形式存储的，而在WSL2中则是一个<code>Hyper-V</code>格式的虚拟硬盘文件<code>ext4.vhdx</code>。</p>
+<p>在Windows中可以使用<code>\\wsl$</code>路径来访问该文件系统。</p>
+<h3 id="安装终端命令行工具"><a href="#安装终端命令行工具" class="headerlink" title="安装终端命令行工具"></a>安装终端命令行工具</h3><p>WSL默认提供的终端命令行工具过于简陋，虽然后来又提供了<code>Windows Terminal</code>，但我不是很喜欢它的风格。</p>
+<p>所以我一般使用<a href="https://github.com/mskyaxl/wsl-terminal" target="_blank" rel="noopener">wsl-terminal</a>。</p>
+<p>在WSL中进入要安装的路径，然后执行<code>bash -c &quot;$(wget https://raw.githubusercontent.com/mskyaxl/wsl-terminal/master/scripts/install.sh -qO -)&quot;</code>命令。</p>
+<p>执行<code>tools/1-add-open-wsl-terminal-here-menu.js</code>脚本可以将<code>wsl-terminal</code>添加到右键菜单中，方便打开终端。</p>
+<h2 id="0x02-配置Linux系统"><a href="#0x02-配置Linux系统" class="headerlink" title="0x02 配置Linux系统"></a>0x02 配置Linux系统</h2><h3 id="安装oh-my-zsh"><a href="#安装oh-my-zsh" class="headerlink" title="安装oh-my-zsh"></a>安装oh-my-zsh</h3><p>首先安装<code>zsh</code></p>
+<pre><code class="bash">$ apt install -y zsh # Ubuntu
+$ yum install -y zsh # Centos
 </code></pre>
-<h3 id="安装Chrome"><a href="#安装Chrome" class="headerlink" title="安装Chrome"></a>安装Chrome</h3><pre><code class="bash">$ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-$ sudo dpkg -i google-chrome-stable_current_amd64.deb
-$ which google-chrome
-/usr/bin/google-chrome
+<p>接着安装oh-my-zsh</p>
+<pre><code class="bash">$ wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O - | sh
 </code></pre>
-<h2 id="使用Chrome-Headless访问网页"><a href="#使用Chrome-Headless访问网页" class="headerlink" title="使用Chrome Headless访问网页"></a>使用Chrome Headless访问网页</h2><p>使用 <a href="https://developers.google.com/web/updates/2017/04/headless-chrome" target="_blank" rel="noopener">官方文档</a>的方法打开Chrome：</p>
-<pre><code>$ google-chrome --headless --disable-gpu --screenshot https://www.baidu.com/
-</code></pre><p>出现如下报错信息：</p>
-<pre><code>Failed to move to new namespace: PID namespaces supported, Network namespace supported, but failed: errno = Permission denied
-Failed to generate minidump.Illegal instruction (core dumped)
-
-</code></pre><p>使用如下命令行也不行：</p>
-<pre><code>$ google-chrome --no-sandbox --headless --no-gpu --disable-setuid-sandbox --screenshot http://www.baidu.com/
-
-[0829/140949.035033:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 1 time(s)
-[0829/140950.200613:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 2 time(s)
-[0829/140951.306996:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 3 time(s)
-
-</code></pre><p>增加<code>--single-process</code>参数后打印如下信息：</p>
-<pre><code>[0829/141145.431580:ERROR:browser_main_loop.cc(584)] Failed to put Xlib into threaded mode.
-[0829/141146.090239:INFO:headless_shell.cc(572)] Written to file screenshot.png.
-</code></pre><p>虽然看起来有报错，但是的确生成网页截图了。</p>
-<p><code>screenshot.png</code>显示如下：</p>
-<p><img src="/images/chrome-headless-screenshot1.png" alt></p>
-<p>看起来有两个问题：</p>
+<p>设置<code>zsh</code>为默认shell</p>
+<pre><code class="bash">$ chsh -s /bin/zsh root
+</code></pre>
+<p>修改主题</p>
+<p>配置文件路径为<code>~/.zshrc</code>，将该文件中的<code>ZSH_THEME=&quot;robbyrussel&quot;</code>修改为<code>ZSH_THEME=&quot;agnoster&quot;</code>。<br>重启shell或执行<code>source ~/.zshrc</code>配置生效。</p>
+<h3 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h3><p>WSL2中安装和使用Docker基本与普通的Linux系统一致，但主要有以下几点区别：</p>
 <ul>
-<li>中文没有正确显示</li>
-<li>窗口大小偏小</li>
+<li>只能使用<code>service</code>命令操作服务，如：<code>service docker start</code></li>
 </ul>
-<p>中文显示的问题可以通过以下命令解决：</p>
-<pre><code>$ sudo apt install fonts-noto-cjk
-</code></pre><p>修改窗口大小可以通过增加<code>--window-size=1920,1080</code>参数进行修改。</p>
-<p><img src="/images/chrome-headless-screenshot2.png" alt></p>
-<h2 id="开启远程调试"><a href="#开启远程调试" class="headerlink" title="开启远程调试"></a>开启远程调试</h2><p><code>Headless</code>模式下一般需要通过Chrome远程调试协议进行访问。</p>
-<p>命令行增加<code>--remote-debugging-port=9200</code>参数启动Chrome后，打印出以下信息：</p>
-<pre><code>[0829/194236.072838:ERROR:browser_main_loop.cc(584)] Failed to put Xlib into threaded mode.
-
-DevTools listening on ws://127.0.0.1:9200/devtools/browser/18442c9f-b0ee-4149-a16b-f49622047621
-[0829/194236.299565:ERROR:command_buffer_proxy_impl.cc(107)] ContextResult::kTransientFailure: Shared memory region is not valid
-</code></pre><p>看起来调试端口是启动成功了。</p>
-<p>但是在访问调试页面后，Chrome进程<code>Crash</code>了。</p>
-<pre><code>Segmentation fault (core dumped)
-</code></pre><p>试了多个页面后发现，远程调试都会导致Crash，看来这条路不太好走。</p>
-<h2 id="使用puppeteer提供的Chrome"><a href="#使用puppeteer提供的Chrome" class="headerlink" title="使用puppeteer提供的Chrome"></a>使用puppeteer提供的Chrome</h2><p>无意中发现，<code>puppeteer</code>中提供的Chrome竟然可以在WSL中开启调试端口并正常访问。</p>
-<p>puppeteer默认下载地址的格式为：<code>https://storage.googleapis.com/chromium-browser-snapshots/${platform}/${revision}/chrome-${revision}.zip</code>。例如目前Linux上最新版本的URL为：<code>https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/674921/chrome-linux.zip</code></p>
-<p>也可以使用镜像网站下载，例如：<code>https://npm.taobao.org/mirrors/chromium-browser-snapshots/</code>。</p>
-<p>解压出来就可以直接用了。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>安装依赖库，包括中文字体库</li>
-<li>使用puppeteer提供的Chrome版本</li>
-<li>完整的启动命令行：<code>chrome --no-sandbox --headless --no-gpu --disable-setuid-sandbox --single-process --window-size=1920,1080 --screenshot --remote-debugging-port=9200 http://www.baidu.com/</code></li>
+<p>网上虽然也有人提供了可以工作的<code>systemd</code>方式，但是并没有执行成功</p>
+<ul>
+<li>修改代理需要通过在文件<code>/etc/init.d/docker</code>开头添加以下内容</li>
 </ul>
-<p>顺便提供一下<code>puppeteer</code>使用的完整命令行：</p>
-<pre><code>chrome --disable-background-networking --enable-features=NetworkService,NetworkServiceInProcess --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=site-per-process,TranslateUI,BlinkGenPropertyTrees --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-sync --force-color-profile=srgb --metrics-recording-only --no-first-run --enable-automation --password-store=basic --use-mock-keychain --headless --hide-scrollbars --mute-audio about:blank --no-sandbox --disable-setuid-sandbox --remote-debugging-port=0 --user-data-dir=/tmp/puppeteer_dev_profile-NkEdQ6
-</code></pre>]]></content>
+<pre><code>export HTTP_PROXY=http://web-proxy.com:8080
+export HTTPS_PROXY=http://web-proxy.com:8080
+export NO_PROXY=internal.com
+</code></pre><h2 id="0x03-WSL2的坑"><a href="#0x03-WSL2的坑" class="headerlink" title="0x03 WSL2的坑"></a>0x03 WSL2的坑</h2><h3 id="任务管理器无法看到进程"><a href="#任务管理器无法看到进程" class="headerlink" title="任务管理器无法看到进程"></a>任务管理器无法看到进程</h3><p>WSL1可以在任务管理器中看到内部的每个进程，但是WSL2是不行的，只能看到一个<code>vmmem</code>进程，想要看具体的进程状态，只能在WSL里看。</p>
+<h3 id="网络互通"><a href="#网络互通" class="headerlink" title="网络互通"></a>网络互通</h3><p>由于WSL2使用的是虚拟机方案，因此它有自己的ip地址，而不是像WSL1那样与Windows使用相同的ip地址。</p>
+<p>这样带来的问题就是：WSL2与Windows的网络互通性存在一定问题。</p>
+<p>例如：Windows上创建的<code>127.0.0.1:8080</code>服务，在WSL里是不能通过<code>127.0.0.1:8080</code>访问的，毕竟在两个系统里<code>127.0.0.1</code>代表的是不同系统。</p>
+<p>不过，幸运的是，在WSL里创建的<code>127.0.0.1:8080</code>服务，倒是可以在Windows里通过<code>127.0.0.1:8080</code>访问的。</p>
+<p>关于这个问题，github上也有专门的<a href="https://github.com/microsoft/WSL/issues/4619" target="_blank" rel="noopener">issue</a>在讨论，不过看起来官方并没有准备修复这个问题。</p>
+<h3 id="与Proxifier冲突"><a href="#与Proxifier冲突" class="headerlink" title="与Proxifier冲突"></a>与Proxifier冲突</h3><p>安装WSL2后，执行Proxifier会报错：</p>
+<p><img src="/images/wsl2-proxifier-winsock-error.png" alt="WinSock Error"></p>
+<p>点击<code>Yes</code>修复之后，WSL又无法工作了，会报<code>参考的对象类型不支持尝试的操作</code>错误，网上提供的修复方法为：</p>
+<pre><code class="cmd">&gt; netsh winsock reset
+</code></pre>
+<p>但是这样操作之后，Proxifier又出问题了。这里似乎陷入了死循环，还好网上提供了终极解决方案：</p>
+<p>使用工具<code>http://www.proxifier.com/tmp/Test20200228/NoLsp.exe</code>以管理员权限执行以下命令可以修复WSL：</p>
+<pre><code class="cmd">&gt; NoLsp.exe C:\windows\system32\wsl.exe
+</code></pre>
+<p>此时<code>wsl-terminal</code>还是不能正常工作，打开后会立即闪退，可以使用<code>NoLsp.exe</code>修复一下<code>wsl-terminal</code>安装目录下的<code>bin\wslbridge2.exe</code>文件即可。</p>
+<h2 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2><p>WSL2解决了很多WSL1无法解决的问题，但是也带来了一些新的问题，这些问题基本上都是由于虚拟化导致的。而能否解决这些问题，则决定了WSL与虚拟机的差异。也就是说，这些问题不解决好，WSL就无法带来更加优异的原生体验。而且，相比WSL1，WSL2在性能上是有一定劣势的。</p>
+]]></content>
       <categories>
-        <category>Linux</category>
+        <category>Windows</category>
       </categories>
       <tags>
-        <tag>WSL</tag>
-        <tag>Chrome</tag>
-        <tag>headless</tag>
+        <tag>wsl</tag>
       </tags>
   </entry>
   <entry>
@@ -2426,6 +2405,19 @@ DevTools listening on ws://127.0.0.1:9200/devtools/browser/18442c9f-b0ee-4149-a1
       </categories>
       <tags>
         <tag>win7</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>安全大赛有感</title>
+    <url>/2017/01/07/web-security-thinking/</url>
+    <content><![CDATA[<p>&emsp;&emsp;前几天参加了公司的安全大赛，其中有几题感觉本应该做出来，却没做出来，归根到底还是自己知识面太窄了。<br>&emsp;&emsp;1、找xss漏洞，onclick=\”addMsg(\’<em>\’)\”，</em>表示是参数中可以传入的内容，但是会有过滤，“\”，“\’”，“\””等字符前面会加上“\”，“\’”，“\””会被替换为html编码形式，网页是gbk编码的。<br>&emsp;&emsp;感觉应该是利用gbk编码的漏洞来绕过去，一般来说gbk编码漏洞都是利用GBK双字节中的第二个字符为“\”，如果server把“\”替换为“\\”，返回到浏览器时就变成一个汉字加一个“\”，可是不管怎么弄“\’”还是变成“&#39;”，没法将前面的“\’”闭合。<br>&emsp;&emsp;最后发现答案是：“%c0%5c%27);alert(1);//”，返回的html代码是：“onclick=\”addMsg(\’繺\\&#039;);alert(1);//\’)\””，如果这里还看不出问题的话，用chrome开发者工具看一下就会发现，解析后的html代码是：“onclick=\”addMsg(\’繺\\\’);alert(1);//\’)\””。  &#39;已经被还原成了“\’”，从而闭合了前面的“\’”，这一点我之前是不知道的，而且也没有用开发者工具看一下，这一点太失败了。我离成功真的只有一步之遥了！<br>&emsp;&emsp;有时间好好研究下什么情况下会还原，什么情况下不会还原！这些是原理层面的东西，可惜都不清楚啊！</p>
+<p>&emsp;&emsp;2、传统的从一个页面找下一个页面的游戏，有一个页面是将秘密隐藏在了HTTP响应头中，可我一直都是在html代码中找线索，白白浪费了时间。下次遇到这类题目一定要立马开fiddler。这个失败主要还是思维定势，想问题一定要思路开阔，不能太死！！！</p>
+]]></content>
+      <categories>
+        <category>Web</category>
+      </categories>
+      <tags>
+        <tag>web</tag>
       </tags>
   </entry>
   <entry>
@@ -2557,66 +2549,74 @@ server {
       </tags>
   </entry>
   <entry>
-    <title>WSL2入坑指北</title>
-    <url>/2020/07/27/wsl2-guide/</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>随着Win10 2004版本的发布，WSL2的时代也正式到来。使用过WSL的用户，都遇到过一些很不爽的问题，例如：不能直接使用docker，一些系统相关的函数不能调用，netstat命令不能使用等。这些问题在WSL2中都得到了解决，因此，是时候切换到WSL2了。</p>
-<p>不过，WSL2不是万能的，依然有一些问题，甚至有些问题本来在WSL1的时代是不存在的。</p>
-<h2 id="0x01-安装WSL2"><a href="#0x01-安装WSL2" class="headerlink" title="0x01 安装WSL2"></a>0x01 安装WSL2</h2><h3 id="升级系统"><a href="#升级系统" class="headerlink" title="升级系统"></a>升级系统</h3><p>如果系统版本不是2004，需要先升级系统。</p>
-<p>可以使用微软官方提供的升级工具<a href="https://www.microsoft.com/zh-cn/software-download/windows10" target="_blank" rel="noopener"><code>微软 Windows 10 易升</code></a>。</p>
-<h3 id="安装WSL2"><a href="#安装WSL2" class="headerlink" title="安装WSL2"></a>安装WSL2</h3><p>安装WSL2可以参考微软的<a href="https://docs.microsoft.com/zh-cn/windows/wsl/install-win10" target="_blank" rel="noopener">官方文档</a>。</p>
-<p>如果想离线下载Linux镜像，可以参考<a href="https://docs.microsoft.com/en-us/windows/wsl/install-manual#download-using-powershell" target="_blank" rel="noopener">文档</a>。</p>
-<h3 id="访问Linux文件系统"><a href="#访问Linux文件系统" class="headerlink" title="访问Linux文件系统"></a>访问Linux文件系统</h3><p>WSL1中Linux系统文件是直接以文件形式存储的，而在WSL2中则是一个<code>Hyper-V</code>格式的虚拟硬盘文件<code>ext4.vhdx</code>。</p>
-<p>在Windows中可以使用<code>\\wsl$</code>路径来访问该文件系统。</p>
-<h3 id="安装终端命令行工具"><a href="#安装终端命令行工具" class="headerlink" title="安装终端命令行工具"></a>安装终端命令行工具</h3><p>WSL默认提供的终端命令行工具过于简陋，虽然后来又提供了<code>Windows Terminal</code>，但我不是很喜欢它的风格。</p>
-<p>所以我一般使用<a href="https://github.com/mskyaxl/wsl-terminal" target="_blank" rel="noopener">wsl-terminal</a>。</p>
-<p>在WSL中进入要安装的路径，然后执行<code>bash -c &quot;$(wget https://raw.githubusercontent.com/mskyaxl/wsl-terminal/master/scripts/install.sh -qO -)&quot;</code>命令。</p>
-<p>执行<code>tools/1-add-open-wsl-terminal-here-menu.js</code>脚本可以将<code>wsl-terminal</code>添加到右键菜单中，方便打开终端。</p>
-<h2 id="0x02-配置Linux系统"><a href="#0x02-配置Linux系统" class="headerlink" title="0x02 配置Linux系统"></a>0x02 配置Linux系统</h2><h3 id="安装oh-my-zsh"><a href="#安装oh-my-zsh" class="headerlink" title="安装oh-my-zsh"></a>安装oh-my-zsh</h3><p>首先安装<code>zsh</code></p>
-<pre><code class="bash">$ apt install -y zsh # Ubuntu
-$ yum install -y zsh # Centos
+    <title>WSL运行Chrome Headless模式</title>
+    <url>/2019/08/29/wsl-chrome-headless/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Google Chrome早就支持了<code>headless</code>模式，但一般都是在Linux上运行，而我则习惯于在<code>WSL</code>上开发，折腾了好久终于找到了可以在WSL上跑<code>headless</code>模式的方法。</p>
+<p>以下以<code>WSL</code>中安装的是<code>Ubuntu 18.04</code>系统为例。</p>
+<h2 id="常见安装方法"><a href="#常见安装方法" class="headerlink" title="常见安装方法"></a>常见安装方法</h2><h3 id="安装依赖库"><a href="#安装依赖库" class="headerlink" title="安装依赖库"></a>安装依赖库</h3><pre><code class="bash">$ sudo apt install gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release xdg-utils
 </code></pre>
-<p>接着安装oh-my-zsh</p>
-<pre><code class="bash">$ wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O - | sh
+<h3 id="安装Chrome"><a href="#安装Chrome" class="headerlink" title="安装Chrome"></a>安装Chrome</h3><pre><code class="bash">$ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+$ sudo dpkg -i google-chrome-stable_current_amd64.deb
+$ which google-chrome
+/usr/bin/google-chrome
 </code></pre>
-<p>设置<code>zsh</code>为默认shell</p>
-<pre><code class="bash">$ chsh -s /bin/zsh root
-</code></pre>
-<p>修改主题</p>
-<p>配置文件路径为<code>~/.zshrc</code>，将该文件中的<code>ZSH_THEME=&quot;robbyrussel&quot;</code>修改为<code>ZSH_THEME=&quot;agnoster&quot;</code>。<br>重启shell或执行<code>source ~/.zshrc</code>配置生效。</p>
-<h3 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h3><p>WSL2中安装和使用Docker基本与普通的Linux系统一致，但主要有以下几点区别：</p>
+<h2 id="使用Chrome-Headless访问网页"><a href="#使用Chrome-Headless访问网页" class="headerlink" title="使用Chrome Headless访问网页"></a>使用Chrome Headless访问网页</h2><p>使用 <a href="https://developers.google.com/web/updates/2017/04/headless-chrome" target="_blank" rel="noopener">官方文档</a>的方法打开Chrome：</p>
+<pre><code>$ google-chrome --headless --disable-gpu --screenshot https://www.baidu.com/
+</code></pre><p>出现如下报错信息：</p>
+<pre><code>Failed to move to new namespace: PID namespaces supported, Network namespace supported, but failed: errno = Permission denied
+Failed to generate minidump.Illegal instruction (core dumped)
+
+</code></pre><p>使用如下命令行也不行：</p>
+<pre><code>$ google-chrome --no-sandbox --headless --no-gpu --disable-setuid-sandbox --screenshot http://www.baidu.com/
+
+[0829/140949.035033:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 1 time(s)
+[0829/140950.200613:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 2 time(s)
+[0829/140951.306996:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 3 time(s)
+
+</code></pre><p>增加<code>--single-process</code>参数后打印如下信息：</p>
+<pre><code>[0829/141145.431580:ERROR:browser_main_loop.cc(584)] Failed to put Xlib into threaded mode.
+[0829/141146.090239:INFO:headless_shell.cc(572)] Written to file screenshot.png.
+</code></pre><p>虽然看起来有报错，但是的确生成网页截图了。</p>
+<p><code>screenshot.png</code>显示如下：</p>
+<p><img src="/images/chrome-headless-screenshot1.png" alt></p>
+<p>看起来有两个问题：</p>
 <ul>
-<li>只能使用<code>service</code>命令操作服务，如：<code>service docker start</code></li>
+<li>中文没有正确显示</li>
+<li>窗口大小偏小</li>
 </ul>
-<p>网上虽然也有人提供了可以工作的<code>systemd</code>方式，但是并没有执行成功</p>
-<ul>
-<li>修改代理需要通过在文件<code>/etc/init.d/docker</code>开头添加以下内容</li>
+<p>中文显示的问题可以通过以下命令解决：</p>
+<pre><code>$ sudo apt install fonts-noto-cjk
+</code></pre><p>修改窗口大小可以通过增加<code>--window-size=1920,1080</code>参数进行修改。</p>
+<p><img src="/images/chrome-headless-screenshot2.png" alt></p>
+<h2 id="开启远程调试"><a href="#开启远程调试" class="headerlink" title="开启远程调试"></a>开启远程调试</h2><p><code>Headless</code>模式下一般需要通过Chrome远程调试协议进行访问。</p>
+<p>命令行增加<code>--remote-debugging-port=9200</code>参数启动Chrome后，打印出以下信息：</p>
+<pre><code>[0829/194236.072838:ERROR:browser_main_loop.cc(584)] Failed to put Xlib into threaded mode.
+
+DevTools listening on ws://127.0.0.1:9200/devtools/browser/18442c9f-b0ee-4149-a16b-f49622047621
+[0829/194236.299565:ERROR:command_buffer_proxy_impl.cc(107)] ContextResult::kTransientFailure: Shared memory region is not valid
+</code></pre><p>看起来调试端口是启动成功了。</p>
+<p>但是在访问调试页面后，Chrome进程<code>Crash</code>了。</p>
+<pre><code>Segmentation fault (core dumped)
+</code></pre><p>试了多个页面后发现，远程调试都会导致Crash，看来这条路不太好走。</p>
+<h2 id="使用puppeteer提供的Chrome"><a href="#使用puppeteer提供的Chrome" class="headerlink" title="使用puppeteer提供的Chrome"></a>使用puppeteer提供的Chrome</h2><p>无意中发现，<code>puppeteer</code>中提供的Chrome竟然可以在WSL中开启调试端口并正常访问。</p>
+<p>puppeteer默认下载地址的格式为：<code>https://storage.googleapis.com/chromium-browser-snapshots/${platform}/${revision}/chrome-${revision}.zip</code>。例如目前Linux上最新版本的URL为：<code>https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/674921/chrome-linux.zip</code></p>
+<p>也可以使用镜像网站下载，例如：<code>https://npm.taobao.org/mirrors/chromium-browser-snapshots/</code>。</p>
+<p>解压出来就可以直接用了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>安装依赖库，包括中文字体库</li>
+<li>使用puppeteer提供的Chrome版本</li>
+<li>完整的启动命令行：<code>chrome --no-sandbox --headless --no-gpu --disable-setuid-sandbox --single-process --window-size=1920,1080 --screenshot --remote-debugging-port=9200 http://www.baidu.com/</code></li>
 </ul>
-<pre><code>export HTTP_PROXY=http://web-proxy.com:8080
-export HTTPS_PROXY=http://web-proxy.com:8080
-export NO_PROXY=internal.com
-</code></pre><h2 id="0x03-WSL2的坑"><a href="#0x03-WSL2的坑" class="headerlink" title="0x03 WSL2的坑"></a>0x03 WSL2的坑</h2><h3 id="任务管理器无法看到进程"><a href="#任务管理器无法看到进程" class="headerlink" title="任务管理器无法看到进程"></a>任务管理器无法看到进程</h3><p>WSL1可以在任务管理器中看到内部的每个进程，但是WSL2是不行的，只能看到一个<code>vmmem</code>进程，想要看具体的进程状态，只能在WSL里看。</p>
-<h3 id="网络互通"><a href="#网络互通" class="headerlink" title="网络互通"></a>网络互通</h3><p>由于WSL2使用的是虚拟机方案，因此它有自己的ip地址，而不是像WSL1那样与Windows使用相同的ip地址。</p>
-<p>这样带来的问题就是：WSL2与Windows的网络互通性存在一定问题。</p>
-<p>例如：Windows上创建的<code>127.0.0.1:8080</code>服务，在WSL里是不能通过<code>127.0.0.1:8080</code>访问的，毕竟在两个系统里<code>127.0.0.1</code>代表的是不同系统。</p>
-<p>不过，幸运的是，在WSL里创建的<code>127.0.0.1:8080</code>服务，倒是可以在Windows里通过<code>127.0.0.1:8080</code>访问的。</p>
-<p>关于这个问题，github上也有专门的<a href="https://github.com/microsoft/WSL/issues/4619" target="_blank" rel="noopener">issue</a>在讨论，不过看起来官方并没有准备修复这个问题。</p>
-<h3 id="与Proxifier冲突"><a href="#与Proxifier冲突" class="headerlink" title="与Proxifier冲突"></a>与Proxifier冲突</h3><p>安装WSL2后，执行Proxifier会报错：</p>
-<p><img src="/images/wsl2-proxifier-winsock-error.png" alt="WinSock Error"></p>
-<p>点击<code>Yes</code>修复之后，WSL又无法工作了，会报<code>参考的对象类型不支持尝试的操作</code>错误，网上提供的修复方法为：</p>
-<pre><code class="cmd">&gt; netsh winsock reset
-</code></pre>
-<p>但是这样操作之后，Proxifier又出问题了。这里似乎陷入了死循环，还好网上提供了终极解决方案：</p>
-<p>使用工具<code>http://www.proxifier.com/tmp/Test20200228/NoLsp.exe</code>以管理员权限执行以下命令可以修复WSL：</p>
-<pre><code class="cmd">&gt; NoLsp.exe C:\windows\system32\wsl.exe
-</code></pre>
-<p>此时<code>wsl-terminal</code>还是不能正常工作，打开后会立即闪退，可以使用<code>NoLsp.exe</code>修复一下<code>wsl-terminal</code>安装目录下的<code>bin\wslbridge2.exe</code>文件即可。</p>
-<h2 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2><p>WSL2解决了很多WSL1无法解决的问题，但是也带来了一些新的问题，这些问题基本上都是由于虚拟化导致的。而能否解决这些问题，则决定了WSL与虚拟机的差异。也就是说，这些问题不解决好，WSL就无法带来更加优异的原生体验。而且，相比WSL1，WSL2在性能上是有一定劣势的。</p>
-]]></content>
+<p>顺便提供一下<code>puppeteer</code>使用的完整命令行：</p>
+<pre><code>chrome --disable-background-networking --enable-features=NetworkService,NetworkServiceInProcess --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=site-per-process,TranslateUI,BlinkGenPropertyTrees --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-sync --force-color-profile=srgb --metrics-recording-only --no-first-run --enable-automation --password-store=basic --use-mock-keychain --headless --hide-scrollbars --mute-audio about:blank --no-sandbox --disable-setuid-sandbox --remote-debugging-port=0 --user-data-dir=/tmp/puppeteer_dev_profile-NkEdQ6
+</code></pre>]]></content>
       <categories>
-        <category>Windows</category>
+        <category>Linux</category>
       </categories>
       <tags>
-        <tag>wsl</tag>
+        <tag>WSL</tag>
+        <tag>Chrome</tag>
+        <tag>headless</tag>
       </tags>
   </entry>
   <entry>
