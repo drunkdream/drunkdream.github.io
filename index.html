@@ -397,6 +397,37 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  1.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
 
           
 
@@ -412,60 +443,17 @@
       
         
           
-            <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>随着Win10 2004版本的发布，WSL2的时代也正式到来。使用过WSL的用户，都遇到过一些很不爽的问题，例如：不能直接使用docker，一些系统相关的函数不能调用，netstat命令不能使用等。这些问题在WSL2中都得到了解决，因此，是时候切换到WSL2了。</p>
-<p>不过，WSL2不是万能的，依然有一些问题，甚至有些问题本来在WSL1的时代是不存在的。</p>
-<h2 id="0x01-安装WSL2"><a href="#0x01-安装WSL2" class="headerlink" title="0x01 安装WSL2"></a>0x01 安装WSL2</h2><h3 id="升级系统"><a href="#升级系统" class="headerlink" title="升级系统"></a>升级系统</h3><p>如果系统版本不是2004，需要先升级系统。</p>
-<p>可以使用微软官方提供的升级工具<a href="https://www.microsoft.com/zh-cn/software-download/windows10" target="_blank" rel="noopener"><code>微软 Windows 10 易升</code></a>。</p>
-<h3 id="安装WSL2"><a href="#安装WSL2" class="headerlink" title="安装WSL2"></a>安装WSL2</h3><p>安装WSL2可以参考微软的<a href="https://docs.microsoft.com/zh-cn/windows/wsl/install-win10" target="_blank" rel="noopener">官方文档</a>。</p>
-<p>如果想离线下载Linux镜像，可以参考<a href="https://docs.microsoft.com/en-us/windows/wsl/install-manual#download-using-powershell" target="_blank" rel="noopener">文档</a>。</p>
-<h3 id="访问Linux文件系统"><a href="#访问Linux文件系统" class="headerlink" title="访问Linux文件系统"></a>访问Linux文件系统</h3><p>WSL1中Linux系统文件是直接以文件形式存储的，而在WSL2中则是一个<code>Hyper-V</code>格式的虚拟硬盘文件<code>ext4.vhdx</code>。</p>
-<p>在Windows中可以使用<code>\\wsl$</code>路径来访问该文件系统。</p>
-<h3 id="安装终端命令行工具"><a href="#安装终端命令行工具" class="headerlink" title="安装终端命令行工具"></a>安装终端命令行工具</h3><p>WSL默认提供的终端命令行工具过于简陋，虽然后来又提供了<code>Windows Terminal</code>，但我不是很喜欢它的风格。</p>
-<p>所以我一般使用<a href="https://github.com/mskyaxl/wsl-terminal" target="_blank" rel="noopener">wsl-terminal</a>。</p>
-<p>在WSL中进入要安装的路径，然后执行<code>bash -c &quot;$(wget https://raw.githubusercontent.com/mskyaxl/wsl-terminal/master/scripts/install.sh -qO -)&quot;</code>命令。</p>
-<p>执行<code>tools/1-add-open-wsl-terminal-here-menu.js</code>脚本可以将<code>wsl-terminal</code>添加到右键菜单中，方便打开终端。</p>
-<h2 id="0x02-配置Linux系统"><a href="#0x02-配置Linux系统" class="headerlink" title="0x02 配置Linux系统"></a>0x02 配置Linux系统</h2><h3 id="安装oh-my-zsh"><a href="#安装oh-my-zsh" class="headerlink" title="安装oh-my-zsh"></a>安装oh-my-zsh</h3><p>首先安装<code>zsh</code></p>
-<pre><code class="bash">$ apt install -y zsh # Ubuntu
-$ yum install -y zsh # Centos
-</code></pre>
-<p>接着安装oh-my-zsh</p>
-<pre><code class="bash">$ wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O - | sh
-</code></pre>
-<p>设置<code>zsh</code>为默认shell</p>
-<pre><code class="bash">$ chsh -s /bin/zsh root
-</code></pre>
-<p>修改主题</p>
-<p>配置文件路径为<code>~/.zshrc</code>，将该文件中的<code>ZSH_THEME=&quot;robbyrussel&quot;</code>修改为<code>ZSH_THEME=&quot;agnoster&quot;</code>。<br>重启shell或执行<code>source ~/.zshrc</code>配置生效。</p>
-<h3 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h3><p>WSL2中安装和使用Docker基本与普通的Linux系统一致，但主要有以下几点区别：</p>
-<ul>
-<li>只能使用<code>service</code>命令操作服务，如：<code>service docker start</code></li>
-</ul>
-<p>网上虽然也有人提供了可以工作的<code>systemd</code>方式，但是并没有执行成功</p>
-<ul>
-<li>修改代理需要通过在文件<code>/etc/init.d/docker</code>开头添加以下内容</li>
-</ul>
-<pre><code>export HTTP_PROXY=http://web-proxy.com:8080
-export HTTPS_PROXY=http://web-proxy.com:8080
-export NO_PROXY=internal.com
-</code></pre><h2 id="0x03-WSL2的坑"><a href="#0x03-WSL2的坑" class="headerlink" title="0x03 WSL2的坑"></a>0x03 WSL2的坑</h2><h3 id="任务管理器无法看到进程"><a href="#任务管理器无法看到进程" class="headerlink" title="任务管理器无法看到进程"></a>任务管理器无法看到进程</h3><p>WSL1可以在任务管理器中看到内部的每个进程，但是WSL2是不行的，只能看到一个<code>vmmem</code>进程，想要看具体的进程状态，只能在WSL里看。</p>
-<h3 id="网络互通"><a href="#网络互通" class="headerlink" title="网络互通"></a>网络互通</h3><p>由于WSL2使用的是虚拟机方案，因此它有自己的ip地址，而不是像WSL1那样与Windows使用相同的ip地址。</p>
-<p>这样带来的问题就是：WSL2与Windows的网络互通性存在一定问题。</p>
-<p>例如：Windows上创建的<code>127.0.0.1:8080</code>服务，在WSL里是不能通过<code>127.0.0.1:8080</code>访问的，毕竟在两个系统里<code>127.0.0.1</code>代表的是不同系统。</p>
-<p>不过，幸运的是，在WSL里创建的<code>127.0.0.1:8080</code>服务，倒是可以在Windows里通过<code>127.0.0.1:8080</code>访问的。</p>
-<p>关于这个问题，github上也有专门的<a href="https://github.com/microsoft/WSL/issues/4619" target="_blank" rel="noopener">issue</a>在讨论，不过看起来官方并没有准备修复这个问题。</p>
-<h3 id="与Proxifier冲突"><a href="#与Proxifier冲突" class="headerlink" title="与Proxifier冲突"></a>与Proxifier冲突</h3><p>安装WSL2后，执行Proxifier会报错：</p>
-<p><img src="/images/wsl2-proxifier-winsock-error.png" alt="WinSock Error"></p>
-<p>点击<code>Yes</code>修复之后，WSL又无法工作了，会报<code>参考的对象类型不支持尝试的操作</code>错误，网上提供的修复方法为：</p>
-<pre><code class="cmd">&gt; netsh winsock reset
-</code></pre>
-<p>但是这样操作之后，Proxifier又出问题了。这里似乎陷入了死循环，还好网上提供了终极解决方案：</p>
-<p>使用工具<code>http://www.proxifier.com/tmp/Test20200228/NoLsp.exe</code>以管理员权限执行以下命令可以修复WSL：</p>
-<pre><code class="cmd">&gt; NoLsp.exe C:\windows\system32\wsl.exe
-</code></pre>
-<p>此时<code>wsl-terminal</code>还是不能正常工作，打开后会立即闪退，可以使用<code>NoLsp.exe</code>修复一下<code>wsl-terminal</code>安装目录下的<code>bin\wslbridge2.exe</code>文件即可。</p>
-<h2 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2><p>WSL2解决了很多WSL1无法解决的问题，但是也带来了一些新的问题，这些问题基本上都是由于虚拟化导致的。而能否解决这些问题，则决定了WSL与虚拟机的差异。也就是说，这些问题不解决好，WSL就无法带来更加优异的原生体验。而且，相比WSL1，WSL2在性能上是有一定劣势的。</p>
-
-          
+          0x00 前言随着Win10 2004版本的发布，WSL2的时代也正式到来。使用过WSL的用户，都遇到过一些很不爽的问题，例如：不能直接使用docker，一些系统相关的函数不能调用，netstat命令不能使用等。这些问题在WSL2中都得到了解决，因此，是时候切换到WSL2了。
+不过，WSL2不是万能的，依然有一些问题，甚至有些问题本来在WSL1的时代是不存在的。
+0x01 安装WSL2升级系统如果
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/07/27/wsl2-guide/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -582,6 +570,37 @@ export NO_PROXY=internal.com
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  892
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
 
           
 
@@ -597,89 +616,17 @@ export NO_PROXY=internal.com
       
         
           
-            <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Hook是一种动态修改函数执行流程或返回结果的方法，在实际应用中非常广泛。Javascript作为一种动态语言，也可以进行Hook操作。随着Javascript语言的发展，Hook的方法也越来越多，本文介绍了常见的几种Hook方法。</p>
-<h1 id="0x01-最简单的Hook方法"><a href="#0x01-最简单的Hook方法" class="headerlink" title="0x01 最简单的Hook方法"></a>0x01 最简单的Hook方法</h1><p>Javascript中的函数可以直接被覆盖，因此，这也是最简单的一种Hook方法。</p>
-<pre><code class="javascript">window.alert = function(s){
-    console.log(&#39;Alert: &#39; + s);
-}
-</code></pre>
-<pre><code>&gt; alert(&#39;Hello!&#39;)
-  Alert: Hello!
-</code></pre><p>这种方法简单粗暴，但是只能覆盖具体变量的成员函数。</p>
-<h2 id="0x02-Hook类方法"><a href="#0x02-Hook类方法" class="headerlink" title="0x02 Hook类方法"></a>0x02 Hook类方法</h2><p>考虑以下这种情况：希望Hook所有元素的<code>setAttribute</code>方法。</p>
-<p><code>方案一</code>：遍历获取所有元素，并Hook每个元素的<code>setAttribute</code>方法。</p>
-<p>首先，页面中的元素数量非常多，而且不断有新元素动态创建出来，如果要监控新元素创建，还得Hook <code>document.createElement</code>等函数，甚至还需要考虑通过其它方式动态创建出来的函数。因此，这种方案不是最佳方案。</p>
-<p><code>方案二</code>：直接Hook类方法</p>
-<pre><code class="javascript">Element.prototype.setAttribute = function(attr, value){
-    console.log(&#39;setAttribute &#39; + attr + &#39; &#39; + value);
-}
-</code></pre>
-<pre><code>&gt; document.body.setAttribute(&#39;xx&#39;, 123)
-  setAttribute xx 123
-</code></pre><p>这里利用了原型链来进行类方法的Hook。</p>
-<h2 id="0x03-利用Getter-Setter进行Hook"><a href="#0x03-利用Getter-Setter进行Hook" class="headerlink" title="0x03 利用Getter/Setter进行Hook"></a>0x03 利用Getter/Setter进行Hook</h2><p><code>document.domain</code>是一个只读对象，正常是不允许乱修改的。</p>
-<pre><code>&gt; document.domain = &#39;test.com&#39;
-  Uncaught DOMException: Failed to set the &#39;domain&#39; property on &#39;Document&#39;: &#39;test.com&#39; is not a suffix of &#39;www.baidu.com&#39;.
-    at &lt;anonymous&gt;:1:16
-</code></pre><p>乱修改这个值的话，浏览器会直接报错。</p>
-<p>但是下面这段代码却可以将<code>document.domain</code>改成可修改的对象。</p>
-<pre><code class="javascript">Object.defineProperty(document, &#39;domain&#39;, {
-    configurable: true,
-    enumerable: true,
-    get: function() {
-        return this._domain || location.host;
-    },
-    set: function(value) {
-        this._domain = value;
-    }
-});
-</code></pre>
-<pre><code>&gt; document.domain = &#39;test.com&#39;
-  &quot;test.com&quot;
-&gt; document.domain
-  &quot;test.com&quot;
-</code></pre><p>如果将<code>configurable</code>属性设为<code>false</code>，<code>document.domain</code>就可以避免被其他人使用<code>Object.defineProperty</code>来修改了。</p>
-<pre><code>&gt; Object.defineProperty(document, &#39;domain&#39;, {value: &#39;xxx&#39;});
-  Uncaught TypeError: Cannot redefine property: domain
-    at Function.defineProperty (&lt;anonymous&gt;)
-    at &lt;anonymous&gt;:1:8
-</code></pre><p>同样的方法还可以用来修改：<code>navigator.userAgent</code>等属性。</p>
-<pre><code class="javascript">Object.defineProperty(navigator, &#39;userAgent&#39;, {
-    configurable: true,
-    enumerable: true,
-    value: &#39;MyBrowser 1.0.0&#39;
-});
-</code></pre>
-<pre><code>&gt; navigator.userAgent
-  &quot;MyBrowser 1.0.0&quot;
-</code></pre><p>不过这种方法只影响使用Javascript获取的数据，不会影响浏览器发送请求时带上的浏览器标识。</p>
-<p>事实上，有多很多系统对象都是不允许使用<code>Object.defineProperty</code>修改的，例如：<code>window.location</code>等。</p>
-<h2 id="0x04-使用Proxy"><a href="#0x04-使用Proxy" class="headerlink" title="0x04 使用Proxy"></a>0x04 使用Proxy</h2><p><code>Proxy</code>是Chrome 49开始支持的一项新特性，具有动态代理功能，可以用于运算符重载、对象模拟等场景。</p>
-<pre><code class="javascript">window.screen = new Proxy(window.screen, {
-    get: function (target, key) {
-        console.log(&#39;get&#39;, key);
-        return target[key];
-    }});
-</code></pre>
-<pre><code>&gt; screen.availHeight
-  get availHeight
-  864
-</code></pre><p>这里通过创建<code>screen</code>对象的代理，然后赋值给<code>window.screen</code>，可以实现对属性、函数访问的拦截。这种方法比较适合需要Hook某个对象中大部分属性、函数的场景。</p>
-<p>这种方法同时也适用于对函数的Hook。</p>
-<pre><code class="javascript">document.createElement= new Proxy(document.createElement, { // Our hook to keep the track
-    apply: function (target, thisArg, args){
-        console.log(&quot;document.createElement is called with args: &quot; + args);
-        return target.apply(thisArg, args);
-    }
-});
-</code></pre>
-<pre><code>&gt; document.createElement(&#39;div&#39;)
-  document.createElement is called with args: div
-  &lt;div&gt;​&lt;/div&gt;
-</code></pre><p>当然，有很多对象是不能被替换的，例如：<code>window</code>、<code>document</code>、<code>navigator</code>、<code>location</code>等。</p>
-<h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>Javascript是一门非常灵活的语言，并且新的接口和规范不断出现，以后还会出现更多的可以用作Hook的方法。</p>
-
-          
+          0x00 前言Hook是一种动态修改函数执行流程或返回结果的方法，在实际应用中非常广泛。Javascript作为一种动态语言，也可以进行Hook操作。随着Javascript语言的发展，Hook的方法也越来越多，本文介绍了常见的几种Hook方法。
+0x01 最简单的Hook方法Javascript中的函数可以直接被覆盖，因此，这也是最简单的一种Hook方法。
+window.alert = func
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/05/javascript-hook/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -796,6 +743,37 @@ export NO_PROXY=internal.com
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  893
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
 
           
 
@@ -811,124 +789,22 @@ export NO_PROXY=internal.com
       
         
           
-            <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>通常一个脚本都是使用某一种语言编写，使用固定的解释器执行。例如以下这段<code>vbs</code>脚本：</p>
-<pre><code class="vbs">WScript.echo(&quot;Hello World!&quot;)
-</code></pre>
-<p>可以使用<code>wscript</code>或<code>cscript</code>执行，但肯定不能使用<code>cmd</code>或其他程序执行。</p>
-<p>是否可以构造这样一种脚本，能同时被多种解释器执行呢？</p>
-<h2 id="0x01-小试牛刀"><a href="#0x01-小试牛刀" class="headerlink" title="0x01 小试牛刀"></a>0x01 小试牛刀</h2><p>下面是一段神奇的脚本：</p>
-<pre><code class="bat">:On Error Resume Next
+          0x00 前言通常一个脚本都是使用某一种语言编写，使用固定的解释器执行。例如以下这段vbs脚本：
+WScript.echo(&quot;Hello World!&quot;)
 
-:Sub bat
-&#39;&amp;cls&amp;@echo off
-cscript -nologo -e:vbs &quot;%~f0&quot;
-:End Sub
+可以使用wscript或cscript执行，但肯定不能使用cmd或其他程序执行。
+是否可以构造这样一种脚本，能同时被多种解释器执行呢？
+0x01 小试牛刀下面是一段神奇的脚本：
+:On Error Resume Next
 
-:WScript.echo(&quot;Hello world!&quot;)
-</code></pre>
-<p>这段代码即可以当做<code>bat</code>来执行，也可以当做<code>vbs</code>来执行，主要是利用了以下几个特性：</p>
-<ul>
-<li><p><code>:</code>在<code>bat</code>中可用作注释，而在<code>vbs</code>中可以用于连接多条语句</p>
-</li>
-<li><p><code>&#39;</code>在<code>vbs</code>中是注释符；<code>&amp;</code>在<code>bat</code>中是命令连接符</p>
-</li>
-<li><p><code>scsript</code>命令可以将文件当做<code>vbs</code>脚本执行</p>
-</li>
-</ul>
-<p>从上面这个例子可以看出：</p>
-<p>要实现一个多语言混编脚本，可以充分利用语言本身的特点，如：注释符、连接符等，特别是那些在多语言中都是合法的语法。</p>
-<h2 id="0x02-bat与shell混编"><a href="#0x02-bat与shell混编" class="headerlink" title="0x02 bat与shell混编"></a>0x02 bat与shell混编</h2><p>当命令行需要跨平台时，就需要进行<code>bat</code>和<code>shell</code>的混编。</p>
-<pre><code class="bash">: &#39;
-@echo off
-goto bat
-&#39;
-
-echo sh;
-exit
-
-:bat
-echo batch
-</code></pre>
-<p>上面这段代码可以同时作为<code>shell</code>脚本和<code>bat</code>脚本执行，不过执行的代码是不同的。这里主要是利用了以下几点特性：</p>
-<ul>
-<li><p><code>: &#39;</code>是bash中的多行注释，也可以作为bat中的注释</p>
-</li>
-<li><p>利用bat的<code>goto</code>语句跳过bash代码区域</p>
-</li>
-</ul>
-<h2 id="0x03-shell与python混编"><a href="#0x03-shell与python混编" class="headerlink" title="0x03 shell与python混编"></a>0x03 shell与python混编</h2><p>这种方式可以将本来需要两个文件实现的功能压缩到一个文件中。</p>
-<p>将下面的内容保存到文件<code>py.sh</code>:</p>
-<pre><code class="bash">#! /bin/sh
-
-&quot;&quot;&quot;
-&quot; 2&gt; /dev/null
-echo &quot;Run python $0&quot;
-exec python $0
-&quot;&quot;&quot;
-
-import sys
-print(sys.version_info)
-</code></pre>
-<pre><code class="bash">$ ./py.sh
-Run python ./py.sh
-sys.version_info(major=2, minor=7, micro=17, releaselevel=&#39;final&#39;, serial=0)
-</code></pre>
-<p>这里主要是利用了<code>&quot;&quot;&quot;</code>在python中可以用作多行注释的作用，将<code>bash</code>脚本包含在其中，最后通过<code>exec</code>跳转到python程序，避免了后面代码的执行。</p>
-<p><code>&quot; 2&gt; /dev/null</code>这行主要是为了闭合前面一行的最后一个<code>&quot;</code>，以及捕获产生的错误。</p>
-<h2 id="0x04-bat与python混编"><a href="#0x04-bat与python混编" class="headerlink" title="0x04 bat与python混编"></a>0x04 bat与python混编</h2><pre><code class="bat">rem = &#39;&#39;&#39;
-@echo off
-python %0
-goto :exit
-&#39;&#39;&#39;
-
-import sys
-print(sys.version_info)
-exit(0)
-
-&#39;&#39;&#39; 2&gt; NUL
-:exit
-echo exit bat
-:&#39;&#39;&#39;
-</code></pre>
-<p>bat与python的混编方法与上面的方法基本一致：</p>
-<ul>
-<li><p>bat使用rem作为注释，python将rem与’’’形成赋值表达式，并且避免了由于bat命令导致的语法错误</p>
-</li>
-<li><p>bat使用goto语法跳过了python代码</p>
-</li>
-<li><p><code>:&#39;&#39;&#39;</code>通过前面的<code>:</code>避免了<code>&#39;&#39;&#39;</code>执行报错</p>
-</li>
-</ul>
-<p>这段代码唯一有缺陷的就是第一行会导致以下无用输出：</p>
-<pre><code>C:\&gt;rem = &#39;&#39;&#39;
-</code></pre><p>尝试了很多办法都不能将其移除掉。</p>
-<h2 id="0x05-bat、shell和python混编"><a href="#0x05-bat、shell和python混编" class="headerlink" title="0x05 bat、shell和python混编"></a>0x05 bat、shell和python混编</h2><p>三种语言的混编需要把前面的几种方法综合起来。</p>
-<pre><code class="bash">&#39;&#39;&#39;&#39; 2&gt;NUL
-: &#39;
-@echo off
-echo Run python from bat
-python %0
-goto :exit
-&#39;
-
-
-echo Run python from shell;
-exec python $0;
-
-&#39;&#39;&#39;
-
-import sys
-print(sys.version_info)
-exit(0)
-
-&#39;&#39;&#39;&#39; 2&gt;/dev/null
-:exit
-:&#39;&#39;&#39;
-</code></pre>
-<p>原理基本上就是前面用到的，这里就不细说了。</p>
-<h2 id="0x06-总结"><a href="#0x06-总结" class="headerlink" title="0x06 总结"></a>0x06 总结</h2><p>多语言代码混编在实际生产中并一定派的上用场，毕竟这样的代码基本跟<code>天书</code>没有什么差异。但作为一种折腾的乐趣，倒是可以尝试一下。</p>
-
-          
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/05/29/mixed-lang-script/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1045,6 +921,37 @@ exit(0)
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  3k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  16
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1060,258 +967,18 @@ exit(0)
       
         
           
-            <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>mongodb是一款基于分布式文件存储的数据库，具有高性能、可扩展、易部署、易使用等特点。官方也提供了丰富的命令行工具来操作。</p>
-<h2 id="0x01-部署mongodb服务"><a href="#0x01-部署mongodb服务" class="headerlink" title="0x01 部署mongodb服务"></a>0x01 部署mongodb服务</h2><p>部署mongodb服务可以直接使用docker镜像：</p>
-<pre><code class="bash">$ docker search mongo
-NAME                                DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED
-mongo                               MongoDB document databases provide high avai…   6656                [OK]                
-mongo-express                       Web-based MongoDB admin interface, written w…   640                 [OK]                
-tutum/mongodb                       MongoDB Docker image – listens in port 27017…   230                                     [OK]
-bitnami/mongodb                     Bitnami MongoDB Docker Image                    109                                     [OK]
-mongoclient/mongoclient             Official docker image for Mongoclient, featu…   79                                      [OK]
-mongooseim/mongooseim               Small docker image for MongooseIM - robust a…   19                                      
-frodenas/mongodb                    A Docker Image for MongoDB                      18                                      [OK]
-cvallance/mongo-k8s-sidecar         Kubernetes side car to setup and maintain a …   14                                      [OK]
-centos/mongodb-32-centos7           MongoDB NoSQL database server                   8                                       
-circleci/mongo                      CircleCI images for MongoDB                     8                                       [OK]
-arm64v8/mongo                       MongoDB document databases provide high avai…   7                                       
-istepanov/mongodump                 Docker image with mongodump running as a cro…   6                                       [OK]
-centos/mongodb-36-centos7           MongoDB NoSQL database server                   5                                       
-eses/mongodb_exporter               mongodb exporter for prometheus                 5                                       [OK]
-centos/mongodb-26-centos7           MongoDB NoSQL database server                   5                                       
-webhippie/mongodb                   Docker images for MongoDB                       4                                       [OK]
-requilence/mongodb-backup           mongo backup container                          4                                       [OK]
-centos/mongodb-34-centos7           MongoDB NoSQL database server                   3                                       
-neowaylabs/mongodb-mms-agent        This Docker image with MongoDB Monitoring Ag…   3                                       [OK]
-ansibleplaybookbundle/mongodb-apb   An APB to deploy MongoDB.                       1                                       [OK]
-ekesken/mongo                       docker image for mongo that is configurable …   1                                       [OK]
-andreasleicher/mongo-azure-backup   a docker container to backup a mongodb using…   1                                       [OK]
-openshift/mongodb-24-centos7        DEPRECATED: A Centos7 based MongoDB v2.4 ima…   1                                       
-ccitest/mongo                       CircleCI test images for Mongo                  0                                       [OK]
-targetprocess/mongodb_exporter      MongoDB exporter for prometheus                 0                                       [OK]
-
-$ docker pull mongo:latest
-
-$ docker run -itd --name mongo -p 27017:27017 mongo --auth
-
-</code></pre>
-<p>此时，mongodb服务已经正常运行起来了，还需要配置下账号。</p>
-<p>使用<code>docker exec -it mongo bash</code>命令进入到<code>shell</code>环境后，输入<code>mongo</code>命令进入交互式命令行：</p>
-<pre><code>&gt; use admin
-switched to db admin
-&gt; db.createUser({ user: &quot;root&quot;, pwd: &quot;root&quot;, roles: [{ role: &quot;root&quot;, db: &quot;admin&quot; }] })
-Successfully added user: {
-        &quot;user&quot; : &quot;root&quot;,
-        &quot;roles&quot; : [
-                {
-                        &quot;role&quot; : &quot;root&quot;,
-                        &quot;db&quot; : &quot;admin&quot;
-                }
-        ]
-}
-</code></pre><p>权限角色说明：</p>
-<p><code>Read</code>：允许用户读取指定数据库</p>
-<p><code>readWrite</code>：允许用户读写指定数据库</p>
-<p><code>dbAdmin</code>：允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile</p>
-<p><code>userAdmin</code>：允许用户向system.users集合写入，可以找指定数据库里创建、删除和管理用户</p>
-<p><code>clusterAdmin</code>：只在admin数据库中可用，赋予用户所有分片和复制集相关函数的管理权限</p>
-<p><code>readAnyDatabase</code>：只在admin数据库中可用，赋予用户所有数据库的读权限</p>
-<p><code>readWriteAnyDatabase</code>：只在admin数据库中可用，赋予用户所有数据库的读写权限</p>
-<p><code>userAdminAnyDatabase</code>：只在admin数据库中可用，赋予用户所有数据库的userAdmin权限</p>
-<p><code>dbAdminAnyDatabase</code>：只在admin数据库中可用，赋予用户所有数据库的dbAdmin权限</p>
-<p><code>root</code>：只在admin数据库中可用。超级账号，超级权限</p>
-<h2 id="0x02-安装mongo客户端"><a href="#0x02-安装mongo客户端" class="headerlink" title="0x02 安装mongo客户端"></a>0x02 安装mongo客户端</h2><pre><code class="bash">$ apt install mongodb-clients
-</code></pre>
-<p>进入mongo shell：</p>
-<pre><code>$ mongo ${mongo_server}:${mongo_port} -u ${username} -p ${password} --authenticationDatabase admin
-</code></pre><p>mongodb中分为不同的数据库，默认数据库为<code>test</code>，使用<code>use db</code>切换数据库时，如果数据库不存在会自动创建。</p>
-<h2 id="0x03-常用mongo命令"><a href="#0x03-常用mongo命令" class="headerlink" title="0x03 常用mongo命令"></a>0x03 常用mongo命令</h2><pre><code>&gt; show dbs
-admin   0.000GB
-config  0.000GB
-local   0.000GB
-
-&gt; use test
-switched to db test
-
-&gt; db
-test
-
-&gt; db.table.insert({&quot;title&quot;:&quot;drunkdream&quot;, &quot;body&quot;: &quot;Hello world&quot;})
-WriteResult({ &quot;nInserted&quot; : 1 })
-
-&gt; db.table.count()
-1
-
-&gt; db.table.dataSize()
-66
-
-&gt; db.table.insert({&quot;title&quot;:&quot;drunkdream123&quot;, &quot;body&quot;: &quot;Test&quot;})
-WriteResult({ &quot;nInserted&quot; : 1 })
-
-&gt; db.table.find().skip(1).limit(1)
-{ &quot;_id&quot; : ObjectId(&quot;5e706e4651e5f0d32c1eb3e0&quot;), &quot;title&quot; : &quot;drunkdream123&quot;, &quot;body&quot; : &quot;Test&quot; }
-
-&gt; db.table.find({title: /^drunkdream/})
-{ &quot;_id&quot; : ObjectId(&quot;5e706a7051e5f0d32c1eb3df&quot;), &quot;title&quot; : &quot;drunkdream&quot;, &quot;body&quot; : &quot;Hello world&quot; }
-{ &quot;_id&quot; : ObjectId(&quot;5e706e4651e5f0d32c1eb3e0&quot;), &quot;title&quot; : &quot;drunkdream123&quot;, &quot;body&quot; : &quot;Test&quot; }
-
-&gt; db.getCollectionNames()
-[ &quot;table&quot; ]
-
-&gt; db.printCollectionStats()
-table
-{
-        &quot;ns&quot; : &quot;test.table&quot;,
-        &quot;size&quot; : 66,
-        &quot;count&quot; : 1,
-        &quot;avgObjSize&quot; : 66,
-        &quot;storageSize&quot; : 20480,
-        &quot;capped&quot; : false,
-...
-}
-
-&gt; db.stats()
-{
-        &quot;db&quot; : &quot;test&quot;,
-        &quot;collections&quot; : 1,
-        &quot;views&quot; : 0,
-        &quot;objects&quot; : 1,
-        &quot;avgObjSize&quot; : 66,
-        &quot;dataSize&quot; : 66,
-        &quot;storageSize&quot; : 4096,
-        &quot;numExtents&quot; : 0,
-        &quot;indexes&quot; : 1,
-        &quot;indexSize&quot; : 4096,
-        &quot;scaleFactor&quot; : 1,
-        &quot;fsUsedSize&quot; : 34517733376,
-        &quot;fsTotalSize&quot; : 109059317760,
-        &quot;ok&quot; : 1
-}
-
-</code></pre><p><code>find</code>命令支持的查询条件：</p>
-<p><code>$gt</code>: &gt;</p>
-<p><code>$lt</code>: &lt;</p>
-<p><code>$gte</code>: &gt;=</p>
-<p><code>$lte</code>: &lt;=</p>
-<p><code>$ne</code>: !=</p>
-<p>例如：<code>{age: {$gte: 23, $lte: 26}}</code></p>
-<h2 id="0x04-其它mongo命令"><a href="#0x04-其它mongo命令" class="headerlink" title="0x04 其它mongo命令"></a>0x04 其它mongo命令</h2><ul>
-<li><p><code>db.table.drop()</code> - 删除集合</p>
-</li>
-<li><p><code>db.dropDatabase()</code> - 删除当前数据库</p>
-</li>
-<li><p><code>db.repairDatabase()</code> - 修复数据库</p>
-</li>
-<li><p><code>db.getPrevError()</code> - 查询之前的错误信息</p>
-</li>
-</ul>
-<h2 id="0x05-迁移数据"><a href="#0x05-迁移数据" class="headerlink" title="0x05 迁移数据"></a>0x05 迁移数据</h2><h3 id="mongodump"><a href="#mongodump" class="headerlink" title="mongodump"></a>mongodump</h3><pre><code class="bash">$ mongodump -h ${mongo_server} --port ${mongo_port} -d ${db_name} -o ${save_dir} -u ${username} -p ${password} --authenticationDatabase admin
-</code></pre>
-<p>该命令可以将整个数据库dump到本地，如果只需要dump其中的一个集合，可以使用以下参数：<code>--collection ${coll_name}</code>。</p>
-<h3 id="mongorestore"><a href="#mongorestore" class="headerlink" title="mongorestore"></a>mongorestore</h3><pre><code class="bash">$ mongorestore -h ${mongo_server} --port ${mongo_port} -d ${db_name} ${save_dir}/${db_name} -u ${username} -p ${password} --authenticationDatabase admin
-</code></pre>
-<p>该命令可以将备份下来的数据库还原到目标数据库中，修改<code>-d</code>参数可以修改目标数据库的名称。</p>
-<p>如果目标数据库存在，需要增加<code>--drop</code>参数进行还原，避免报错。</p>
-<h3 id="迁移脚本"><a href="#迁移脚本" class="headerlink" title="迁移脚本"></a>迁移脚本</h3><p>写了个简单的迁移脚本：</p>
-<pre><code class="python"># -*- coding: utf-8 -*-
-
-import argparse
-import os
-import tempfile
-import time
-
-
-def sync_mongo(src_host, src_port, dst_host, dst_port, db, collection=None, username=&#39;root&#39;, password=&#39;root&#39;, drop=False):
-    time0 = time.time()
-    backup_dir = tempfile.mkdtemp(&#39;.backup&#39;).split(os.path.sep)[-1]
-    auth_cmdline = &#39; -u %s -p %s --authenticationDatabase admin&#39; % (username, password)
-    cmdline = &#39;mongodump -h %s --port=%d -d %s -o %s&#39; % (src_host, src_port, db, backup_dir)
-    if collection:
-        cmdline += &#39; --collection %s&#39; % collection
-    cmdline += auth_cmdline
-    print(cmdline)
-    os.system(cmdline)
-    time1 = time.time()
-    print(&#39;backup %s from %s complete, cost %fs\n&#39; % (db, src_host, time1 - time0))
-
-    cmdline = &#39;mongorestore -h %s --port=%d -d %s %s/%s&#39; % (dst_host, dst_port, db, backup_dir, db)
-    if drop:
-        cmdline += &#39; --drop&#39;
-    cmdline += auth_cmdline
-    print(cmdline)
-    os.system(cmdline)
-    time1 = time.time()
-    print(&#39;sync data from %s/%s to %s/%s complete, total cost %fs&#39; % (src_host, db, dst_host, db, time1 - time0))
-
-if __name__ == &#39;__main__&#39;:
-    parser = argparse.ArgumentParser(description=&#39;Mongodb sync data script.&#39;)
-    parser.add_argument(&#39;src_host&#39;, help=&#39;source host&#39;)
-    parser.add_argument(&#39;dst_host&#39;, help=&#39;destination host&#39;)
-    parser.add_argument(&#39;db_name&#39;, help=&#39;database name&#39;)
-    parser.add_argument(&#39;--src-port&#39;, type=int, help=&#39;source port&#39;, default=27017)
-    parser.add_argument(&#39;--dst-port&#39;, type=int, help=&#39;destination port&#39;, default=27017)
-    parser.add_argument(&#39;--collection&#39;, help=&#39;collection to sync&#39;)
-    parser.add_argument(&#39;--drop&#39;, help=&#39;drop collection before restore&#39;, default=False, action=&#39;store_true&#39;)
-
-    args = parser.parse_args()
-    sync_mongo(args.src_host, args.src_port, args.dst_host, args.dst_port, args.db_name, args.collection, drop=args.drop)
-
-</code></pre>
-<h3 id="增量备份"><a href="#增量备份" class="headerlink" title="增量备份"></a>增量备份</h3><p><code>oplog</code>是<code>local</code>数据库中的一个固定集合，<code>Secondary</code>就是通过查看<code>Primary</code>的oplog这个集合来进行复制的。每个节点都有oplog，记录这从主节点复制过来的信息，这样每个成员都可以作为同步源给其他节点。</p>
-<pre><code class="docker">FROM mongo:3.6.3
-
-RUN printf &quot;mongod --replSet rs0 &amp;\nsleep 2\nmongo local --eval \&quot;rs.initiate()\&quot;\nmongo local --eval \&quot;rs.conf()\&quot;\nsleep infinity&quot; &gt; /usr/local/bin/init-mongo.sh
-
-ENTRYPOINT &quot;sh /usr/local/bin/init-mongo.sh&quot;
-
-</code></pre>
-<p>可以使用上面的<code>Dockerfile</code>生成一个自动开启<code>oplog</code>的容器。</p>
-<pre><code>rs0:PRIMARY&gt; use local
-switched to db local
-rs0:PRIMARY&gt; db.getCollectionNames()
-[
-        &quot;me&quot;,
-        &quot;oplog.rs&quot;,
-        &quot;replset.election&quot;,
-        &quot;replset.minvalid&quot;,
-        &quot;startup_log&quot;,
-        &quot;system.replset&quot;,
-        &quot;system.rollback.id&quot;
-]
-rs0:PRIMARY&gt; db.oplog.rs.find()
-{ &quot;ts&quot; : Timestamp(1584972071, 1), &quot;h&quot; : NumberLong(&quot;7155205047322550757&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:11.490Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;initiating set&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972073, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;3098310879886849971&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:13.536Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;new primary&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972073, 2), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;7423790971296558722&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;c&quot;, &quot;ns&quot; : &quot;config.$cmd&quot;, &quot;ui&quot; : UUID(&quot;ac77fd00-b096-4062-b7ca-ac7f187c1fc7&quot;), &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:13.576Z&quot;), &quot;o&quot; : { &quot;create&quot; : &quot;transactions&quot;, &quot;idIndex&quot; : { &quot;v&quot; : 2, &quot;key&quot; : { &quot;_id&quot; : 1 }, &quot;name&quot; : &quot;_id_&quot;, &quot;ns&quot; : &quot;config.transactions&quot; } } }
-{ &quot;ts&quot; : Timestamp(1584972073, 3), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-2051859930978240465&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;c&quot;, &quot;ns&quot; : &quot;admin.$cmd&quot;, &quot;ui&quot; : UUID(&quot;4a0104be-5d4f-49db-9204-d778d83c64dd&quot;), &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:13.606Z&quot;), &quot;o&quot; : { &quot;create&quot; : &quot;system.keys&quot;, &quot;idIndex&quot; : { &quot;v&quot; : 2, &quot;key&quot; : { &quot;_id&quot; : 1 }, &quot;name&quot; : &quot;_id_&quot;, &quot;ns&quot; : &quot;admin.system.keys&quot; } } }
-{ &quot;ts&quot; : Timestamp(1584972073, 4), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-4130342990996856185&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;i&quot;, &quot;ns&quot; : &quot;admin.system.keys&quot;, &quot;ui&quot; : UUID(&quot;4a0104be-5d4f-49db-9204-d778d83c64dd&quot;), &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:13.606Z&quot;), &quot;o&quot; : { &quot;_id&quot; : NumberLong(&quot;6807403218608324609&quot;), &quot;purpose&quot; : &quot;HMAC&quot;, &quot;key&quot; : BinData(0,&quot;h/kcD++ijF/AUzwUqqXHTKG4Jwk=&quot;), &quot;expiresAt&quot; : Timestamp(1592748073, 0) } }
-{ &quot;ts&quot; : Timestamp(1584972073, 5), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;3814221418240704217&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;i&quot;, &quot;ns&quot; : &quot;admin.system.keys&quot;, &quot;ui&quot; : UUID(&quot;4a0104be-5d4f-49db-9204-d778d83c64dd&quot;), &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:13.606Z&quot;), &quot;o&quot; : { &quot;_id&quot; : NumberLong(&quot;6807403218608324610&quot;), &quot;purpose&quot; : &quot;HMAC&quot;, &quot;key&quot; : BinData(0,&quot;4Ds1uk/bTNYytP0hMkXX9ilgz38=&quot;), &quot;expiresAt&quot; : Timestamp(1600524073, 0) } }
-{ &quot;ts&quot; : Timestamp(1584972093, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;7954269847273383577&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:33.576Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972103, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;1461838052525134608&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:43.576Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972113, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-2878317090536866771&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:53.576Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972123, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;8386919002466516906&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:03.577Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972133, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;3752867656297542596&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:13.577Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972143, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-6914327186052916342&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:23.577Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972153, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;4905151581311694538&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:33.577Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972163, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;2195348018262890539&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:43.577Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972173, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-945081611143254792&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:53.577Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972183, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-8550993957527781683&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:03:03.577Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972193, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;2027336719720729041&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:03:13.578Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972203, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;8383046467552376073&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:03:23.578Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972213, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-2718017147947765099&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:03:33.578Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-{ &quot;ts&quot; : Timestamp(1584972223, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;4265940161146074795&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:03:43.578Z&quot;), &quot;o&quot; : { &quot;msg&quot; : &quot;periodic noop&quot; } }
-Type &quot;it&quot; for more
-</code></pre><p>可以看到，<code>oplog.rs</code>集合里已经有数据了。</p>
-<p>备份数据命令：</p>
-<pre><code class="bash">$ mongodump -h ${mongo_server} --port ${mongo_port} -o ${save_dir} -u ${username} -p ${password} --authenticationDatabase admin --oplog
-</code></pre>
-<blockquote>
-<p>使用<code>--oplog</code>参数时不能指定数据库，只能全量备份</p>
-</blockquote>
-<p>还原数据命令：</p>
-<pre><code class="bash">$ mongorestore -h ${mongo_server} --port ${mongo_port} -u ${username} -p ${password} --authenticationDatabase admin --oplogReplay --dir ${save_dir}
-</code></pre>
-
-          
+          0x00 前言mongodb是一款基于分布式文件存储的数据库，具有高性能、可扩展、易部署、易使用等特点。官方也提供了丰富的命令行工具来操作。
+0x01 部署mongodb服务部署mongodb服务可以直接使用docker镜像：
+$ docker search mongo
+NAME                                DESCRIPTION                 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/03/11/mongodb-command/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1428,6 +1095,37 @@ Type &quot;it&quot; for more
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  2.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1443,385 +1141,19 @@ Type &quot;it&quot; for more
       
         
           
-            <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>有很多Python语言的协程库，如：tornado、asyncio等。这些库在使用时需要使用特定的语法，如：async/await，对于非协程的代码需要改写才能以协程方式运行。</p>
-<p>gevent是一个特殊的协程库，它可以将非协程代码以协程方式运行，从而起到提升性能的作用。本文尝试分析一下它的实现原理。</p>
-<h2 id="0x01-使用案例"><a href="#0x01-使用案例" class="headerlink" title="0x01 使用案例"></a>0x01 使用案例</h2><p>先看以下这段代码：</p>
-<pre><code class="python">import ctypes
+          0x00 前言有很多Python语言的协程库，如：tornado、asyncio等。这些库在使用时需要使用特定的语法，如：async/await，对于非协程的代码需要改写才能以协程方式运行。
+gevent是一个特殊的协程库，它可以将非协程代码以协程方式运行，从而起到提升性能的作用。本文尝试分析一下它的实现原理。
+0x01 使用案例先看以下这段代码：
+import ctypes
 import sys
-import threading
-import time
-
-def gettid():
-    if sys.platform == &#39;linux2&#39;:
-        return ctypes.CDLL(&#39;libc.so.6&#39;).syscall(186)
-    else:
-        return ctypes.windll.kernel32.GetCurrentThreadId()
-
-def thread_test(index):
-    time0 = time.time()
-    while time.time() - time0 &lt; 1:
-        print(&#39;I\&#39;m thread %d: %d %d&#39; % (index, threading.current_thread().ident, gettid()))
-        time.sleep(0.1)
-
-thread1 = threading.Thread(target=thread_test, args=(1,))
-thread1.start()
-
-thread2 = threading.Thread(target=thread_test, args=(2,))
-thread2.start()
-print(&#39;Main thread sleep&#39;)
-time.sleep(2)
-print(&#39;Main thread exit&#39;)
-</code></pre>
-<p>输出内容如下：</p>
-<pre><code>I&#39;m thread 1: 140540774946560 32347
-I&#39;m thread 2: 140540766553856 32348
-Main thread sleep
-I&#39;m thread 1: 140540774946560 32347
-I&#39;m thread 2: 140540766553856 32348
-I&#39;m thread 1: 140540774946560 32347
-I&#39;m thread 2: 140540766553856 32348
-I&#39;m thread 1: 140540774946560 32347
-I&#39;m thread 2: 140540766553856 32348
-I&#39;m thread 1: 140540774946560 32347
-I&#39;m thread 2: 140540766553856 32348
-I&#39;m thread 1: 140540774946560 32347
-I&#39;m thread 2: 140540766553856 32348
-I&#39;m thread 1: 140540774946560 32347
-I&#39;m thread 2: 140540766553856 32348
-I&#39;m thread 1: 140540774946560 32347
-I&#39;m thread 2: 140540766553856 32348
-I&#39;m thread 1: 140540774946560 32347
-I&#39;m thread 2: 140540766553856 32348
-I&#39;m thread 1: 140540774946560 32347
-I&#39;m thread 2: 140540766553856 32348
-Main thread exit
-</code></pre><p>在这段代码前面加上以下代码：</p>
-<pre><code class="python">from gevent import monkey
-monkey.patch_thread()
-</code></pre>
-<p>输出如下：</p>
-<pre><code>I&#39;m thread 1: 21069936 31623
-I&#39;m thread 1: 21069936 31623
-I&#39;m thread 1: 21069936 31623
-I&#39;m thread 1: 21069936 31623
-I&#39;m thread 1: 21069936 31623
-I&#39;m thread 1: 21069936 31623
-I&#39;m thread 1: 21069936 31623
-I&#39;m thread 1: 21069936 31623
-I&#39;m thread 1: 21069936 31623
-I&#39;m thread 1: 21069936 31623
-I&#39;m thread 2: 14522208 31623
-I&#39;m thread 2: 14522208 31623
-I&#39;m thread 2: 14522208 31623
-I&#39;m thread 2: 14522208 31623
-I&#39;m thread 2: 14522208 31623
-I&#39;m thread 2: 14522208 31623
-I&#39;m thread 2: 14522208 31623
-I&#39;m thread 2: 14522208 31623
-I&#39;m thread 2: 14522208 31623
-I&#39;m thread 2: 14522208 31623
-Main thread sleep
-Main thread exit
-</code></pre><p>可以看出，在加入gevent后，输出与之前有些不同，最大的区别是：<code>两个线程具有相同的线程ID</code>。也就是说，这两个线程其实是跑在同一个线程里的。</p>
-<p>还有一点需要注意的地方：<code>Main thread sleep</code>这句输出在前后两次执行是不同的。</p>
-<h2 id="0x02-原理分析"><a href="#0x02-原理分析" class="headerlink" title="0x02 原理分析"></a>0x02 原理分析</h2><p>来看下<code>patch_thread</code>函数的实现：</p>
-<pre><code class="python">def patch_thread(threading=True, _threading_local=True, Event=True, logging=True,
-                 existing_locks=True,
-                 _warnings=None):
-    if threading:
-        threading_mod = __import__(&#39;threading&#39;)
-        # Capture the *real* current thread object before
-        # we start returning DummyThread objects, for comparison
-        # to the main thread.
-        orig_current_thread = threading_mod.current_thread()
-    else:
-        threading_mod = None
-        gevent_threading_mod = None
-        orig_current_thread = None
-
-    gevent_thread_mod, thread_mod = _patch_module(&#39;thread&#39;,
-                                                  _warnings=_warnings, _notify_did_subscribers=False)
-
-    if threading:
-        gevent_threading_mod, _ = _patch_module(&#39;threading&#39;,
-                                                _warnings=_warnings, _notify_did_subscribers=False)
-
-        if Event:
-            from gevent.event import Event
-            patch_item(threading_mod, &#39;Event&#39;, Event)
-            # Python 2 had `Event` as a function returning
-            # the private class `_Event`. Some code may be relying
-            # on that.
-            if hasattr(threading_mod, &#39;_Event&#39;):
-                patch_item(threading_mod, &#39;_Event&#39;, Event)
-
-        if existing_locks:
-            _patch_existing_locks(threading_mod)
-
-        if logging and &#39;logging&#39; in sys.modules:
-            logging = __import__(&#39;logging&#39;)
-            patch_item(logging, &#39;_lock&#39;, threading_mod.RLock())
-            for wr in logging._handlerList:
-                # In py26, these are actual handlers, not weakrefs
-                handler = wr() if callable(wr) else wr
-                if handler is None:
-                    continue
-                if not hasattr(handler, &#39;lock&#39;):
-                    raise TypeError(&quot;Unknown/unsupported handler %r&quot; % handler)
-                handler.lock = threading_mod.RLock()
-
-    if _threading_local:
-        _threading_local = __import__(&#39;_threading_local&#39;)
-        from gevent.local import local
-        patch_item(_threading_local, &#39;local&#39;, local)
-
-    def make_join_func(thread, thread_greenlet):
-        from gevent.hub import sleep
-        from time import time
-
-        def join(timeout=None):
-            end = None
-            if threading_mod.current_thread() is thread:
-                raise RuntimeError(&quot;Cannot join current thread&quot;)
-            if thread_greenlet is not None and thread_greenlet.dead:
-                return
-            if not thread.is_alive():
-                return
-
-            if timeout:
-                end = time() + timeout
-
-            while thread.is_alive():
-                if end is not None and time() &gt; end:
-                    return
-                sleep(0.01)
-        return join
-
-    if threading:
-        from gevent.threading import main_native_thread
-
-        for thread in threading_mod._active.values():
-            if thread == main_native_thread():
-                continue
-            thread.join = make_join_func(thread, None)
-
-    if sys.version_info[:2] &gt;= (3, 4):
-
-        # Issue 18808 changes the nature of Thread.join() to use
-        # locks. This means that a greenlet spawned in the main thread
-        # (which is already running) cannot wait for the main thread---it
-        # hangs forever. We patch around this if possible. See also
-        # gevent.threading.
-        greenlet = __import__(&#39;greenlet&#39;)
-
-        if orig_current_thread == threading_mod.main_thread():
-            main_thread = threading_mod.main_thread()
-            _greenlet = main_thread._greenlet = greenlet.getcurrent()
-
-            main_thread.join = make_join_func(main_thread, _greenlet)
-
-            # Patch up the ident of the main thread to match. This
-            # matters if threading was imported before monkey-patching
-            # thread
-            oldid = main_thread.ident
-            main_thread._ident = threading_mod.get_ident()
-            if oldid in threading_mod._active:
-                threading_mod._active[main_thread.ident] = threading_mod._active[oldid]
-            if oldid != main_thread.ident:
-                del threading_mod._active[oldid]
-        else:
-            _queue_warning(&quot;Monkey-patching not on the main thread; &quot;
-                           &quot;threading.main_thread().join() will hang from a greenlet&quot;,
-                           _warnings)
-
-    from gevent import events
-    _notify_patch(events.GeventDidPatchModuleEvent(&#39;thread&#39;, gevent_thread_mod, thread_mod))
-    _notify_patch(events.GeventDidPatchModuleEvent(&#39;threading&#39;, gevent_threading_mod, threading_mod))
-</code></pre>
-<p>首先，<code>orig_current_thread</code>变量存储了当前的线程对象，然后调用<code>_patch_module</code>函数<code>patch</code>了<code>threading</code>和<code>thread</code>模块。</p>
-<p><code>_patch_module</code>函数相关实现如下：</p>
-<pre><code class="python">def __call_module_hook(gevent_module, name, module, items, _warnings):
-    # This function can raise DoNotPatch on &#39;will&#39;
-
-    def warn(message):
-        _queue_warning(message, _warnings)
-
-    func_name = &#39;_gevent_&#39; + name + &#39;_monkey_patch&#39;
-    try:
-        func = getattr(gevent_module, func_name)
-    except AttributeError:
-        func = lambda *args: None
-
-
-    func(module, items, warn)
-
-def patch_item(module, attr, newitem):
-    olditem = getattr(module, attr, _NONE)
-    if olditem is not _NONE:
-        saved.setdefault(module.__name__, {}).setdefault(attr, olditem)
-    setattr(module, attr, newitem)
-
-def patch_module(target_module, source_module, items=None,
-                 _warnings=None,
-                 _notify_did_subscribers=True):
-    &quot;&quot;&quot;
-    patch_module(target_module, source_module, items=None)
-
-    Replace attributes in *target_module* with the attributes of the
-    same name in *source_module*.
-
-    The *source_module* can provide some attributes to customize the process:
-
-    * ``__implements__`` is a list of attribute names to copy; if not present,
-      the *items* keyword argument is mandatory.
-    * ``_gevent_will_monkey_patch(target_module, items, warn, **kwargs)``
-    * ``_gevent_did_monkey_patch(target_module, items, warn, **kwargs)``
-      These two functions in the *source_module* are called *if* they exist,
-      before and after copying attributes, respectively. The &quot;will&quot; function
-      may modify *items*. The value of *warn* is a function that should be called
-      with a single string argument to issue a warning to the user. If the &quot;will&quot;
-      function raises :exc:`gevent.events.DoNotPatch`, no patching will be done. These functions
-      are called before any event subscribers or plugins.
-
-    :keyword list items: A list of attribute names to replace. If
-       not given, this will be taken from the *source_module* ``__implements__``
-       attribute.
-    :return: A true value if patching was done, a false value if patching was canceled.
-
-    .. versionadded:: 1.3b1
-    &quot;&quot;&quot;
-    from gevent import events
-
-    if items is None:
-        items = getattr(source_module, &#39;__implements__&#39;, None)
-        if items is None:
-            raise AttributeError(&#39;%r does not have __implements__&#39; % source_module)
-
-    try:
-        __call_module_hook(source_module, &#39;will&#39;, target_module, items, _warnings)
-        _notify_patch(
-            events.GeventWillPatchModuleEvent(target_module.__name__, source_module,
-                                              target_module, items),
-            _warnings)
-    except events.DoNotPatch:
-        return False
-
-    for attr in items:
-        patch_item(target_module, attr, getattr(source_module, attr))
-
-    __call_module_hook(source_module, &#39;did&#39;, target_module, items, _warnings)
-
-    if _notify_did_subscribers:
-        # We allow turning off the broadcast of the &#39;did&#39; event for the benefit
-        # of our internal functions which need to do additional work (besides copying
-        # attributes) before their patch can be considered complete.
-        _notify_patch(
-            events.GeventDidPatchModuleEvent(target_module.__name__, source_module,
-                                             target_module)
-        )
-
-    return True
-
-def _patch_module(name, items=None, _warnings=None, _notify_did_subscribers=True):
-
-    gevent_module = getattr(__import__(&#39;gevent.&#39; + name), name)
-    module_name = getattr(gevent_module, &#39;__target__&#39;, name)
-    target_module = __import__(module_name)
-
-    patch_module(target_module, gevent_module, items=items,
-                 _warnings=_warnings,
-                 _notify_did_subscribers=_notify_did_subscribers)
-
-    return gevent_module, target_module
-</code></pre>
-<p>这里比较关键的逻辑有两个：</p>
-<ul>
-<li><p>调用<code>__call_module_hook</code>执行目标模块中的<code>_gevent_will_monkey_patch</code>和<code>_gevent_did_monkey_patch</code>方法</p>
-</li>
-<li><p>调用<code>patch_item</code>将原始模块中的指定方法替换为gevent对应模块中的同名方法</p>
-</li>
-</ul>
-<p>可以看出，patch的关键逻辑就是由<code>patch_item</code>实现的，具体要patch的对象是由gevent模块中的<code>__implements__</code>列表指定的。</p>
-<h2 id="0x03-threading模块patch分析"><a href="#0x03-threading模块patch分析" class="headerlink" title="0x03 threading模块patch分析"></a>0x03 threading模块patch分析</h2><p>对于<code>threading</code>模块，对应模块就是<code>gevent.threading</code>，里面实现了<code>_gevent_will_monkey_patch</code>方法，在hook前做一些准备工作。</p>
-<pre><code class="python">import threading as __threading__
-
-def _gevent_will_monkey_patch(native_module, items, warn): # pylint:disable=unused-argument
-    # Make sure the MainThread can be found by our current greenlet ID,
-    # otherwise we get a new DummyThread, which cannot be joined.
-    # Fixes tests in test_threading_2 under PyPy.
-    main_thread = main_native_thread()
-    if __threading__.current_thread() != main_thread:
-        warn(&quot;Monkey-patching outside the main native thread. Some APIs &quot;
-             &quot;will not be available. Expect a KeyError to be printed at shutdown.&quot;)
-        return
-
-    if _get_ident() not in __threading__._active:
-        main_id = main_thread.ident
-        del __threading__._active[main_id]
-        main_thread._ident = main_thread._Thread__ident = _get_ident()
-        __threading__._active[_get_ident()] = main_thread
-</code></pre>
-<p>在<code>gevent.threading</code>模块中要patch的列表是：</p>
-<pre><code class="python">__implements__ = [
-    &#39;local&#39;,
-    &#39;_start_new_thread&#39;,
-    &#39;_allocate_lock&#39;,
-    &#39;Lock&#39;,
-    &#39;_get_ident&#39;,
-    &#39;_sleep&#39;,
-    &#39;_DummyThread&#39;,
-]
-</code></pre>
-<p>而在<code>gevent.thread</code>模块中则是：</p>
-<pre><code class="python">__implements__ = [
-    &#39;allocate_lock&#39;,
-    &#39;get_ident&#39;,
-    &#39;exit&#39;,
-    &#39;LockType&#39;,
-    &#39;stack_size&#39;,
-    &#39;start_new_thread&#39;,
-    &#39;_local&#39;
-]
-</code></pre>
-<p>我们来看下<code>threading</code>模块在启动线程过程中做了哪些操作。</p>
-<pre><code>  +------------------------+
-  |                        |
-  | threading.Thread.start |
-  |                        |
-  +-----------+------------+
-              |
-              |
-              v
-+-------------+---------------+
-|                             |
-| threading._start_new_thread |
-|                             |
-+-------------+---------------+
-              |
-              |
-              |
-              v
-  +-----------+-------------+
-  |                         |
-  | thread.start_new_thread |
-  |                         |
-  +-------------------------+
-
-</code></pre><p>上面的<code>threading._start_new_thread</code>和<code>thread.start_new_thread</code>都是在gevent的<code>__implements__</code>列表中的。也就是说：这两个函数都被gevent hook了。</p>
-<pre><code class="python">from gevent.thread import start_new_thread as _start_new_thread
-</code></pre>
-<p>而由于<code>gevent.threading._start_new_thread</code>其实就是<code>gevent.thread.start_new_thread</code>，所以它们其实是同一个函数。</p>
-<pre><code class="python">def start_new_thread(function, args=(), kwargs=None):
-    if kwargs is not None:
-        greenlet = Greenlet.spawn(function, *args, **kwargs)
-    else:
-        greenlet = Greenlet.spawn(function, *args)
-    return get_ident(greenlet)
-</code></pre>
-<p>从<code>start_new_thread</code>函数可以看出，启动线程逻辑已经被替换成了<code>greenlet</code>的实现，这也是为什么使用了<code>patch_thread</code>后，真实线程id相同的原因。</p>
-<h2 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2><p>gevent使用动态patch的方法，实现了动态将非协程库变成协程库的功能，在极少修改代码的前提下提升了程序的性能。但是，在上面线程的例子中可以看出，patch后程序的行为可能会有一些差异，所以在使用上还是需要小心。</p>
-
-          
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/02/18/gevent/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1938,6 +1270,37 @@ def _gevent_will_monkey_patch(native_module, items, warn): # pylint:disable=unus
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  1.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1953,162 +1316,22 @@ def _gevent_will_monkey_patch(native_module, items, warn): # pylint:disable=unus
       
         
           
-            <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Javascript中的prototype是一个十分重要的概念，但是网上的教程一般分析得比较绕，结果越看越晕，反而变得更加难以理解了。</p>
-<p>本文尝试由浅入深，从实验入手，来深入地理解这一概念。</p>
-<h2 id="0x01-函数与对象"><a href="#0x01-函数与对象" class="headerlink" title="0x01 函数与对象"></a>0x01 函数与对象</h2><p>函数是JS中最为重要的一个概念，下面是创建函数最简单的方法：</p>
-<pre><code class="javascript">function func(){
+          0x00 前言Javascript中的prototype是一个十分重要的概念，但是网上的教程一般分析得比较绕，结果越看越晕，反而变得更加难以理解了。
+本文尝试由浅入深，从实验入手，来深入地理解这一概念。
+0x01 函数与对象函数是JS中最为重要的一个概念，下面是创建函数最简单的方法：
+function func(){
     return 0;
 }
-</code></pre>
-<p>通过Chrome开发者工具，可以得到以下输出：</p>
-<pre><code>&gt; typeof func
-&lt; &quot;function&quot;
-&gt; func instanceof Function
-&lt; true
-&gt; func instanceof Object
-&lt; true
-</code></pre><p>可以看出，<code>func</code>是<code>Function</code>的一个实例，同时也是<code>Object</code>的一个实例。这点可以理解成<code>Function</code>本质上也是<code>Object</code>的一种。</p>
-<pre><code>&gt; typeof Function
-&lt; &quot;function&quot;
-&gt; typeof Object
-&lt; &quot;function&quot;
-</code></pre><p>再来看这段输出，按照通常<code>OOP</code>语言的理解，<code>Function</code>和<code>Object</code>的类型应该是<code>class</code>之类的值，但偏偏这里返回的是<code>function</code>。这是为什么呢？</p>
-<p>我们知道，js中<code>class</code>的概念是在<code>ES6</code>中才出现的，可以通过以下代码创建一个<code>class</code>：</p>
-<pre><code class="javascript">class MyClass {
-    constructor(name) {
-        this.name = name;
-    }
-    show(){
-        console.log(this.name);
-    }
-}
 
-var obj = new MyClass(&#39;drunkdream&#39;);
-obj.show();
-</code></pre>
-<p>现在来测试一下<code>obj</code>实例的相关情况：</p>
-<pre><code>&gt; typeof obj
-&lt; &quot;object&quot;
-&gt; obj instanceof MyClass
-&lt; true
-&gt; obj instanceof Object
-&lt; true
-&gt; typeof MyClass
-&lt; &quot;function&quot;
-&gt; MyClass instanceof Function
-&lt; true
-</code></pre><p>可以看出，<code>obj</code>的确是<code>MyClass</code>的一个实例。但是，奇怪的是：<code>MyClass</code>的类型竟然是<code>function</code>，这点和其它语言的确不太一样。</p>
-<p>这是因为：</p>
-<blockquote>
-<p>js中并没有真正的<code>class</code>的概念，<code>class</code>仅仅是<code>function</code>的一种语法糖而已。</p>
-</blockquote>
-<p>来看下在<code>ES5</code>中一般怎么构造一个<code>class</code>的。</p>
-<pre><code class="javascript">function MyClass(name) {
-    this.name = name;
-}
-
-MyClass.prototype.show = function () {
-    console.log(this.name);
-}
-</code></pre>
-<p>这种写法可以实现和上面那段代码相同的功能，但是很明显，<code>MyClass</code>真的是一个<code>function</code>。也就是说：<code>new</code>一个<code>function</code>得到的其实是一个对象。这和其它语言差异是比较大的。</p>
-<p>而<code>prototype</code>在其中就是扮演了添加类的成员函数的作用。</p>
-<p>其实，将上面的代码改成：</p>
-<pre><code class="javascript">function MyClass(name) {
-    this.name = name;
-    this.show = function () {
-        console.log(this.name);
-    }
-}
-</code></pre>
-<p>这样的形式对于使用者也是完全没有问题的，差别只是每次实例化都会创建出一个<code>show</code>函数，显然这种写法是不好的。</p>
-<h2 id="0x02-prototype与proto"><a href="#0x02-prototype与proto" class="headerlink" title="0x02 prototype与proto"></a>0x02 prototype与<strong>proto</strong></h2><p>那<code>prototype</code>到底是个什么样的存在呢？</p>
-<pre><code>&gt; MyClass.prototype
-&lt; {show: ƒ, constructor: ƒ}
-    show: ƒ ()
-    constructor: ƒ MyClass(name)
-    __proto__: Object
-&gt; typeof MyClass.prototype
-&lt; &quot;object&quot;
-&gt; MyClass.prototype.constructor === MyClass
-&lt; true
-&gt; MyClass.prototype.__proto__
-&lt; {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …}
-    constructor: ƒ Object()
-    hasOwnProperty: ƒ hasOwnProperty()
-    isPrototypeOf: ƒ isPrototypeOf()
-    propertyIsEnumerable: ƒ propertyIsEnumerable()
-    toLocaleString: ƒ toLocaleString()
-    toString: ƒ toString()
-    valueOf: ƒ valueOf()
-    __defineGetter__: ƒ __defineGetter__()
-    __defineSetter__: ƒ __defineSetter__()
-    __lookupGetter__: ƒ __lookupGetter__()
-    __lookupSetter__: ƒ __lookupSetter__()
-    get __proto__: ƒ __proto__()
-    set __proto__: ƒ __proto__()
-</code></pre><p>上面这段看起来有点绕，需要仔细思索一下。</p>
-<p>可以看出，<code>prototype</code>本质上是一个对象，必须要包含<code>constructor</code>构造函数和<code>__proto__</code>对象。</p>
-<p><code>constructor</code>其实就是<code>MyClass</code>函数本身，而<code>__proto__</code>对象看起来就有些神秘了。不过从<code>__proto__.constructor</code>可以看出，它其实就是<code>Object</code>。是不是觉得<code>__proto__</code>指向的是当前类的基类呢？</p>
-<p>我们再来测试一下：</p>
-<pre><code>&gt; class MyClass1 extends String{}
-&gt; MyClass1.prototype.__proto__.constructor == String
-&lt; true
-</code></pre><p>看来的确是这样的，只不过由于js中的类本质上都是<code>function</code>，而每个<code>function</code>都有一个原型，通过这种方式将原型<code>链接</code>起来，就起到了类继承的作用。</p>
-<h2 id="0x03-将对象变成函数"><a href="#0x03-将对象变成函数" class="headerlink" title="0x03 将对象变成函数"></a>0x03 将对象变成函数</h2><p>下面是网上找的一段代码：</p>
-<pre><code class="javascript">function classcallable(cls) {
-    /*
-     * Replicate the __call__ magic method of python and let class instances
-     * be callable.
-     */
-    var new_cls = function () {
-        var obj = Object.create(cls.prototype);
-        // create callable
-        // we use func.__call__ because call might be defined in
-        // init which hasn&#39;t been called yet.
-        var func = function () {
-            return func.__call__.apply(func, arguments);
-        };
-        func.__proto__ = obj;
-        // apply init late so it is bound to func and not cls
-        cls.apply(func, arguments);
-        return func;
-    }
-    new_cls.prototype = cls.prototype;
-    return new_cls
-}
-</code></pre>
-<p>它可以将一个类实例类型从<code>object</code>变成<code>function</code>。</p>
-<pre><code class="javascript">var s = new String();
-console.log(typeof s);
-
-var s = new classcallable(String)();
-console.log(typeof s);
-</code></pre>
-<p>输出结果为：</p>
-<pre><code>object
-function
-</code></pre><p>也就是说，使用<code>classcallable</code>之后创建的对象，可以当做函数来调用。我们分析一下这里面的原因。</p>
-<p>在js中是允许在类的构造函数中返回一个<code>function</code>的，可以使用以下代码进行测试：</p>
-<pre><code class="javascript">function MyClass(flag){
-    var func = function(){
-        console.log(&quot;call func&quot;);
-    }
-    if(flag === 1)
-        return func;
-    else
-        return 0;
-}
-
-console.log(typeof new MyClass(0));
-console.log(typeof new MyClass(1));
-</code></pre>
-<p>输出结果为：</p>
-<pre><code>object
-function
-</code></pre><p>因此，只要修改构造函数的返回值，就可以改变创建出的实例类型，这里正是用了这种方法。</p>
-
-          
+通过Chrome开发者工具，可以得到以下输出：
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/12/14/js-prototype/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2225,6 +1448,37 @@ function
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  1.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
 
           
 
@@ -2240,129 +1494,19 @@ function
       
         
           
-            <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Jenkins是一款使用比较广泛的<code>CI/CD</code>平台，2.0版本开始支持了<code>pipeline</code>，通过<code>jenkinsfile</code>文件进行流水线的控制。本文提供了一种在本地Linux环境中快速搭建Jenkins测试环境的方法。</p>
-<h2 id="0x01-环境部署"><a href="#0x01-环境部署" class="headerlink" title="0x01 环境部署"></a>0x01 环境部署</h2><p>直接使用docker镜像搭建环境是一种比较快捷的方法。编写如下<code>Dockerfile</code>文件：</p>
-<pre><code class="Dockerfile">FROM jenkins/jenkins:lts
+          0x00 前言Jenkins是一款使用比较广泛的CI/CD平台，2.0版本开始支持了pipeline，通过jenkinsfile文件进行流水线的控制。本文提供了一种在本地Linux环境中快速搭建Jenkins测试环境的方法。
+0x01 环境部署直接使用docker镜像搭建环境是一种比较快捷的方法。编写如下Dockerfile文件：
+FROM jenkins/jenkins:lts
 
-USER root
-RUN apt -y update \
-    &amp;&amp; apt -y upgrade \
-    &amp;&amp; apt -y install python-pip
-</code></pre>
-<p>使用命令：<code>docker build -t jenkins .</code>进行镜像编译。</p>
-<p>编译后使用命令：<code>docker run --name jenkins -i -p 8787:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker -v /data/jenkins/jenkins_home:/var/jenkins_home:rw jenkins</code>启动镜像。</p>
-<p><code>/var/run/docker.sock</code>和<code>/usr/bin/docker</code>这两个挂载是为了支持<code>Docker in Docker</code>。<code>/data/jenkins/jenkins_home</code>这个挂载是为了便于保存Jenkins数据，以免容器重启后又要重新配置。</p>
-<h2 id="0x02-初始化Jenkins配置"><a href="#0x02-初始化Jenkins配置" class="headerlink" title="0x02 初始化Jenkins配置"></a>0x02 初始化Jenkins配置</h2><p>使用浏览器访问<code>http:/127.0.0.1:8787/</code>页面，进行初始化操作。</p>
-<h3 id="配置代理"><a href="#配置代理" class="headerlink" title="配置代理"></a>配置代理</h3><h2 id="0x03-编写Jenkinsfile"><a href="#0x03-编写Jenkinsfile" class="headerlink" title="0x03 编写Jenkinsfile"></a>0x03 编写Jenkinsfile</h2><p>文档地址：<a href="https://jenkins.io/zh/doc/book/pipeline/syntax/" target="_blank" rel="noopener">https://jenkins.io/zh/doc/book/pipeline/syntax/</a>。</p>
-<p><code>Jenkinsfile</code>分为<code>声明式</code>和<code>脚本式</code>，这里主要介绍<code>声明式</code>。</p>
-<p>下面是一个简单的模板：</p>
-<pre><code class="Jenkinsfile">pipeline {
-  agent {
-    label &quot;default&quot;
-  }
-
-  stages  {
-    stage(&quot;检出&quot;) {
-      steps {
-        sh &#39;ci-init&#39;
-        checkout(
-          [$class: &#39;GitSCM&#39;, branches: [[name: env.GIT_BUILD_REF]], 
-                  userRemoteConfigs: [[url: env.GIT_REPO_URL]]]
-        )
-      }
-    }
-
-    stage(&quot;构建&quot;) {
-      steps {
-        echo &quot;构建中...&quot;
-        sh &#39;go version&#39;
-        sh &#39;node -v&#39;
-        sh &#39;java -version&#39;
-        sh &#39;php -v&#39;
-        sh &#39;python -V&#39;
-        sh &#39;gcc -v&#39;
-        sh &#39;make -v&#39;
-        // 请在这里放置您项目代码的单元测试调用过程，例如:
-        // sh &#39;mvn package&#39; // mvn 示例
-        // sh &#39;make&#39; // make 示例
-        echo &quot;构建完成.&quot;
-        // archiveArtifacts artifacts: &#39;**/target/*.jar&#39;, fingerprint: true // 收集构建产物
-      }
-    }
-
-    stage(&quot;测试&quot;) {
-      steps {
-        echo &quot;单元测试中...&quot;
-        // 请在这里放置您项目代码的单元测试调用过程，例如:
-        // sh &#39;mvn test&#39; // mvn 示例
-        // sh &#39;make test&#39; // make 示例
-        echo &quot;单元测试完成.&quot;
-        // junit &#39;target/surefire-reports/*.xml&#39; // 收集单元测试报告的调用过程
-      }
-    }
-
-    stage(&quot;部署&quot;) {
-      steps {
-        echo &quot;部署中...&quot;
-        // 请在这里放置收集单元测试报告的调用过程，例如:
-        // sh &#39;mvn tomcat7:deploy&#39; // Maven tomcat7 插件示例：
-        // sh &#39;./deploy.sh&#39; // 自研部署脚本
-        echo &quot;部署完成&quot;
-      }
-    }
-  }
-}
-</code></pre>
-<h3 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h3><h4 id="指定docker镜像"><a href="#指定docker镜像" class="headerlink" title="指定docker镜像"></a>指定docker镜像</h4><pre><code>  agent {
-    docker {
-      image &#39;demo/test/base:latest&#39;
-      registryUrl &#39;https://drunkdream-docker.pkg.coding.net&#39;
-    }
-  }
-</code></pre><h4 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h4><pre><code>  environment {
-    MY_ENV = &#39;test&#39;
-  }
-</code></pre><h4 id="访问环境变量"><a href="#访问环境变量" class="headerlink" title="访问环境变量"></a>访问环境变量</h4><p>Jenkins内置的环境变量列表可以在<code>http://jenkins-server/pipeline-syntax/globals#env</code>地址中获取。</p>
-<p>环境变量可以通过<code>${env.My_ENV}</code>或<code>${My_ENV}</code>或<code>$My_ENV</code>来访问。需要注意的是，使用引号的时候尽量使用<code>&quot;</code>，如：<code>echo &quot;${env.My_ENV}&quot;</code>，否则会无法生效。Jenkins应该是在运行时将变量动态替换成了实际值，使用单引号的话，则不会进行替换。</p>
-<p>而如果写成<code>sh &#39;echo ${MY_ENV}&#39;</code>则是可以正常工作的，因为此时是由<code>shell</code>程序进行环境变量的读取。</p>
-<pre><code>  stage(&#39;测试&#39;) {
-    steps {
-      echo &quot;${env.MY_ENV}&quot;
-      echo &quot;${MY_ENV}&quot;
-      echo &quot;$MY_ENV&quot;
-      sh &#39;echo $MY_ENV&#39;
-      sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;MY_ENV\&#39;])&quot;&#39;
-      echo &#39;${env.MY_ENV}&#39; //输出`${env.MY_ENV}`
-    }
-  }
-</code></pre><p>前五条命令都可以正常输出变量值，但最后一条却无法输出。</p>
-<h4 id="将命令行输出赋值给变量"><a href="#将命令行输出赋值给变量" class="headerlink" title="将命令行输出赋值给变量"></a>将命令行输出赋值给变量</h4><p>Jenkins的<code>${env.My_ENV}</code>方式不支持默认值，也就是<code>bash</code>中的<code>${MY_ENV:-&quot;test&quot;}</code>写法。如果需要这种用法，可以使用以下方式：</p>
-<pre><code>  stage(&#39;测试&#39;) {
-    steps {
-      script {
-        ENV1 = sh(returnStdout: true, script: &#39;echo ${MY_ENV:-&quot;default&quot;}&#39;).trim()
-      }
-      sh &#39;echo ${ENV1}&#39; //可以正常输出
-      sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;ENV1\&#39;])&quot;&#39; //会报错
-    }
-  }
-</code></pre><p><code>trim()</code>方法可以去掉前后的空白字符。</p>
-<blockquote>
-<p>注意：<code>${MY_ENV:-&quot;default&quot;}</code>不能写成<code>${env.MY_ENV:-&quot;default&quot;}</code></p>
-</blockquote>
-<p>虽然这种方式赋值的变量也可以通过<code>${env.ENV1}</code>方式访问，但其实它并不是环境变量。</p>
-<h4 id="动态配置环境变量"><a href="#动态配置环境变量" class="headerlink" title="动态配置环境变量"></a>动态配置环境变量</h4><pre><code>  stage(&#39;测试&#39;) {
-    steps {
-      script {
-        ENV1 = sh(returnStdout: true, script: &#39;echo ${MY_ENV:-&quot;default&quot;}&#39;).trim()
-      }
-      withEnv([&quot;MY_ENV=${ENV1}&quot;]) {
-        sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;MY_ENV\&#39;])&quot;&#39; //输出default
-      }
-    }
-  }
-</code></pre>
-          
+USER ro
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/12/06/local-deploy-jenkins/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2479,6 +1623,37 @@ RUN apt -y update \
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  821
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
 
           
 
@@ -2494,95 +1669,22 @@ RUN apt -y update \
       
         
           
-            <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>单例是一种很常见的设计模式，在Python中不同的实现方法差异也比较大。这里介绍一些不同的实现方法。</p>
-<h2 id="0x01-基本法"><a href="#0x01-基本法" class="headerlink" title="0x01 基本法"></a>0x01 基本法</h2><pre><code class="python">class MyClass(object):
+          0x00 前言单例是一种很常见的设计模式，在Python中不同的实现方法差异也比较大。这里介绍一些不同的实现方法。
+0x01 基本法class MyClass(object):
     _instance = None
 
     @staticmethod
     def get_instance():
         if not MyClass._instance:
-            MyClass._instance = MyClass()
-        return MyClass._instance
-
-inst = MyClass.get_instance()
-
-</code></pre>
-<p>这种方法是最简单的实现方法，但是需要使用者主动调用<code>get_instance</code>方法来获取实例，如果写成<code>inst = MyClass()</code>的话，就不会起到单例的作用了。</p>
-<h2 id="0x02-重载new大法"><a href="#0x02-重载new大法" class="headerlink" title="0x02 重载new大法"></a>0x02 重载<strong>new</strong>大法</h2><p>为了解决上面的问题，可以通过重载<code>__new__</code>方法来实现。</p>
-<pre><code class="python">class MyClass(object):
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(MyClass, cls).__new__(cls, *args, **kwargs)
-            cls._instance.initialize(*args, **kwargs)
-        return cls._instance
-
-    def initialize(self, *args, **kwargs):
-        pass
-
-inst = MyClass()
-</code></pre>
-<p>类在实例化的时候，会先调用<code>__new__</code>方法，在这里可以修改返回的实例。但是，这种方法有一个问题，就是实例化的时候一定会调用<code>__init__</code>方法，因此会出现重复初始化的问题。这里改为使用<code>initialize</code>方法进行初始化，也就是说，使用者需要避免使用<code>__init__</code>进行初始化。</p>
-<p>但是这种方法对用户不是透明的，体验上不是很好。</p>
-<h1 id="0x03-元类法"><a href="#0x03-元类法" class="headerlink" title="0x03 元类法"></a>0x03 元类法</h1><p>元类是一种特殊的类，它继承自<code>type</code>，拥有创造类的能力，因此成为<code>元类</code>。</p>
-<pre><code class="python">
-class SingletonMetaClass(type):
-
-    def __init__(cls, *args, **kwargs):
-        super(SingletonMetaClass, cls).__init__(*args, **kwargs)
-        print(&#39;SingletonMetaClass __init__&#39;)
-
-    def __call__(cls, *args, **kwargs):
-        print(&#39;SingletonMetaClass __call__&#39;)
-        if not hasattr(cls, &#39;_instance&#39;):
-            cls._instance = super(SingletonMetaClass, cls).__call__(*args, **kwargs)
-        print(&#39;SingletonMetaClass __call__ return&#39;)
-        return cls._instance
-
-class MyClass(object, metaclass=SingletonMetaClass):
-
-    def __new__(cls, *args, **kwargs):
-        print(&#39;MyClass __new__&#39;)
-        return super(MyClass, cls).__new__(cls, *args, **kwargs)
-
-    def __init__(self, *args, **kwargs):
-        print(&#39;MyClass __init__&#39;)
-
-inst = MyClass()
-</code></pre>
-<p>输出如下内容：</p>
-<pre><code>SingletonMetaClass __init__
-SingletonMetaClass __call__
-MyClass __new__
-MyClass __init__
-SingletonMetaClass __call__ return
-</code></pre><p>可以看出，正是在元类的<code>__call__</code>中，创造了<code>MyClass</code>这个类。</p>
-<p>这种方法一般用来是没什么问题的，但是有些情况下会报：<code>TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases</code>这个错误。这是因为基类中也使用了元类的原因，此时需要保证元类的继承关系，以避免元类冲突。</p>
-<h2 id="0x04-装饰器法"><a href="#0x04-装饰器法" class="headerlink" title="0x04 装饰器法"></a>0x04 装饰器法</h2><p>装饰器是一种常用的动态修改函数行为的方法，因此也可以用于实现单例。</p>
-<pre><code class="python">class Singleton(object):
-    &#39;&#39;&#39;singleton decorator
-    &#39;&#39;&#39;
-
-    def __init__(self, cls):
-        self.__instance = None
-        self.__cls = cls
-
-    def __call__(self, *args, **kwargs):
-        if not self.__instance:
-            self.__instance = self.__cls(*args, **kwargs)
-        return self.__instance
-
-@Singleton
-class MyClass(object):
-    pass
-
-</code></pre>
-<p>相比其它方法，这种方法缺点更少，使用也更加灵活，不需要修改类的实现。</p>
-<h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>为了实现通用的单例逻辑，主要思路就是修改类的实例化过程。</p>
-<p><code>__new__</code>方法、<code>元类法</code>、<code>装饰器法</code>都是通过在实例化之前判断是否已经实例化，从而返回对应的实例，差别只是在于实现逻辑位于实例化的不同阶段。<code>元类法</code>、<code>装饰器法</code>是通过在类实例化之前判断是否已经进行过实例化；而<code>__new__方法</code>是在已经进入实例化过程，但是尚未进到<code>__init__</code>过程，利用<code>__new__</code>函数可以改变返回实例的特点做到这一点。</p>
-
-          
+            M
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/11/19/python-singleton/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2699,6 +1801,37 @@ class MyClass(object):
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  874
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
 
           
 
@@ -2714,66 +1847,17 @@ class MyClass(object):
       
         
           
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Google Chrome早就支持了<code>headless</code>模式，但一般都是在Linux上运行，而我则习惯于在<code>WSL</code>上开发，折腾了好久终于找到了可以在WSL上跑<code>headless</code>模式的方法。</p>
-<p>以下以<code>WSL</code>中安装的是<code>Ubuntu 18.04</code>系统为例。</p>
-<h2 id="常见安装方法"><a href="#常见安装方法" class="headerlink" title="常见安装方法"></a>常见安装方法</h2><h3 id="安装依赖库"><a href="#安装依赖库" class="headerlink" title="安装依赖库"></a>安装依赖库</h3><pre><code class="bash">$ sudo apt install gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release xdg-utils
-</code></pre>
-<h3 id="安装Chrome"><a href="#安装Chrome" class="headerlink" title="安装Chrome"></a>安装Chrome</h3><pre><code class="bash">$ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-$ sudo dpkg -i google-chrome-stable_current_amd64.deb
-$ which google-chrome
-/usr/bin/google-chrome
-</code></pre>
-<h2 id="使用Chrome-Headless访问网页"><a href="#使用Chrome-Headless访问网页" class="headerlink" title="使用Chrome Headless访问网页"></a>使用Chrome Headless访问网页</h2><p>使用 <a href="https://developers.google.com/web/updates/2017/04/headless-chrome" target="_blank" rel="noopener">官方文档</a>的方法打开Chrome：</p>
-<pre><code>$ google-chrome --headless --disable-gpu --screenshot https://www.baidu.com/
-</code></pre><p>出现如下报错信息：</p>
-<pre><code>Failed to move to new namespace: PID namespaces supported, Network namespace supported, but failed: errno = Permission denied
-Failed to generate minidump.Illegal instruction (core dumped)
-
-</code></pre><p>使用如下命令行也不行：</p>
-<pre><code>$ google-chrome --no-sandbox --headless --no-gpu --disable-setuid-sandbox --screenshot http://www.baidu.com/
-
-[0829/140949.035033:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 1 time(s)
-[0829/140950.200613:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 2 time(s)
-[0829/140951.306996:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 3 time(s)
-
-</code></pre><p>增加<code>--single-process</code>参数后打印如下信息：</p>
-<pre><code>[0829/141145.431580:ERROR:browser_main_loop.cc(584)] Failed to put Xlib into threaded mode.
-[0829/141146.090239:INFO:headless_shell.cc(572)] Written to file screenshot.png.
-</code></pre><p>虽然看起来有报错，但是的确生成网页截图了。</p>
-<p><code>screenshot.png</code>显示如下：</p>
-<p><img src="/images/chrome-headless-screenshot1.png" alt></p>
-<p>看起来有两个问题：</p>
-<ul>
-<li>中文没有正确显示</li>
-<li>窗口大小偏小</li>
-</ul>
-<p>中文显示的问题可以通过以下命令解决：</p>
-<pre><code>$ sudo apt install fonts-noto-cjk
-</code></pre><p>修改窗口大小可以通过增加<code>--window-size=1920,1080</code>参数进行修改。</p>
-<p><img src="/images/chrome-headless-screenshot2.png" alt></p>
-<h2 id="开启远程调试"><a href="#开启远程调试" class="headerlink" title="开启远程调试"></a>开启远程调试</h2><p><code>Headless</code>模式下一般需要通过Chrome远程调试协议进行访问。</p>
-<p>命令行增加<code>--remote-debugging-port=9200</code>参数启动Chrome后，打印出以下信息：</p>
-<pre><code>[0829/194236.072838:ERROR:browser_main_loop.cc(584)] Failed to put Xlib into threaded mode.
-
-DevTools listening on ws://127.0.0.1:9200/devtools/browser/18442c9f-b0ee-4149-a16b-f49622047621
-[0829/194236.299565:ERROR:command_buffer_proxy_impl.cc(107)] ContextResult::kTransientFailure: Shared memory region is not valid
-</code></pre><p>看起来调试端口是启动成功了。</p>
-<p>但是在访问调试页面后，Chrome进程<code>Crash</code>了。</p>
-<pre><code>Segmentation fault (core dumped)
-</code></pre><p>试了多个页面后发现，远程调试都会导致Crash，看来这条路不太好走。</p>
-<h2 id="使用puppeteer提供的Chrome"><a href="#使用puppeteer提供的Chrome" class="headerlink" title="使用puppeteer提供的Chrome"></a>使用puppeteer提供的Chrome</h2><p>无意中发现，<code>puppeteer</code>中提供的Chrome竟然可以在WSL中开启调试端口并正常访问。</p>
-<p>puppeteer默认下载地址的格式为：<code>https://storage.googleapis.com/chromium-browser-snapshots/${platform}/${revision}/chrome-${revision}.zip</code>。例如目前Linux上最新版本的URL为：<code>https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/674921/chrome-linux.zip</code></p>
-<p>也可以使用镜像网站下载，例如：<code>https://npm.taobao.org/mirrors/chromium-browser-snapshots/</code>。</p>
-<p>解压出来就可以直接用了。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>安装依赖库，包括中文字体库</li>
-<li>使用puppeteer提供的Chrome版本</li>
-<li>完整的启动命令行：<code>chrome --no-sandbox --headless --no-gpu --disable-setuid-sandbox --single-process --window-size=1920,1080 --screenshot --remote-debugging-port=9200 http://www.baidu.com/</code></li>
-</ul>
-<p>顺便提供一下<code>puppeteer</code>使用的完整命令行：</p>
-<pre><code>chrome --disable-background-networking --enable-features=NetworkService,NetworkServiceInProcess --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=site-per-process,TranslateUI,BlinkGenPropertyTrees --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-sync --force-color-profile=srgb --metrics-recording-only --no-first-run --enable-automation --password-store=basic --use-mock-keychain --headless --hide-scrollbars --mute-audio about:blank --no-sandbox --disable-setuid-sandbox --remote-debugging-port=0 --user-data-dir=/tmp/puppeteer_dev_profile-NkEdQ6
-</code></pre>
-          
+          前言Google Chrome早就支持了headless模式，但一般都是在Linux上运行，而我则习惯于在WSL上开发，折腾了好久终于找到了可以在WSL上跑headless模式的方法。
+以下以WSL中安装的是Ubuntu 18.04系统为例。
+常见安装方法安装依赖库$ sudo apt install gconf-service libasound2 libatk1.0-0 libc6 libca
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/08/29/wsl-chrome-headless/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2890,6 +1974,37 @@ DevTools listening on ws://127.0.0.1:9200/devtools/browser/18442c9f-b0ee-4149-a1
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  885
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
 
           
 
@@ -2905,124 +2020,16 @@ DevTools listening on ws://127.0.0.1:9200/devtools/browser/18442c9f-b0ee-4149-a1
       
         
           
-            <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>自从有了<code>WSL</code>，在Windows上部署各种服务也变得更加方便。最近，遇到一个问题，本地调试一些Web服务的时候，必须要使用<code>80</code>端口，如果同时有两个服务都监听<code>80</code>端口必然会导致冲突。而且，在<code>Linux</code>中监听<code>80</code>端口需要使用<code>root</code>权限，每次启动的时候都要加上<code>sudo</code>也挺麻烦的。</p>
-<p>因此，想到可以利用<code>nginx</code>的反向代理能力，在本地进行HTTP的转发，这样，每个服务就可以使用自己的端口了。</p>
-<h2 id="0x01-部署nginx"><a href="#0x01-部署nginx" class="headerlink" title="0x01 部署nginx"></a>0x01 部署nginx</h2><p>在<code>WSL</code>上部署nginx，和<code>Linux</code>下上是基本一致的。</p>
-<p>我的<code>WSL</code>中安装的是<code>Ubuntu 18.04</code>，以下以该系统为例。</p>
-<pre><code class="bash">$ apt install nginx -y
-</code></pre>
-<p>由于默认配置监听的是<code>0.0.0.0</code>地址，而我们只是本地使用，需要改成<code>127.0.0.1</code>。</p>
-<p>修改<code>/etc/nginx/sites-available/default</code>文件中的<code>listen 80 default_server;</code>为<code>listen 127.0.0.1:80 default_server;</code>，并注释掉<code>listen [::]:80 default_server;</code>（不需要开启ipv6）。</p>
-<p>启动nginx服务：</p>
-<pre><code class="bash">service nginx start
-</code></pre>
-<blockquote>
-<p>注意：不能使用<code>systemctl</code>命令。</p>
-</blockquote>
-<h2 id="0x02-添加反向代理配置"><a href="#0x02-添加反向代理配置" class="headerlink" title="0x02 添加反向代理配置"></a>0x02 添加反向代理配置</h2><p>在<code>/etc/nginx/conf.d</code>目录中添加一个配置文件<code>service.conf</code>，内容如下：</p>
-<pre><code class="conf">##
-# You should look at the following URL&#39;s in order to grasp a solid understanding
-# of Nginx configuration files in order to fully unleash the power of Nginx.
-# https://www.nginx.com/resources/wiki/start/
-# https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/
-# https://wiki.debian.org/Nginx/DirectoryStructure
-#
-# In most cases, administrators will remove this file from sites-enabled/ and
-# leave it as reference inside of sites-available where it will continue to be
-# updated by the nginx packaging team.
-#
-# This file will automatically load configuration files provided by other
-# applications, such as Drupal or Wordpress. These applications will be made
-# available underneath a path with that package name, such as /drupal8.
-#
-# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
-##
-
-# Default server configuration
-#
-server {
-    listen 127.0.0.1:80;
-    # listen [::]:80 default_server;
-
-    # SSL configuration
-    #
-    # listen 443 ssl default_server;
-    # listen [::]:443 ssl default_server;
-    #
-    # Note: You should disable gzip for SSL traffic.
-    # See: https://bugs.debian.org/773332
-    #
-    # Read up on ssl_ciphers to ensure a secure configuration.
-    # See: https://bugs.debian.org/765782
-    #
-    # Self signed certs generated by the ssl-cert package
-    # Don&#39;t use them in a production server!
-    #
-    # include snippets/snakeoil.conf;
-
-    root /var/www/html;
-
-    # Add index.php to the list if you are using PHP
-    index index.html index.htm index.nginx-debian.html;
-
-    server_name service.com; # 此处替换为对应服务的域名，可以通过配置hosts文件来指向127.0.0.1
-
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host               $host;
-        proxy_set_header X-Real-IP          $remote_addr;
-        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto  $scheme;
-     }
-
-    # pass PHP scripts to FastCGI server
-    #
-    #location ~ \.php$ {
-    #    include snippets/fastcgi-php.conf;
-    #
-    #    # With php-fpm (or other unix sockets):
-    #    fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
-    #    # With php-cgi (or other tcp sockets):
-    #    fastcgi_pass 127.0.0.1:9000;
-    #}
-
-    # deny access to .htaccess files, if Apache&#39;s document root
-    # concurs with nginx&#39;s one
-    #
-    #location ~ /\.ht {
-    #    deny all;
-    #}
-
-}
-
-</code></pre>
-<p>每个服务添加一个对应的<code>.conf</code>文件，然后重新加载nginx服务：</p>
-<pre><code class="bash">$ service nginx reload
-</code></pre>
-<h2 id="0x03-nginx常用配置方法"><a href="#0x03-nginx常用配置方法" class="headerlink" title="0x03 nginx常用配置方法"></a>0x03 nginx常用配置方法</h2><pre><code>    location /api/ {
-        proxy_pass http://127.0.0.1:8000;
-     }
-</code></pre><p>这种方法表示转发整个路径，如：<code>/api/test/</code>会转发到<code>http://127.0.0.1:8000/api/test/</code></p>
-<pre><code>    location /api/ {
-        proxy_pass http://127.0.0.1:8000/;
-     }
-</code></pre><p>这种方法表示转发<code>/api/</code>后的路径，如：<code>/api/test/</code>会转发到<code>http://127.0.0.1:8000/test/</code></p>
-<pre><code>location = / {
-}
-</code></pre><p>这种表示完全匹配，具有最高优先级</p>
-<pre><code>location ^~ /images/ {
-}
-</code></pre><p>这种表示匹配所有以<code>/images/</code>开头的url，优先级仅次于<code>=</code></p>
-<pre><code>location ~*.(gif|jpg|jpeg)$ {
-}
-</code></pre><p>使用正则方式匹配，这里表示所有以<code>gif</code>、<code>jpg</code>、<code>jpeg</code>结尾的请求</p>
-<pre><code>location / {
-}
-</code></pre><p>匹配任意请求，优先级最低</p>
-<h2 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2><p><code>WSL</code>极大简化了在Windows上部署各种服务的流程，同时，也可以学习Linux上的常用操作，可谓一举两得。</p>
-<p>自从有了<code>WSL</code>，Windows也变得从未如此友好！</p>
-
-          
+          0x00 前言自从有了WSL，在Windows上部署各种服务也变得更加方便。最近，遇到一个问题，本地调试一些Web服务的时候，必须要使用80端口，如果同时有两个服务都监听80端口必然会导致冲突。而且，在Linux中监听80端口需要使用root权限，每次启动的时候都要加上sudo也挺麻烦的。
+因此，想到可以利用nginx的反向代理能力，在本地进行HTTP的转发，这样，每个服务就可以使用自己的端口了。
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/07/21/wsl-nginx/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -3670,7 +2677,7 @@ server {
   
 
   
-<link rel="stylesheet" href="/lib/prettify/skins/tomorrow-night-bright.css" type="text/css">
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
@@ -3678,5 +2685,8 @@ server {
       prettyPrint();
   });
 </script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
 </body>
 </html>

@@ -397,6 +397,37 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  202
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -412,22 +443,21 @@
       
         
           
-            <p>有些设备tadb等第三方adb工具能识别，但是sdk中提供的adb却不能识别。这种情况可以通过修改<code>adb_usb.ini</code>来让adb识别。<br>该文件位于<code>C:\Users\{username}\.android\adb_usb.ini</code></p>
-<p>将要识别设备的<code>VID</code>添加到adb_usb.ini文件，每行一个，如：</p>
-<pre><code>0x2717  
+          有些设备tadb等第三方adb工具能识别，但是sdk中提供的adb却不能识别。这种情况可以通过修改adb_usb.ini来让adb识别。该文件位于C:\Users\{username}\.android\adb_usb.ini
+将要识别设备的VID添加到adb_usb.ini文件，每行一个，如：
+0x2717  
 0x2A45  
 0x9BB5
-</code></pre><h3 id="获取设备UID的方法"><a href="#获取设备UID的方法" class="headerlink" title="获取设备UID的方法"></a>获取设备UID的方法</h3><ul>
-<li><p>打开设备管理器,找到安装的android硬件,右单属性再打开详细信息选项卡,在<code>属性</code>中选择<code>硬件id</code>,会在<code>值显示框</code>中出现硬件的id信息,只需要记下<code>VID_</code>后面跟的数字就行,比如我的是<code>USBUID_2207&amp;....</code>，只需要<code>2007</code>就行</p>
-</li>
-<li><p>使用<code>libusb-win32</code>查看  </p>
-</li>
-</ul>
-<pre><code>\\.\libusb0-0001--0x2a45-0x0c03     2A45/0C03  
-Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L  
-</code></pre><p>如果不能看到这个设备，说明驱动没有正常安装</p>
-
-          
+获取设备UID的方法
+打开设备管理器,找到安装的an
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/adb-new-device/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -544,6 +574,37 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  236
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -559,9 +620,15 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       
         
           
-            <p>&emsp;&emsp;这几天手机老是自动更新到MIUI v6，但是我又不喜欢v6，只好降级，结果降级后又自动升级，只好研究了下禁止升级的方法。<br>&emsp;&emsp;结果发现只能卸载<strong>/system/app/Updater.apk</strong>，不然就算禁止“系统更新”联网也没用，它还是会偷偷下载新版本，然后提示重启升级。此时千万不能重启，要进到recovery里，选择另外一个系统（不显示“最近”的系统），进去，这样进到的还是旧系统。因为MIUI会将新版本放到新系统里，重启后自动进的就是新系统（这也是双系统的好处）。<br>&emsp;&emsp;如果不小心进到新系统里升级了，也不要紧，重启到recovery，清除用户数据，再重启到旧系统就可以了。然后一定要卸载Updater.apk。这样就不会再自动升级了。</p>
-
-          
+          &emsp;&emsp;这几天手机老是自动更新到MIUI v6，但是我又不喜欢v6，只好降级，结果降级后又自动升级，只好研究了下禁止升级的方法。&emsp;&emsp;结果发现只能卸载/system/app/Updater.apk，不然就算禁止“系统更新”联网也没用，它还是会偷偷下载新版本，然后提示重启升级。此时千万不能重启，要进到recovery里，选择另外一个系统（不显示“最近”的系统），进去
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/disable-miui-update/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -678,6 +745,37 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  28
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -693,10 +791,17 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       
         
           
-            <pre><code>&lt;img/src=\&quot;#\&quot;/onerror=alert(1)&gt;
-</code></pre><p>这样子写是可以正常解析的，至少Chrome是可以的</p>
+          &lt;img/src=\&quot;#\&quot;/onerror=alert(1)&gt;
+这样子写是可以正常解析的，至少Chrome是可以的
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/new-web-skill/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -813,6 +918,37 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  458
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -828,10 +964,15 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       
         
           
-            <p>&emsp;&emsp;前几天参加了公司的安全大赛，其中有几题感觉本应该做出来，却没做出来，归根到底还是自己知识面太窄了。<br>&emsp;&emsp;1、找xss漏洞，onclick=\”addMsg(\’<em>\’)\”，</em>表示是参数中可以传入的内容，但是会有过滤，“\”，“\’”，“\””等字符前面会加上“\”，“\’”，“\””会被替换为html编码形式，网页是gbk编码的。<br>&emsp;&emsp;感觉应该是利用gbk编码的漏洞来绕过去，一般来说gbk编码漏洞都是利用GBK双字节中的第二个字符为“\”，如果server把“\”替换为“\\”，返回到浏览器时就变成一个汉字加一个“\”，可是不管怎么弄“\’”还是变成“&#39;”，没法将前面的“\’”闭合。<br>&emsp;&emsp;最后发现答案是：“%c0%5c%27);alert(1);//”，返回的html代码是：“onclick=\”addMsg(\’繺\\&#039;);alert(1);//\’)\””，如果这里还看不出问题的话，用chrome开发者工具看一下就会发现，解析后的html代码是：“onclick=\”addMsg(\’繺\\\’);alert(1);//\’)\””。  &#39;已经被还原成了“\’”，从而闭合了前面的“\’”，这一点我之前是不知道的，而且也没有用开发者工具看一下，这一点太失败了。我离成功真的只有一步之遥了！<br>&emsp;&emsp;有时间好好研究下什么情况下会还原，什么情况下不会还原！这些是原理层面的东西，可惜都不清楚啊！</p>
-<p>&emsp;&emsp;2、传统的从一个页面找下一个页面的游戏，有一个页面是将秘密隐藏在了HTTP响应头中，可我一直都是在html代码中找线索，白白浪费了时间。下次遇到这类题目一定要立马开fiddler。这个失败主要还是思维定势，想问题一定要思路开阔，不能太死！！！</p>
-
-          
+          &emsp;&emsp;前几天参加了公司的安全大赛，其中有几题感觉本应该做出来，却没做出来，归根到底还是自己知识面太窄了。&emsp;&emsp;1、找xss漏洞，onclick=\”addMsg(\’\’)\”，表示是参数中可以传入的内容，但是会有过滤，“\”，“\’”，“\””等字符前面会加上“\”，“\’”，“\””会被替换为html编码形式，网页是gbk编码的。&emsp;&emsp;感觉
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/web-security-thinking/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -948,6 +1089,37 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  100
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -963,17 +1135,21 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       
         
           
-            <p>安装kinguser后创建的su文件发现无法删除，会提示  </p>
-<blockquote>
-<p>rm: can\’t remove \’su\’: Operation not permitted  </p>
-</blockquote>
-<p>找了好久终于找到原因了<br>是这个文件设置了<em>immutable</em>属性，导致无法rm、chmod、chown<br>只要去掉这个属性就好了  </p>
-<blockquote>
-<p>/system/xbin # chattr -i su<br>/system/xbin # chattr -i su<br>/system/xbin # chattr -a su<br>/system/xbin # rm -f su<br>/system/xbin # rm -f su  </p>
-</blockquote>
-<p>使用lsattr可以查看属性</p>
+          安装kinguser后创建的su文件发现无法删除，会提示  
 
-          
+rm: can\’t remove \’su\’: Operation not permitted  
+
+找了好久终于找到原因了是这个文件设置了immutable属性，导致无法rm、chmod、chown只要去掉这个属性就好了  
+
+/system/xbin # chattr -i su/system/xbin # chattr -i
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/delete-kinguser-su/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1090,6 +1266,37 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  24
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1105,9 +1312,16 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       
         
           
-            <p>每次都要刷入recovery，然后使用音量键选择“Recovery mode”，按电源键进入</p>
+          每次都要刷入recovery，然后使用音量键选择“Recovery mode”，按电源键进入
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/nexus5-recovery/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1224,6 +1438,37 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  19
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1239,16 +1484,23 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       
         
           
-            <ul>
-<li><a href="http://bbs.xiaomi.cn/thread-8844774-1-1.html" target="_blank" rel="noopener">小米2/2S</a></li>
-<li><a href="http://www.netded.com/a/jingpinshouji/2014/0807/28945.html" target="_blank" rel="noopener">小米4</a></li>
-<li><a href="http://www.60ke.cn/html/sjsy/shuaj/2014/1115/15479.html" target="_blank" rel="noopener">华为Mate7</a></li>
-<li><a href="http://www.miui.com/thread-2229950-1-1.html" target="_blank" rel="noopener">红米2</a></li>
-<li><a href="http://www.muzisoft.com/root/59516.html" target="_blank" rel="noopener">三星i9500</a></li>
-<li><a href="http://bbs.ydss.cn/thread-496737-1-1.html" target="_blank" rel="noopener">红牛v5S</a></li>
-</ul>
+          
+小米2/2S
+小米4
+华为Mate7
+红米2
+三星i9500
+红牛v5S
+
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/flash-recovery/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1365,6 +1617,37 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  101
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1380,10 +1663,17 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       
         
           
-            <p>一般插入4.1以上版本的手机会弹出验证界面，但是我某台PC上就始终弹不出这个界面，找了很多方法都没有解决。</p>
-<p>最后发现原来是<strong>ANDROID_SDK_HOME</strong>这个环境变量配的路径不存在，我之前把SDK的路径挪了下地方，就导致了这个问题。删除这个环境变量就OK了。</p>
+          一般插入4.1以上版本的手机会弹出验证界面，但是我某台PC上就始终弹不出这个界面，找了很多方法都没有解决。
+最后发现原来是ANDROID_SDK_HOME这个环境变量配的路径不存在，我之前把SDK的路径挪了下地方，就导致了这个问题。删除这个环境变量就OK了。
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/android-unauthorized-error/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1500,6 +1790,37 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  26
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1515,12 +1836,19 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       
         
           
-            <p>今天发现一种让应用弹出ANR窗口的简单方法，记录一下</p>
-<blockquote>
-<p>kill -19 pid</p>
-</blockquote>
+          今天发现一种让应用弹出ANR窗口的简单方法，记录一下
+
+kill -19 pid
+
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/make-app-anr/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2168,7 +2496,7 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
   
 
   
-<link rel="stylesheet" href="/lib/prettify/skins/tomorrow-night-bright.css" type="text/css">
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
@@ -2176,5 +2504,8 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       prettyPrint();
   });
 </script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
 </body>
 </html>

@@ -397,6 +397,37 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  204
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -412,22 +443,15 @@
       
         
           
-            <p>TOS中安装第三方recovery后，刷入SuperSU刷机包，重启后发现无法获取su权限，原因是daemonsu进程没有运行。<br>解决方法是将/system/etc/install-qrom-recovery.sh文件替换成/system/etc/install-recovery.sh，这样，重启手机后才会创建daemonsu进程。同时，还需要删除/system/vendor/bin/su，因为会优先使用这个su。<br>另外，贴一下TOS中每次自动刷recovery的脚本。  </p>
-<pre><code>#!/system/bin/sh  
-if ! applypatch -c EMMC:/dev/block/platform/msm_sdcc.1/by-name/recovery:12238848
-:ff0553f96edc2bffa97e4ee722422a04f2b66504; then  
-  log -t recovery &quot;Installing new recovery image&quot;  
-  # At most 32M, It is enough currently  
-  dd if=/dev/zero of=/dev/block/platform/msm_sdcc.1/by-name/recovery bs=4096 cou
-nt=8192  
-  dd if=/system/etc/recovery.img of=/dev/block/platform/msm_sdcc.1/by-name/recov
-ery || log -t recovery &quot;Dump into /dev/block/platform/msm_sdcc.1/by-name/recover
-y error!&quot;  
-else  
-  log -t recovery &quot;Recovery image already installed&quot;  
-fi
-</code></pre>
-          
+          TOS中安装第三方recovery后，刷入SuperSU刷机包，重启后发现无法获取su权限，原因是daemonsu进程没有运行。解决方法是将/system/etc/install-qrom-recovery.sh文件替换成/system/etc/install-recovery.sh，这样，重启手机后才会创建daemonsu进程。同时，还需要删除/system/vendor/bin/su，因为会优
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/tos-supersu/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -544,6 +568,37 @@ fi
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  179
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -559,21 +614,22 @@ fi
       
         
           
-            <p>flyme中通过“安全中心”应用管理应用权限，未找到关闭权限管理的入口。后来发现是一个隐藏的Activity中可以关闭。</p>
-<blockquote>
-<p>am start -n com.meizu.safe/.security.SecSettingsActivity</p>
-</blockquote>
-<p>这个命令可以打开设置界面进行关闭。</p>
-<p>不过重启之后，系统还会自动开启权限管理，目前能找到的解决方法是在手机启动的时候用脚本关闭。</p>
-<pre><code>sleep 30  
-am start -n    com.meizu.safe/.security.SecSettingsActivity &amp;&amp; sleep 1  
-input keyevent 66 &amp;&amp; sleep 1  
-input keyevent 66 &amp;&amp; sleep 1  
-input keyevent 61 &amp;&amp; sleep 1  
-input keyevent 66
-</code></pre><p>将如上代码添加到<strong>/system/etc/install-recovery.sh</strong>脚本后面，这样手机启动后就会自动执行了。</p>
+          flyme中通过“安全中心”应用管理应用权限，未找到关闭权限管理的入口。后来发现是一个隐藏的Activity中可以关闭。
 
-          
+am start -n com.meizu.safe/.security.SecSettingsActivity
+
+这个命令可以打开设置界面进行关闭。
+不过重启之后，系统还会自动开启权限管理，目前能找到的解决方法是在手机启动的时候用脚本关闭。
+sleep 30  
+am st
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/flyme-close-perm/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -690,6 +746,37 @@ input keyevent 66
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  64
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -705,12 +792,19 @@ input keyevent 66
       
         
           
-            <blockquote>
-<p>bcdedit.exe -set loadoptions DDISABLE_INTEGRITY_CHECKS</p>
-</blockquote>
-<p>使用管理员的身份打开CMD命令行，然后输入上面的命令，完成之后重新启动计算机，就可以随时在Win7系统64位上使用未有数字签名的驱动程序了。</p>
+          
+bcdedit.exe -set loadoptions DDISABLE_INTEGRITY_CHECKS
+
+使用管理员的身份打开CMD命令行，然后输入上面的命令，完成之后重新启动计算机，就可以随时在Win7系统64位上使用未有数字签名的驱动程序了。
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/win7-64-signature/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -827,6 +921,37 @@ input keyevent 66
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  72
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -842,17 +967,23 @@ input keyevent 66
       
         
           
-            <p>在三星S4上运行ping -c 4 <a href="http://www.qq.com" target="_blank" rel="noopener">www.qq.com</a> 命令报错  </p>
-<blockquote>
-<p>This version of ping should NOT run with privileges. Aborting  </p>
-</blockquote>
-<p>换成root权限执行也不行<br>原因是ping文件的权限设置有问题  </p>
-<blockquote>
-<p>-rwxr-sr-x root     net_raw     26060 2008-08-01 20:00 ping  </p>
-</blockquote>
-<p>使用<strong>chmod 755 ping</strong>修改权限即可</p>
+          在三星S4上运行ping -c 4 www.qq.com 命令报错  
 
-          
+This version of ping should NOT run with privileges. Aborting  
+
+换成root权限执行也不行原因是ping文件的权限设置有问题  
+
+-rwxr-sr-x root     net_raw     26060 2008-08-01 20:00 ping  
+
+使
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/ping-error/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -969,6 +1100,37 @@ input keyevent 66
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  78
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -984,18 +1146,25 @@ input keyevent 66
       
         
           
-            <p>Chrome从35之前的某一版本开始会检查HTTPS证书，如果不是信任的证书会阻止访问，报：  </p>
-<blockquote>
-<p>Failed to load resource: net::ERR_INSECURE_RESPONSE </p>
-</blockquote>
-<p>所以就没办法使用Fiddler抓HTTPS包了。</p>
-<p>解决方式是启动Chrome的时候加上  </p>
-<blockquote>
-<p>–ignore-certificate-errors</p>
-</blockquote>
-<p>参数，这样Chrome就不会检查证书了。</p>
+          Chrome从35之前的某一版本开始会检查HTTPS证书，如果不是信任的证书会阻止访问，报：  
+
+Failed to load resource: net::ERR_INSECURE_RESPONSE 
+
+所以就没办法使用Fiddler抓HTTPS包了。
+解决方式是启动Chrome的时候加上  
+
+–ignore-certificate-errors
+
+参数，这样Chrome就不会检查证书了。
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/chrome-fiddler-https/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1112,6 +1281,37 @@ input keyevent 66
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  155
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1127,19 +1327,21 @@ input keyevent 66
       
         
           
-            <p>最近为三星Note2|N7100刷入内核版本为3.0.31-1071214的ROM，发现使用logcat时给出如下错误提示：</p>
-<blockquote>
-<p>Unable to open log device \’/dev/log/main\’: No such file or directory    </p>
-</blockquote>
-<p>通过各种搜索分析最终找到针对该机型的解决办法，解决方式如下：  </p>
-<ol>
-<li>从手机进入目录：/system/etc/init.d;  </li>
-<li>在该目录下找到S82logger文件，用记事本打开，可以看到如下语句：rm /dev/log/main，将该语句删除。  </li>
-<li>在该目录下找到04opb-tweaks文件，用记事本打开，找到如下语句：rm /dev/log/main，将该语句删除。  </li>
-<li>重启手机。</li>
-</ol>
+          最近为三星Note2|N7100刷入内核版本为3.0.31-1071214的ROM，发现使用logcat时给出如下错误提示：
 
-          
+Unable to open log device \’/dev/log/main\’: No such file or directory    
+
+通过各种搜索分析最终找到针对该机型的解决办法，解决方式如下：  
+
+从手机进入目录：/system/etc/init.d
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/logcat-cannot-use/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1256,6 +1458,37 @@ input keyevent 66
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  116
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1271,17 +1504,21 @@ input keyevent 66
       
         
           
-            <p>在稳定版MIUI v6中，设置=》安全中心 里没有“授权管理”设置的入口，之前都是刷开发版解决该问题。今天突发奇想，我直接调起设置的Activity行不行呢？<br>在一款开发版系统里打开设置界面，获得Activity名称为：  </p>
-<blockquote>
-<p>com.miui.securitycenter/com.miui.permcenter.SettingsAcitivty </p>
-</blockquote>
-<p>换到稳定版手机，使用  </p>
-<blockquote>
-<p>am start -W -n com.miui.securitycenter/com.miui.permcenter.SettingsAcitivty  </p>
-</blockquote>
-<p>命令打开Activity，果然成功关闭</p>
+          在稳定版MIUI v6中，设置=》安全中心 里没有“授权管理”设置的入口，之前都是刷开发版解决该问题。今天突发奇想，我直接调起设置的Activity行不行呢？在一款开发版系统里打开设置界面，获得Activity名称为：  
 
-          
+com.miui.securitycenter/com.miui.permcenter.SettingsAcitivty 
+
+换到稳定版手机，使用  
+
+am start -
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/miui-v6-disable-perm/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1398,6 +1635,37 @@ input keyevent 66
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  187
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1413,13 +1681,15 @@ input keyevent 66
       
         
           
-            <p>&emsp;&emsp;今天在一部手机上安装应用会一直返回INSTALL_FAILED_INSUFFICIENT_STORAGE错误，但是用df命令看手机储存空间又是足够的，一直想不通为什么。<br>&emsp;&emsp;隐隐觉得双清一下手机是可以解决问题，但是这样没法找到报错的根源。\n然后试了其他一些应用，发现都是能装上的，怀疑就和这个应用有关。<br>&emsp;&emsp;使用logcat查看安装过程中的日志，发现有这样一条  </p>
-<blockquote>
-<p>E/PackageManager(994): Cannot rename native library directory /data/app-lib/vmdl786013163 to /data/app-lib/com.tencent.mobileqq-1  </p>
-</blockquote>
-<p>&emsp;&emsp;顿时觉得问题出在这个目录上面，删除了这个目录之后，果然应用能够正常安装了</p>
-
-          
+          &emsp;&emsp;今天在一部手机上安装应用会一直返回INSTALL_FAILED_INSUFFICIENT_STORAGE错误，但是用df命令看手机储存空间又是足够的，一直想不通为什么。&emsp;&emsp;隐隐觉得双清一下手机是可以解决问题，但是这样没法找到报错的根源。\n然后试了其他一些应用，发现都是能装上的，怀疑就和这个应用有关。&emsp;&emsp;使用logcat查看安装过程中
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/INSTALL-FAILED-INSUFFICIENT-STORAGE/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1536,6 +1806,37 @@ input keyevent 66
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  32
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1551,9 +1852,16 @@ input keyevent 66
       
         
           
-            <p>默认在设置里没有该开关，需要<br>在手机拨号界面输入<strong>*#*#6961#*#*</strong><br>再到手机设置里关掉</p>
+          默认在设置里没有该开关，需要在手机拨号界面输入*#*#6961#*#*再到手机设置里关掉
 
           
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/meizu-mx4-close-gpu/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1670,6 +1978,37 @@ input keyevent 66
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  148
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -1685,14 +2024,17 @@ input keyevent 66
       
         
           
-            <p>三星S4，4.4系统，selinux无法关闭  </p>
-<p>注入时发现dlopen调用返回为0，怀疑是selinux的原因。研究后发现加载的so的context不能是<strong>u:object_r:shell_data_file:s0</strong>，使用chcon命令改为<strong>u:object_r:app_data_file:s0</strong>或<strong>u:object_r:system_file:s0</strong>，注入成功</p>
-<p>另外，以u:r:init:s0创建的进程，创建的localsocket服务端，在PC无法用adb forward命令转发到PC上，怀疑是adbd进程无法访问u:r:init:s0域的原因，使用runcon命令将进程以u:r:shell:s0域创建，locaclsocket可以转发到PC，但是权限可能会降低。  </p>
-<blockquote>
-<p>runcon u:r:shell:s0 sh</p>
-</blockquote>
-
-          
+          三星S4，4.4系统，selinux无法关闭  
+注入时发现dlopen调用返回为0，怀疑是selinux的原因。研究后发现加载的so的context不能是u:object_r:shell_data_file:s0，使用chcon命令改为u:object_r:app_data_file:s0或u:object_r:system_file:s0，注入成功
+另外，以u:r:init:s0创建的进程，创
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/07/samsung-s4-inject/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -2340,7 +2682,7 @@ input keyevent 66
   
 
   
-<link rel="stylesheet" href="/lib/prettify/skins/tomorrow-night-bright.css" type="text/css">
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
@@ -2348,5 +2690,8 @@ input keyevent 66
       prettyPrint();
   });
 </script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
 </body>
 </html>

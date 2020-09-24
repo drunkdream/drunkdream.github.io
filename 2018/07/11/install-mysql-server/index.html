@@ -101,7 +101,7 @@
 <meta property="og:site_name" content="醉梦轩">
 <meta property="og:description" content="0x00 前言MySQL是一款开源的关系型数据库管理系统，大量公司都在使用它，或是在它的基础上做二次开发。有时，我们会需要在Linux系统上部署MySQL服务用于测试。 本文是根据网上的经验分享以及亲自实践的过程总结而来。实验环境为：Ubuntu 16.04 x64。 0x01 安装MySQL服务端和客户端apt install mysql-server -y  apt install mysql">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-07-27T13:23:25.532Z">
+<meta property="og:updated_time" content="2020-09-24T07:33:22.671Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ubuntu 16.04 部署MySQL服务">
 <meta name="twitter:description" content="0x00 前言MySQL是一款开源的关系型数据库管理系统，大量公司都在使用它，或是在它的基础上做二次开发。有时，我们会需要在Linux系统上部署MySQL服务用于测试。 本文是根据网上的经验分享以及亲自实践的过程总结而来。实验环境为：Ubuntu 16.04 x64。 0x01 安装MySQL服务端和客户端apt install mysql-server -y  apt install mysql">
@@ -403,6 +403,37 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  868
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
 
           
 
@@ -490,6 +521,10 @@ character-set-server = utf8
 </li>
 <li>导入<code>.sql</code>文件<ul>
 <li><code>mysql -u username -p database &lt; backup.sql</code></li>
+</ul>
+</li>
+<li>获取慢查询列表<ul>
+<li><code>SELECT concat(&#39;kill &#39;, id, &#39;;&#39;) FROM information_schema.processlist WHERE Command != &#39;Sleep&#39; AND Time &gt; 300 ORDER BY Time DESC;</code></li>
 </ul>
 </li>
 </ul>
@@ -1264,7 +1299,7 @@ character-set-server = utf8
   
 
   
-<link rel="stylesheet" href="/lib/prettify/skins/tomorrow-night-bright.css" type="text/css">
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
 <script src="/lib/prettify/prettify.js" type="text/javascript"></script>
 <script type="text/javascript">
   $(document).ready(function() {
@@ -1272,5 +1307,8 @@ character-set-server = utf8
       prettyPrint();
   });
 </script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
 </body>
 </html>
