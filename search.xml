@@ -1,22 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>解决INSTALL_FAILED_INSUFFICIENT_STORAGE错误</title>
-    <url>/2017/01/07/INSTALL-FAILED-INSUFFICIENT-STORAGE/</url>
-    <content><![CDATA[<p>&emsp;&emsp;今天在一部手机上安装应用会一直返回INSTALL_FAILED_INSUFFICIENT_STORAGE错误，但是用df命令看手机储存空间又是足够的，一直想不通为什么。<br>&emsp;&emsp;隐隐觉得双清一下手机是可以解决问题，但是这样没法找到报错的根源。\n然后试了其他一些应用，发现都是能装上的，怀疑就和这个应用有关。<br>&emsp;&emsp;使用logcat查看安装过程中的日志，发现有这样一条  </p>
-<blockquote>
-<p>E/PackageManager(994): Cannot rename native library directory /data/app-lib/vmdl786013163 to /data/app-lib/com.tencent.mobileqq-1  </p>
-</blockquote>
-<p>&emsp;&emsp;顿时觉得问题出在这个目录上面，删除了这个目录之后，果然应用能够正常安装了</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>install</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>让adb识别到不能识别的设备</title>
     <url>/2017/01/07/adb-new-device/</url>
     <content><![CDATA[<p>有些设备tadb等第三方adb工具能识别，但是sdk中提供的adb却不能识别。这种情况可以通过修改<code>adb_usb.ini</code>来让adb识别。<br>该文件位于<code>C:\Users\{username}\.android\adb_usb.ini</code></p>
@@ -39,6 +23,35 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       </categories>
       <tags>
         <tag>adb</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决手机unauthorized错误</title>
+    <url>/2017/01/07/android-unauthorized-error/</url>
+    <content><![CDATA[<p>一般插入4.1以上版本的手机会弹出验证界面，但是我某台PC上就始终弹不出这个界面，找了很多方法都没有解决。</p>
+<p>最后发现原来是<strong>ANDROID_SDK_HOME</strong>这个环境变量配的路径不存在，我之前把SDK的路径挪了下地方，就导致了这个问题。删除这个环境变量就OK了。</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>adb</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决INSTALL_FAILED_INSUFFICIENT_STORAGE错误</title>
+    <url>/2017/01/07/INSTALL-FAILED-INSUFFICIENT-STORAGE/</url>
+    <content><![CDATA[<p>&emsp;&emsp;今天在一部手机上安装应用会一直返回INSTALL_FAILED_INSUFFICIENT_STORAGE错误，但是用df命令看手机储存空间又是足够的，一直想不通为什么。<br>&emsp;&emsp;隐隐觉得双清一下手机是可以解决问题，但是这样没法找到报错的根源。\n然后试了其他一些应用，发现都是能装上的，怀疑就和这个应用有关。<br>&emsp;&emsp;使用logcat查看安装过程中的日志，发现有这样一条  </p>
+<blockquote>
+<p>E/PackageManager(994): Cannot rename native library directory /data/app-lib/vmdl786013163 to /data/app-lib/com.tencent.mobileqq-1  </p>
+</blockquote>
+<p>&emsp;&emsp;顿时觉得问题出在这个目录上面，删除了这个目录之后，果然应用能够正常安装了</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>install</tag>
       </tags>
   </entry>
   <entry>
@@ -107,16 +120,110 @@ Dev #1: Meizu - MX4- Serial Number: 750BBKT22W4L
       </tags>
   </entry>
   <entry>
-    <title>解决手机unauthorized错误</title>
-    <url>/2017/01/07/android-unauthorized-error/</url>
-    <content><![CDATA[<p>一般插入4.1以上版本的手机会弹出验证界面，但是我某台PC上就始终弹不出这个界面，找了很多方法都没有解决。</p>
-<p>最后发现原来是<strong>ANDROID_SDK_HOME</strong>这个环境变量配的路径不存在，我之前把SDK的路径挪了下地方，就导致了这个问题。删除这个环境变量就OK了。</p>
+    <title>Chrome使用Fiddler抓HTTPS包</title>
+    <url>/2017/01/07/chrome-fiddler-https/</url>
+    <content><![CDATA[<p>Chrome从35之前的某一版本开始会检查HTTPS证书，如果不是信任的证书会阻止访问，报：  </p>
+<blockquote>
+<p>Failed to load resource: net::ERR_INSECURE_RESPONSE </p>
+</blockquote>
+<p>所以就没办法使用Fiddler抓HTTPS包了。</p>
+<p>解决方式是启动Chrome的时候加上  </p>
+<blockquote>
+<p>–ignore-certificate-errors</p>
+</blockquote>
+<p>参数，这样Chrome就不会检查证书了。</p>
+]]></content>
+      <categories>
+        <category>Web</category>
+      </categories>
+      <tags>
+        <tag>chrome</tag>
+        <tag>fiddler</tag>
+        <tag>https</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>编译Android版本的libjpeg-turbo</title>
+    <url>/2018/03/29/build-libjpeg-turbo-for-android/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>libjpeg-turbo是一个JPEG编解码库，支持x86, x86-64, ARM等系统下的指令加速，其性能号称是libjpeg的2-6倍。官网地址是：<a href="https://libjpeg-turbo.org/" target="_blank" rel="noopener">https://libjpeg-turbo.org/</a>。github地址是：<a href="https://github.com/libjpeg-turbo/libjpeg-turbo" target="_blank" rel="noopener">https://github.com/libjpeg-turbo/libjpeg-turbo</a>。</p>
+<p>Android中默认提供了libjpeg实现的JPEG编解码接口，但是测试下来性能不是很好，无法满足实际使用需求。因此，准备编译Android版本来用。</p>
+<h2 id="0x01-下载源码"><a href="#0x01-下载源码" class="headerlink" title="0x01 下载源码"></a>0x01 下载源码</h2><p>使用的编译环境是：Ubuntu 16.04 x64</p>
+<p>一开始，我使用的是github上的代码，可以正常编译成linux版本。但是按照<a href="https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/BUILDING.md" target="_blank" rel="noopener">文档</a>上的操作却始终无法编译出Android版本。</p>
+<p>后来发现，官网上的提供的版本编译脚本与github上并不相同。官网的源码包下载地址为：<a href="https://sourceforge.net/projects/libjpeg-turbo/files/" target="_blank" rel="noopener">https://sourceforge.net/projects/libjpeg-turbo/files/</a>。我下的是1.5.3版本<a href="https://sourceforge.net/projects/libjpeg-turbo/files/1.5.3/libjpeg-turbo-1.5.3.tar.gz/download" target="_blank" rel="noopener">源码包</a>。</p>
+<p>解压到本地，根目录下的<code>BUILDING.md</code>文件中包含了编译方法。具体内容如下：<a href="https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/libjpeg-turbo-1.5.3/BUILDING.md" target="_blank" rel="noopener">https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/libjpeg-turbo-1.5.3/BUILDING.md</a></p>
+<h2 id="0x02-编译环境"><a href="#0x02-编译环境" class="headerlink" title="0x02 编译环境"></a>0x02 编译环境</h2><p>编译依赖需要依赖以下库：</p>
+<ul>
+<li>autoconf 2.56 or later</li>
+<li>automake 1.7 or later</li>
+<li>libtool 1.4 or later</li>
+<li>NASM or YASM (if building x86 or x86-64 SIMD extensions)</li>
+</ul>
+<p>Ubuntu下可以使用以下方法安装：</p>
+<pre><code>apt install autoconf
+apt install automake
+apt install libtool
+apt install nasm
+</code></pre><h2 id="0x03-编译"><a href="#0x03-编译" class="headerlink" title="0x03 编译"></a>0x03 编译</h2><p>修改<code>BUILDING.md</code>中提供的编译脚本，编译出目标架构版本。为方便编译，我提供了可以直接编译的脚本: <a href="https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/build.sh" target="_blank" rel="noopener">https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/build.sh</a>。</p>
+<p>使用方法：</p>
+<pre><code>export NDK_PATH=/path/to/ndk
+sh build.sh arm/arm64/x86/x86_64/all
+</code></pre><p>此时，会在当前目录的<code>out</code>目录下生成对应架构的文件。</p>
 ]]></content>
       <categories>
         <category>Android</category>
       </categories>
       <tags>
-        <tag>adb</tag>
+        <tag>Android</tag>
+        <tag>libjpeg-turbo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>在Windows上编译openssl</title>
+    <url>/2017/07/21/build-openssl-on-windows/</url>
+    <content><![CDATA[<p>###1、下载openssl源码</p>
+<p><a href="https://www.openssl.org/source/" target="_blank" rel="noopener">https://www.openssl.org/source/</a></p>
+<p>###2、安装环境</p>
+<ol>
+<li>vs2010</li>
+<li><a href="http://www.activestate.com/activeperl/downloads" target="_blank" rel="noopener">ActivePerl</a></li>
+<li>nasm（将nasm.exe所在目录加入到%PATH%中）</li>
+</ol>
+<p>###3、编译</p>
+<ol>
+<li>进入<strong>Visual Studio 命令提示(2010)</strong></li>
+<li>进入源码目录</li>
+<li>执行<code>perl Configure VC-WIN32 --prefix=C:\Build-OpenSSL-VC-32</code></li>
+<li>执行<code>set path=C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin;%PATH%</code></li>
+<li>执行<code>set INCLUDE=C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include</code></li>
+<li>执行<code>set lib=C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\lib</code></li>
+<li>执行<code>nmake</code></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Windows</category>
+      </categories>
+      <tags>
+        <tag>openssl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>删除kinguser的su文件</title>
+    <url>/2017/01/07/delete-kinguser-su/</url>
+    <content><![CDATA[<p>安装kinguser后创建的su文件发现无法删除，会提示  </p>
+<blockquote>
+<p>rm: can\’t remove \’su\’: Operation not permitted  </p>
+</blockquote>
+<p>找了好久终于找到原因了<br>是这个文件设置了<em>immutable</em>属性，导致无法rm、chmod、chown<br>只要去掉这个属性就好了  </p>
+<blockquote>
+<p>/system/xbin # chattr -i su<br>/system/xbin # chattr -i su<br>/system/xbin # chattr -a su<br>/system/xbin # rm -f su<br>/system/xbin # rm -f su  </p>
+</blockquote>
+<p>使用lsattr可以查看属性</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>kinguser</tag>
       </tags>
   </entry>
   <entry>
@@ -279,67 +386,23 @@ final int ret = mInstaller.dexopt(path, sharedGid, !isForwardLocked(pkg),
       </tags>
   </entry>
   <entry>
-    <title>在Windows上编译openssl</title>
-    <url>/2017/07/21/build-openssl-on-windows/</url>
-    <content><![CDATA[<p>###1、下载openssl源码</p>
-<p><a href="https://www.openssl.org/source/" target="_blank" rel="noopener">https://www.openssl.org/source/</a></p>
-<p>###2、安装环境</p>
-<ol>
-<li>vs2010</li>
-<li><a href="http://www.activestate.com/activeperl/downloads" target="_blank" rel="noopener">ActivePerl</a></li>
-<li>nasm（将nasm.exe所在目录加入到%PATH%中）</li>
-</ol>
-<p>###3、编译</p>
-<ol>
-<li>进入<strong>Visual Studio 命令提示(2010)</strong></li>
-<li>进入源码目录</li>
-<li>执行<code>perl Configure VC-WIN32 --prefix=C:\Build-OpenSSL-VC-32</code></li>
-<li>执行<code>set path=C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin;%PATH%</code></li>
-<li>执行<code>set INCLUDE=C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include</code></li>
-<li>执行<code>set lib=C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib;C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\lib</code></li>
-<li>执行<code>nmake</code></li>
-</ol>
+    <title>下载旧版本的miui卡刷包</title>
+    <url>/2017/06/02/download-old-miui-rom/</url>
+    <content><![CDATA[<p><a href="http://www.miui.com/download.html" target="_blank" rel="noopener">miui网站</a>提供了所有小米手机的卡刷包下载链接，但是默认只有最新的3个版本。如果我要下载旧点的版本（比如现在是miui8，但是我想下miui7），一般会在论坛里搜索，但如果论坛里也搜索不到怎么办呢？<br>这个时候我们会借助于历史页面网站，因为虽然页面更新了，但是旧版本的下载链接还是有效的。</p>
+<p>1、 打开网站: <a href="http://web.archive.org/" target="_blank" rel="noopener">http://web.archive.org/</a></p>
+<p>2、 在搜索框中输入要查看的页面url，比如红米Note的miui下载页面：<a href="http://www.miui.com/download-218.html" target="_blank" rel="noopener">http://www.miui.com/download-218.html</a>。然后，页面会显示所有收录的历史记录。</p>
+<p><img src="http://images.drunkdream.cn/web.archive.org.png" alt></p>
+<p>3、 选择某一天的版本进去，发现有7.0的rom了</p>
+<p><img src="http://images.drunkdream.cn/miui7.png" alt></p>
+<p>4、点击下载，由于此时的链接地址是被web.archive.org处理过的：</p>
+<blockquote>
+<p><a href="http://web.archive.org/web/20161118214831/http://bigota.d.miui.com/V7.5.1.0.KHECNDE/miui_HMNoteTD_V7.5.1.0.KHECNDE_b9b75c8daf_4.4.zip" target="_blank" rel="noopener">http://web.archive.org/web/20161118214831/http://bigota.d.miui.com/V7.5.1.0.KHECNDE/miui_HMNoteTD_V7.5.1.0.KHECNDE_b9b75c8daf_4.4.zip</a></p>
+</blockquote>
+<p>如果不能直接下载，只要去掉前面的<em><a href="http://web.archive.org/web/20161118214831/" target="_blank" rel="noopener">http://web.archive.org/web/20161118214831/</a></em>即可。</p>
 ]]></content>
-      <categories>
-        <category>Windows</category>
-      </categories>
       <tags>
-        <tag>openssl</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>编译Android版本的libjpeg-turbo</title>
-    <url>/2018/03/29/build-libjpeg-turbo-for-android/</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>libjpeg-turbo是一个JPEG编解码库，支持x86, x86-64, ARM等系统下的指令加速，其性能号称是libjpeg的2-6倍。官网地址是：<a href="https://libjpeg-turbo.org/" target="_blank" rel="noopener">https://libjpeg-turbo.org/</a>。github地址是：<a href="https://github.com/libjpeg-turbo/libjpeg-turbo" target="_blank" rel="noopener">https://github.com/libjpeg-turbo/libjpeg-turbo</a>。</p>
-<p>Android中默认提供了libjpeg实现的JPEG编解码接口，但是测试下来性能不是很好，无法满足实际使用需求。因此，准备编译Android版本来用。</p>
-<h2 id="0x01-下载源码"><a href="#0x01-下载源码" class="headerlink" title="0x01 下载源码"></a>0x01 下载源码</h2><p>使用的编译环境是：Ubuntu 16.04 x64</p>
-<p>一开始，我使用的是github上的代码，可以正常编译成linux版本。但是按照<a href="https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/BUILDING.md" target="_blank" rel="noopener">文档</a>上的操作却始终无法编译出Android版本。</p>
-<p>后来发现，官网上的提供的版本编译脚本与github上并不相同。官网的源码包下载地址为：<a href="https://sourceforge.net/projects/libjpeg-turbo/files/" target="_blank" rel="noopener">https://sourceforge.net/projects/libjpeg-turbo/files/</a>。我下的是1.5.3版本<a href="https://sourceforge.net/projects/libjpeg-turbo/files/1.5.3/libjpeg-turbo-1.5.3.tar.gz/download" target="_blank" rel="noopener">源码包</a>。</p>
-<p>解压到本地，根目录下的<code>BUILDING.md</code>文件中包含了编译方法。具体内容如下：<a href="https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/libjpeg-turbo-1.5.3/BUILDING.md" target="_blank" rel="noopener">https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/libjpeg-turbo-1.5.3/BUILDING.md</a></p>
-<h2 id="0x02-编译环境"><a href="#0x02-编译环境" class="headerlink" title="0x02 编译环境"></a>0x02 编译环境</h2><p>编译依赖需要依赖以下库：</p>
-<ul>
-<li>autoconf 2.56 or later</li>
-<li>automake 1.7 or later</li>
-<li>libtool 1.4 or later</li>
-<li>NASM or YASM (if building x86 or x86-64 SIMD extensions)</li>
-</ul>
-<p>Ubuntu下可以使用以下方法安装：</p>
-<pre><code>apt install autoconf
-apt install automake
-apt install libtool
-apt install nasm
-</code></pre><h2 id="0x03-编译"><a href="#0x03-编译" class="headerlink" title="0x03 编译"></a>0x03 编译</h2><p>修改<code>BUILDING.md</code>中提供的编译脚本，编译出目标架构版本。为方便编译，我提供了可以直接编译的脚本: <a href="https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/build.sh" target="_blank" rel="noopener">https://github.com/drunkdream/Android-libjpeg-turbo/blob/master/build.sh</a>。</p>
-<p>使用方法：</p>
-<pre><code>export NDK_PATH=/path/to/ndk
-sh build.sh arm/arm64/x86/x86_64/all
-</code></pre><p>此时，会在当前目录的<code>out</code>目录下生成对应架构的文件。</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>Android</tag>
-        <tag>libjpeg-turbo</tag>
+        <tag>miui</tag>
+        <tag>rom</tag>
       </tags>
   </entry>
   <entry>
@@ -380,46 +443,46 @@ https://aka.ms/wslstore
       </tags>
   </entry>
   <entry>
-    <title>Chrome使用Fiddler抓HTTPS包</title>
-    <url>/2017/01/07/chrome-fiddler-https/</url>
-    <content><![CDATA[<p>Chrome从35之前的某一版本开始会检查HTTPS证书，如果不是信任的证书会阻止访问，报：  </p>
-<blockquote>
-<p>Failed to load resource: net::ERR_INSECURE_RESPONSE </p>
-</blockquote>
-<p>所以就没办法使用Fiddler抓HTTPS包了。</p>
-<p>解决方式是启动Chrome的时候加上  </p>
-<blockquote>
-<p>–ignore-certificate-errors</p>
-</blockquote>
-<p>参数，这样Chrome就不会检查证书了。</p>
-]]></content>
-      <categories>
-        <category>Web</category>
-      </categories>
-      <tags>
-        <tag>chrome</tag>
-        <tag>fiddler</tag>
-        <tag>https</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>删除kinguser的su文件</title>
-    <url>/2017/01/07/delete-kinguser-su/</url>
-    <content><![CDATA[<p>安装kinguser后创建的su文件发现无法删除，会提示  </p>
-<blockquote>
-<p>rm: can\’t remove \’su\’: Operation not permitted  </p>
-</blockquote>
-<p>找了好久终于找到原因了<br>是这个文件设置了<em>immutable</em>属性，导致无法rm、chmod、chown<br>只要去掉这个属性就好了  </p>
-<blockquote>
-<p>/system/xbin # chattr -i su<br>/system/xbin # chattr -i su<br>/system/xbin # chattr -a su<br>/system/xbin # rm -f su<br>/system/xbin # rm -f su  </p>
-</blockquote>
-<p>使用lsattr可以查看属性</p>
+    <title>手机刷入第三方recovery教程汇总</title>
+    <url>/2017/01/07/flash-recovery/</url>
+    <content><![CDATA[<ul>
+<li><a href="http://bbs.xiaomi.cn/thread-8844774-1-1.html" target="_blank" rel="noopener">小米2/2S</a></li>
+<li><a href="http://www.netded.com/a/jingpinshouji/2014/0807/28945.html" target="_blank" rel="noopener">小米4</a></li>
+<li><a href="http://www.60ke.cn/html/sjsy/shuaj/2014/1115/15479.html" target="_blank" rel="noopener">华为Mate7</a></li>
+<li><a href="http://www.miui.com/thread-2229950-1-1.html" target="_blank" rel="noopener">红米2</a></li>
+<li><a href="http://www.muzisoft.com/root/59516.html" target="_blank" rel="noopener">三星i9500</a></li>
+<li><a href="http://bbs.ydss.cn/thread-496737-1-1.html" target="_blank" rel="noopener">红牛v5S</a></li>
+</ul>
 ]]></content>
       <categories>
         <category>Android</category>
       </categories>
       <tags>
-        <tag>kinguser</tag>
+        <tag>recovery</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>flyme中关闭系统的权限管理</title>
+    <url>/2017/01/07/flyme-close-perm/</url>
+    <content><![CDATA[<p>flyme中通过“安全中心”应用管理应用权限，未找到关闭权限管理的入口。后来发现是一个隐藏的Activity中可以关闭。</p>
+<blockquote>
+<p>am start -n com.meizu.safe/.security.SecSettingsActivity</p>
+</blockquote>
+<p>这个命令可以打开设置界面进行关闭。</p>
+<p>不过重启之后，系统还会自动开启权限管理，目前能找到的解决方法是在手机启动的时候用脚本关闭。</p>
+<pre><code>sleep 30  
+am start -n    com.meizu.safe/.security.SecSettingsActivity &amp;&amp; sleep 1  
+input keyevent 66 &amp;&amp; sleep 1  
+input keyevent 66 &amp;&amp; sleep 1  
+input keyevent 61 &amp;&amp; sleep 1  
+input keyevent 66
+</code></pre><p>将如上代码添加到<strong>/system/etc/install-recovery.sh</strong>脚本后面，这样手机启动后就会自动执行了。</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>flyme</tag>
       </tags>
   </entry>
   <entry>
@@ -452,142 +515,6 @@ apt install linux-image-generic
       </categories>
       <tags>
         <tag>kernel</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>下载旧版本的miui卡刷包</title>
-    <url>/2017/06/02/download-old-miui-rom/</url>
-    <content><![CDATA[<p><a href="http://www.miui.com/download.html" target="_blank" rel="noopener">miui网站</a>提供了所有小米手机的卡刷包下载链接，但是默认只有最新的3个版本。如果我要下载旧点的版本（比如现在是miui8，但是我想下miui7），一般会在论坛里搜索，但如果论坛里也搜索不到怎么办呢？<br>这个时候我们会借助于历史页面网站，因为虽然页面更新了，但是旧版本的下载链接还是有效的。</p>
-<p>1、 打开网站: <a href="http://web.archive.org/" target="_blank" rel="noopener">http://web.archive.org/</a></p>
-<p>2、 在搜索框中输入要查看的页面url，比如红米Note的miui下载页面：<a href="http://www.miui.com/download-218.html" target="_blank" rel="noopener">http://www.miui.com/download-218.html</a>。然后，页面会显示所有收录的历史记录。</p>
-<p><img src="http://images.drunkdream.cn/web.archive.org.png" alt></p>
-<p>3、 选择某一天的版本进去，发现有7.0的rom了</p>
-<p><img src="http://images.drunkdream.cn/miui7.png" alt></p>
-<p>4、点击下载，由于此时的链接地址是被web.archive.org处理过的：</p>
-<blockquote>
-<p><a href="http://web.archive.org/web/20161118214831/http://bigota.d.miui.com/V7.5.1.0.KHECNDE/miui_HMNoteTD_V7.5.1.0.KHECNDE_b9b75c8daf_4.4.zip" target="_blank" rel="noopener">http://web.archive.org/web/20161118214831/http://bigota.d.miui.com/V7.5.1.0.KHECNDE/miui_HMNoteTD_V7.5.1.0.KHECNDE_b9b75c8daf_4.4.zip</a></p>
-</blockquote>
-<p>如果不能直接下载，只要去掉前面的<em><a href="http://web.archive.org/web/20161118214831/" target="_blank" rel="noopener">http://web.archive.org/web/20161118214831/</a></em>即可。</p>
-]]></content>
-      <tags>
-        <tag>miui</tag>
-        <tag>rom</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MIUI关闭系统自动升级</title>
-    <url>/2017/01/07/disable-miui-update/</url>
-    <content><![CDATA[<p>&emsp;&emsp;这几天手机老是自动更新到MIUI v6，但是我又不喜欢v6，只好降级，结果降级后又自动升级，只好研究了下禁止升级的方法。<br>&emsp;&emsp;结果发现只能卸载<strong>/system/app/Updater.apk</strong>，不然就算禁止“系统更新”联网也没用，它还是会偷偷下载新版本，然后提示重启升级。此时千万不能重启，要进到recovery里，选择另外一个系统（不显示“最近”的系统），进去，这样进到的还是旧系统。因为MIUI会将新版本放到新系统里，重启后自动进的就是新系统（这也是双系统的好处）。<br>&emsp;&emsp;如果不小心进到新系统里升级了，也不要紧，重启到recovery，清除用户数据，再重启到旧系统就可以了。然后一定要卸载Updater.apk。这样就不会再自动升级了。</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>miui</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>flyme中关闭系统的权限管理</title>
-    <url>/2017/01/07/flyme-close-perm/</url>
-    <content><![CDATA[<p>flyme中通过“安全中心”应用管理应用权限，未找到关闭权限管理的入口。后来发现是一个隐藏的Activity中可以关闭。</p>
-<blockquote>
-<p>am start -n com.meizu.safe/.security.SecSettingsActivity</p>
-</blockquote>
-<p>这个命令可以打开设置界面进行关闭。</p>
-<p>不过重启之后，系统还会自动开启权限管理，目前能找到的解决方法是在手机启动的时候用脚本关闭。</p>
-<pre><code>sleep 30  
-am start -n    com.meizu.safe/.security.SecSettingsActivity &amp;&amp; sleep 1  
-input keyevent 66 &amp;&amp; sleep 1  
-input keyevent 66 &amp;&amp; sleep 1  
-input keyevent 61 &amp;&amp; sleep 1  
-input keyevent 66
-</code></pre><p>将如上代码添加到<strong>/system/etc/install-recovery.sh</strong>脚本后面，这样手机启动后就会自动执行了。</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>flyme</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>手机刷入第三方recovery教程汇总</title>
-    <url>/2017/01/07/flash-recovery/</url>
-    <content><![CDATA[<ul>
-<li><a href="http://bbs.xiaomi.cn/thread-8844774-1-1.html" target="_blank" rel="noopener">小米2/2S</a></li>
-<li><a href="http://www.netded.com/a/jingpinshouji/2014/0807/28945.html" target="_blank" rel="noopener">小米4</a></li>
-<li><a href="http://www.60ke.cn/html/sjsy/shuaj/2014/1115/15479.html" target="_blank" rel="noopener">华为Mate7</a></li>
-<li><a href="http://www.miui.com/thread-2229950-1-1.html" target="_blank" rel="noopener">红米2</a></li>
-<li><a href="http://www.muzisoft.com/root/59516.html" target="_blank" rel="noopener">三星i9500</a></li>
-<li><a href="http://bbs.ydss.cn/thread-496737-1-1.html" target="_blank" rel="noopener">红牛v5S</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>recovery</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo主题中设置代码高亮</title>
-    <url>/2017/06/03/hexo-set-code-highlight/</url>
-    <content><![CDATA[<p>今天，介绍一种在主题中添加<a href="https://github.com/google/code-prettify" target="_blank" rel="noopener">Google Prettify</a>代码高亮的方法。这里以next主题为例，如果对应的目录不存在，可以手动创建，或选择其它目录。</p>
-<p>1、 将压缩包<a href="https://raw.githubusercontent.com/google/code-prettify/master/distrib/prettify-small.zip" target="_blank" rel="noopener">https://raw.githubusercontent.com/google/code-prettify/master/distrib/prettify-small.zip</a>下载到本地，解压到主题的lib目录下，目录名为prettify。<br>2、 从<a href="http://jmblog.github.io/color-themes-for-google-code-prettify/" target="_blank" rel="noopener">http://jmblog.github.io/color-themes-for-google-code-prettify/</a>下载自己喜欢的主题文件到lib/prettify/skins目录下。<br>3、 在主题的layout/_third-party目录下创建prettify.swig文件，内容如下：</p>
-<pre><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;/lib/prettify/skins/{{ theme.custom_highlight_theme }}.css&quot; type=&quot;text/css&quot;&gt;
-&lt;script src=&quot;/lib/prettify/prettify.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-  $(document).ready(function() {
-      $(&#39;pre&#39;).addClass(&#39;prettyprint linenums&#39;).attr(&#39;style&#39;, &#39;overflow:auto;&#39;);
-      prettyPrint();
-  });
-&lt;/script&gt;
-
-</code></pre><p>4、 修改主题layout目录下的_layout.swig文件（只要是会被所有文件加载的地方都可以），在合适的地方（最好是最后）添加：  </p>
-<pre><code>{% include '_third-party/prettify.swig' %}
-</code></pre><p>5、 修改主题的_config.yml文件，添加一行： </p>
-<pre><code>    custom_highlight_theme: theme_name
-</code></pre><p>   theme_name是要使用主题名，也就是下载的css文件名。本来想复用next中自带的highlight_theme字段，但是改成其它主题名字后运行hexo会报错，只好新建了一个字段。</p>
-<p>参考链接：</p>
-<blockquote>
-<p><a href="https://liuzhichao.com/2016/hexo-use-prettify-to-highlight-code.html" target="_blank" rel="noopener">https://liuzhichao.com/2016/hexo-use-prettify-to-highlight-code.html</a></p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git回滚代码</title>
-    <url>/2018/05/10/git-rollback/</url>
-    <content><![CDATA[<p>有时我们需要回滚git上已经提交的代码，特别是已经提交到<code>github上</code>的代码。可以使用如下步骤：</p>
-<p>1、 <code>git reflog</code></p>
-<pre><code>$ git reflog
-1bd6100 (HEAD -&gt; master) HEAD@{0}: commit: Site updated: 2018-05-10 12:20:40
-f681615 HEAD@{1}: commit: Site updated: 2018-04-25 19:31:25
-78f096f HEAD@{2}: commit: Site updated: 2018-04-25 19:11:23
-14b480b HEAD@{3}: commit: Site updated: 2018-04-24 20:01:27
-</code></pre><p>2、 <code>git reset --hard version</code></p>
-<pre><code>$ git reset --hard f681615
-HEAD is now at f681615 Site updated: 2018-04-25 19:31:25
-</code></pre><p>3、 <code>git log</code></p>
-<pre><code>$ git log
-commit f68161540b8c3400c4ab4a35eef67039c732781d (HEAD -&gt; master)
-Author: drunkdream &lt;drunkdream@gmail.com&gt;
-Date:   Wed Apr 25 19:31:53 2018 +0800
-
-    Site updated: 2018-04-25 19:31:25
-</code></pre><p>4、 <code>git push --force</code></p>
-<pre><code>$ git push --force
-Total 0 (delta 0), reused 0 (delta 0)
-To github.com:drunkdream/xxx.git
- + 1bd6100...f681615 master -&gt; master (forced update)
-</code></pre>]]></content>
-      <categories>
-        <category>Tool</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -682,6 +609,77 @@ character-set-server = utf8
       <tags>
         <tag>ubuntu</tag>
         <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu部署squid代理服务器</title>
+    <url>/2019/01/28/install-squid-server/</url>
+    <content><![CDATA[<h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p><code>squid</code>是一款高性能的代理缓存服务器，常用来部署<code>HTTP(S)</code>代理服务器。本文是在<code>Ubuntu</code>上使用<code>squid</code>部署<code>HTTP(S)</code>代理服务器的方法总结。</p>
+<p>使用的Ubuntu版本是：<code>Ubuntu 16.04 x64</code>。</p>
+<h1 id="0x01-安装和配置"><a href="#0x01-安装和配置" class="headerlink" title="0x01 安装和配置"></a>0x01 安装和配置</h1><p>使用如下命令安装<code>squid</code>：</p>
+<pre><code>apt install squid -y
+</code></pre><p>安装后，会在<code>/etc/squid</code>目录下生成默认的配置文件<code>squid.conf</code>,需要对其做一些自定义的修改.</p>
+<h2 id="修改默认端口"><a href="#修改默认端口" class="headerlink" title="修改默认端口"></a>修改默认端口</h2><p>将<code>http_port 3128</code>这行中的<code>3128</code>修改为期望的端口号，比如<code>8080</code>，或是非常用端口，这样可以避免服务被<a href="https://www.shodan.io/" target="_blank" rel="noopener">shodan</a>之类的搜索引擎探测到。</p>
+<h2 id="允许外部访问"><a href="#允许外部访问" class="headerlink" title="允许外部访问"></a>允许外部访问</h2><p>squid默认只能从本地访问，是因为它设置了<code>http_access allow localhost</code>。</p>
+<p>但正常情况下，我们都是需要从外部访问的，这就需要添加以下两行配置：</p>
+<pre><code>acl net src 0.0.0.0/0
+http_access allow net
+</code></pre><p>表示接收任意外部地址。</p>
+<h2 id="允许CONNECT所有端口"><a href="#允许CONNECT所有端口" class="headerlink" title="允许CONNECT所有端口"></a>允许<code>CONNECT</code>所有端口</h2><p>squid默认只可以<code>CONNECT</code>443端口，如果要开放所有端口，需要注释掉<code>http_access deny CONNECT !SSL_ports</code>这行。</p>
+<h2 id="修改安全端口"><a href="#修改安全端口" class="headerlink" title="修改安全端口"></a>修改安全端口</h2><p>squid默认策略只允许代理访问以下端口：</p>
+<pre><code>acl Safe_ports port 80        # http
+acl Safe_ports port 21        # ftp
+acl Safe_ports port 443        # https
+acl Safe_ports port 70        # gopher
+acl Safe_ports port 210        # wais
+acl Safe_ports port 1025-65535    # unregistered ports
+acl Safe_ports port 280        # http-mgmt
+acl Safe_ports port 488        # gss-http
+acl Safe_ports port 591        # filemaker
+acl Safe_ports port 777        # multiling http
+</code></pre><p>因此，会有部分端口无法访问，直接返回<code>403 Forbidden</code>。如果需要访问这些端口，可以增加以下配置：</p>
+<pre><code>acl Safe_ports port 1-1024
+</code></pre><h2 id="不允许访问本地网络"><a href="#不允许访问本地网络" class="headerlink" title="不允许访问本地网络"></a>不允许访问本地网络</h2><p>squid默认允许访问本地（<code>localhost</code>）服务，但建议去掉<code>#http_access deny to_localhost</code>的注释</p>
+<h2 id="允许所有访问"><a href="#允许所有访问" class="headerlink" title="允许所有访问"></a>允许所有访问</h2><p>如果觉得以上操作过于繁琐，在<code>不考虑安全性</code>的情况下，也可以修改<code>http_access deny all</code>为<code>http_access allow all</code></p>
+<h2 id="设置访问密码"><a href="#设置访问密码" class="headerlink" title="设置访问密码"></a>设置访问密码</h2><p>为了安全，我们通常会给代理服务器设置密码。</p>
+<p>先安装<code>htpasswd</code>工具，使用如下命令：</p>
+<pre><code>apt install apache2-utils -y
+</code></pre><p>创建密码文件：</p>
+<pre><code>htpasswd -c /etc/squid/passwd proxy_username
+</code></pre><p>在<code>squid.conf</code>中添加以下内容：</p>
+<pre><code>auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/passwd
+</code></pre><h1 id="0x02-启动squid服务"><a href="#0x02-启动squid服务" class="headerlink" title="0x02 启动squid服务"></a>0x02 启动squid服务</h1><pre><code>systemctl start squid
+</code></pre>]]></content>
+      <tags>
+        <tag>ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo主题中设置代码高亮</title>
+    <url>/2017/06/03/hexo-set-code-highlight/</url>
+    <content><![CDATA[<p>今天，介绍一种在主题中添加<a href="https://github.com/google/code-prettify" target="_blank" rel="noopener">Google Prettify</a>代码高亮的方法。这里以next主题为例，如果对应的目录不存在，可以手动创建，或选择其它目录。</p>
+<p>1、 将压缩包<a href="https://raw.githubusercontent.com/google/code-prettify/master/distrib/prettify-small.zip" target="_blank" rel="noopener">https://raw.githubusercontent.com/google/code-prettify/master/distrib/prettify-small.zip</a>下载到本地，解压到主题的lib目录下，目录名为prettify。<br>2、 从<a href="http://jmblog.github.io/color-themes-for-google-code-prettify/" target="_blank" rel="noopener">http://jmblog.github.io/color-themes-for-google-code-prettify/</a>下载自己喜欢的主题文件到lib/prettify/skins目录下。<br>3、 在主题的layout/_third-party目录下创建prettify.swig文件，内容如下：</p>
+<pre><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;/lib/prettify/skins/{{ theme.custom_highlight_theme }}.css&quot; type=&quot;text/css&quot;&gt;
+&lt;script src=&quot;/lib/prettify/prettify.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+  $(document).ready(function() {
+      $(&#39;pre&#39;).addClass(&#39;prettyprint linenums&#39;).attr(&#39;style&#39;, &#39;overflow:auto;&#39;);
+      prettyPrint();
+  });
+&lt;/script&gt;
+
+</code></pre><p>4、 修改主题layout目录下的_layout.swig文件（只要是会被所有文件加载的地方都可以），在合适的地方（最好是最后）添加：  </p>
+<pre><code>{% include '_third-party/prettify.swig' %}
+</code></pre><p>5、 修改主题的_config.yml文件，添加一行： </p>
+<pre><code>    custom_highlight_theme: theme_name
+</code></pre><p>   theme_name是要使用主题名，也就是下载的css文件名。本来想复用next中自带的highlight_theme字段，但是改成其它主题名字后运行hexo会报错，只好新建了一个字段。</p>
+<p>参考链接：</p>
+<blockquote>
+<p><a href="https://liuzhichao.com/2016/hexo-use-prettify-to-highlight-code.html" target="_blank" rel="noopener">https://liuzhichao.com/2016/hexo-use-prettify-to-highlight-code.html</a></p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -788,366 +786,6 @@ character-set-server = utf8
       <categories>
         <category>诗词</category>
       </categories>
-  </entry>
-  <entry>
-    <title>Ubuntu部署squid代理服务器</title>
-    <url>/2019/01/28/install-squid-server/</url>
-    <content><![CDATA[<h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p><code>squid</code>是一款高性能的代理缓存服务器，常用来部署<code>HTTP(S)</code>代理服务器。本文是在<code>Ubuntu</code>上使用<code>squid</code>部署<code>HTTP(S)</code>代理服务器的方法总结。</p>
-<p>使用的Ubuntu版本是：<code>Ubuntu 16.04 x64</code>。</p>
-<h1 id="0x01-安装和配置"><a href="#0x01-安装和配置" class="headerlink" title="0x01 安装和配置"></a>0x01 安装和配置</h1><p>使用如下命令安装<code>squid</code>：</p>
-<pre><code>apt install squid -y
-</code></pre><p>安装后，会在<code>/etc/squid</code>目录下生成默认的配置文件<code>squid.conf</code>,需要对其做一些自定义的修改.</p>
-<h2 id="修改默认端口"><a href="#修改默认端口" class="headerlink" title="修改默认端口"></a>修改默认端口</h2><p>将<code>http_port 3128</code>这行中的<code>3128</code>修改为期望的端口号，比如<code>8080</code>，或是非常用端口，这样可以避免服务被<a href="https://www.shodan.io/" target="_blank" rel="noopener">shodan</a>之类的搜索引擎探测到。</p>
-<h2 id="允许外部访问"><a href="#允许外部访问" class="headerlink" title="允许外部访问"></a>允许外部访问</h2><p>squid默认只能从本地访问，是因为它设置了<code>http_access allow localhost</code>。</p>
-<p>但正常情况下，我们都是需要从外部访问的，这就需要添加以下两行配置：</p>
-<pre><code>acl net src 0.0.0.0/0
-http_access allow net
-</code></pre><p>表示接收任意外部地址。</p>
-<h2 id="允许CONNECT所有端口"><a href="#允许CONNECT所有端口" class="headerlink" title="允许CONNECT所有端口"></a>允许<code>CONNECT</code>所有端口</h2><p>squid默认只可以<code>CONNECT</code>443端口，如果要开放所有端口，需要注释掉<code>http_access deny CONNECT !SSL_ports</code>这行。</p>
-<h2 id="修改安全端口"><a href="#修改安全端口" class="headerlink" title="修改安全端口"></a>修改安全端口</h2><p>squid默认策略只允许代理访问以下端口：</p>
-<pre><code>acl Safe_ports port 80        # http
-acl Safe_ports port 21        # ftp
-acl Safe_ports port 443        # https
-acl Safe_ports port 70        # gopher
-acl Safe_ports port 210        # wais
-acl Safe_ports port 1025-65535    # unregistered ports
-acl Safe_ports port 280        # http-mgmt
-acl Safe_ports port 488        # gss-http
-acl Safe_ports port 591        # filemaker
-acl Safe_ports port 777        # multiling http
-</code></pre><p>因此，会有部分端口无法访问，直接返回<code>403 Forbidden</code>。如果需要访问这些端口，可以增加以下配置：</p>
-<pre><code>acl Safe_ports port 1-1024
-</code></pre><h2 id="不允许访问本地网络"><a href="#不允许访问本地网络" class="headerlink" title="不允许访问本地网络"></a>不允许访问本地网络</h2><p>squid默认允许访问本地（<code>localhost</code>）服务，但建议去掉<code>#http_access deny to_localhost</code>的注释</p>
-<h2 id="允许所有访问"><a href="#允许所有访问" class="headerlink" title="允许所有访问"></a>允许所有访问</h2><p>如果觉得以上操作过于繁琐，在<code>不考虑安全性</code>的情况下，也可以修改<code>http_access deny all</code>为<code>http_access allow all</code></p>
-<h2 id="设置访问密码"><a href="#设置访问密码" class="headerlink" title="设置访问密码"></a>设置访问密码</h2><p>为了安全，我们通常会给代理服务器设置密码。</p>
-<p>先安装<code>htpasswd</code>工具，使用如下命令：</p>
-<pre><code>apt install apache2-utils -y
-</code></pre><p>创建密码文件：</p>
-<pre><code>htpasswd -c /etc/squid/passwd proxy_username
-</code></pre><p>在<code>squid.conf</code>中添加以下内容：</p>
-<pre><code>auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/passwd
-</code></pre><h1 id="0x02-启动squid服务"><a href="#0x02-启动squid服务" class="headerlink" title="0x02 启动squid服务"></a>0x02 启动squid服务</h1><pre><code>systemctl start squid
-</code></pre>]]></content>
-      <tags>
-        <tag>ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>本地部署Jenkins环境</title>
-    <url>/2019/12/06/local-deploy-jenkins/</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Jenkins是一款使用比较广泛的<code>CI/CD</code>平台，2.0版本开始支持了<code>pipeline</code>，通过<code>jenkinsfile</code>文件进行流水线的控制。本文提供了一种在本地Linux环境中快速搭建Jenkins测试环境的方法。</p>
-<h2 id="0x01-环境部署"><a href="#0x01-环境部署" class="headerlink" title="0x01 环境部署"></a>0x01 环境部署</h2><p>直接使用docker镜像搭建环境是一种比较快捷的方法。编写如下<code>Dockerfile</code>文件：</p>
-<pre><code class="Dockerfile">FROM jenkins/jenkins:lts
-
-USER root
-RUN apt -y update \
-    &amp;&amp; apt -y upgrade \
-    &amp;&amp; apt -y install python-pip
-</code></pre>
-<p>使用命令：<code>docker build -t jenkins .</code>进行镜像编译。</p>
-<p>编译后使用命令：<code>docker run --name jenkins -i -p 8787:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker -v /data/jenkins/jenkins_home:/var/jenkins_home:rw jenkins</code>启动镜像。</p>
-<p><code>/var/run/docker.sock</code>和<code>/usr/bin/docker</code>这两个挂载是为了支持<code>Docker in Docker</code>。<code>/data/jenkins/jenkins_home</code>这个挂载是为了便于保存Jenkins数据，以免容器重启后又要重新配置。</p>
-<h2 id="0x02-初始化Jenkins配置"><a href="#0x02-初始化Jenkins配置" class="headerlink" title="0x02 初始化Jenkins配置"></a>0x02 初始化Jenkins配置</h2><p>使用浏览器访问<code>http:/127.0.0.1:8787/</code>页面，进行初始化操作。</p>
-<h3 id="配置代理"><a href="#配置代理" class="headerlink" title="配置代理"></a>配置代理</h3><h2 id="0x03-编写Jenkinsfile"><a href="#0x03-编写Jenkinsfile" class="headerlink" title="0x03 编写Jenkinsfile"></a>0x03 编写Jenkinsfile</h2><p>文档地址：<a href="https://jenkins.io/zh/doc/book/pipeline/syntax/" target="_blank" rel="noopener">https://jenkins.io/zh/doc/book/pipeline/syntax/</a>。</p>
-<p><code>Jenkinsfile</code>分为<code>声明式</code>和<code>脚本式</code>，这里主要介绍<code>声明式</code>。</p>
-<p>下面是一个简单的模板：</p>
-<pre><code class="Jenkinsfile">pipeline {
-  agent {
-    label &quot;default&quot;
-  }
-
-  stages  {
-    stage(&quot;检出&quot;) {
-      steps {
-        sh &#39;ci-init&#39;
-        checkout(
-          [$class: &#39;GitSCM&#39;, branches: [[name: env.GIT_BUILD_REF]], 
-                  userRemoteConfigs: [[url: env.GIT_REPO_URL]]]
-        )
-      }
-    }
-
-    stage(&quot;构建&quot;) {
-      steps {
-        echo &quot;构建中...&quot;
-        sh &#39;go version&#39;
-        sh &#39;node -v&#39;
-        sh &#39;java -version&#39;
-        sh &#39;php -v&#39;
-        sh &#39;python -V&#39;
-        sh &#39;gcc -v&#39;
-        sh &#39;make -v&#39;
-        // 请在这里放置您项目代码的单元测试调用过程，例如:
-        // sh &#39;mvn package&#39; // mvn 示例
-        // sh &#39;make&#39; // make 示例
-        echo &quot;构建完成.&quot;
-        // archiveArtifacts artifacts: &#39;**/target/*.jar&#39;, fingerprint: true // 收集构建产物
-      }
-    }
-
-    stage(&quot;测试&quot;) {
-      steps {
-        echo &quot;单元测试中...&quot;
-        // 请在这里放置您项目代码的单元测试调用过程，例如:
-        // sh &#39;mvn test&#39; // mvn 示例
-        // sh &#39;make test&#39; // make 示例
-        echo &quot;单元测试完成.&quot;
-        // junit &#39;target/surefire-reports/*.xml&#39; // 收集单元测试报告的调用过程
-      }
-    }
-
-    stage(&quot;部署&quot;) {
-      steps {
-        echo &quot;部署中...&quot;
-        // 请在这里放置收集单元测试报告的调用过程，例如:
-        // sh &#39;mvn tomcat7:deploy&#39; // Maven tomcat7 插件示例：
-        // sh &#39;./deploy.sh&#39; // 自研部署脚本
-        echo &quot;部署完成&quot;
-      }
-    }
-  }
-}
-</code></pre>
-<h3 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h3><h4 id="指定docker镜像"><a href="#指定docker镜像" class="headerlink" title="指定docker镜像"></a>指定docker镜像</h4><pre><code>  agent {
-    docker {
-      image &#39;demo/test/base:latest&#39;
-      registryUrl &#39;https://drunkdream-docker.pkg.coding.net&#39;
-    }
-  }
-</code></pre><h4 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h4><pre><code>  environment {
-    MY_ENV = &#39;test&#39;
-  }
-</code></pre><h4 id="访问环境变量"><a href="#访问环境变量" class="headerlink" title="访问环境变量"></a>访问环境变量</h4><p>Jenkins内置的环境变量列表可以在<code>http://jenkins-server/pipeline-syntax/globals#env</code>地址中获取。</p>
-<p>环境变量可以通过<code>${env.My_ENV}</code>或<code>${My_ENV}</code>或<code>$My_ENV</code>来访问。需要注意的是，使用引号的时候尽量使用<code>&quot;</code>，如：<code>echo &quot;${env.My_ENV}&quot;</code>，否则会无法生效。Jenkins应该是在运行时将变量动态替换成了实际值，使用单引号的话，则不会进行替换。</p>
-<p>而如果写成<code>sh &#39;echo ${MY_ENV}&#39;</code>则是可以正常工作的，因为此时是由<code>shell</code>程序进行环境变量的读取。</p>
-<pre><code>  stage(&#39;测试&#39;) {
-    steps {
-      echo &quot;${env.MY_ENV}&quot;
-      echo &quot;${MY_ENV}&quot;
-      echo &quot;$MY_ENV&quot;
-      sh &#39;echo $MY_ENV&#39;
-      sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;MY_ENV\&#39;])&quot;&#39;
-      echo &#39;${env.MY_ENV}&#39; //输出`${env.MY_ENV}`
-    }
-  }
-</code></pre><p>前五条命令都可以正常输出变量值，但最后一条却无法输出。</p>
-<h4 id="将命令行输出赋值给变量"><a href="#将命令行输出赋值给变量" class="headerlink" title="将命令行输出赋值给变量"></a>将命令行输出赋值给变量</h4><p>Jenkins的<code>${env.My_ENV}</code>方式不支持默认值，也就是<code>bash</code>中的<code>${MY_ENV:-&quot;test&quot;}</code>写法。如果需要这种用法，可以使用以下方式：</p>
-<pre><code>  stage(&#39;测试&#39;) {
-    steps {
-      script {
-        ENV1 = sh(returnStdout: true, script: &#39;echo ${MY_ENV:-&quot;default&quot;}&#39;).trim()
-      }
-      sh &#39;echo ${ENV1}&#39; //可以正常输出
-      sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;ENV1\&#39;])&quot;&#39; //会报错
-    }
-  }
-</code></pre><p><code>trim()</code>方法可以去掉前后的空白字符。</p>
-<blockquote>
-<p>注意：<code>${MY_ENV:-&quot;default&quot;}</code>不能写成<code>${env.MY_ENV:-&quot;default&quot;}</code></p>
-</blockquote>
-<p>虽然这种方式赋值的变量也可以通过<code>${env.ENV1}</code>方式访问，但其实它并不是环境变量。</p>
-<h4 id="动态配置环境变量"><a href="#动态配置环境变量" class="headerlink" title="动态配置环境变量"></a>动态配置环境变量</h4><pre><code>  stage(&#39;测试&#39;) {
-    steps {
-      script {
-        ENV1 = sh(returnStdout: true, script: &#39;echo ${MY_ENV:-&quot;default&quot;}&#39;).trim()
-      }
-      withEnv([&quot;MY_ENV=${ENV1}&quot;]) {
-        sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;MY_ENV\&#39;])&quot;&#39; //输出default
-      }
-    }
-  }
-</code></pre>]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MIUI v6稳定版中关闭授权管理</title>
-    <url>/2017/01/07/miui-v6-disable-perm/</url>
-    <content><![CDATA[<p>在稳定版MIUI v6中，设置=》安全中心 里没有“授权管理”设置的入口，之前都是刷开发版解决该问题。今天突发奇想，我直接调起设置的Activity行不行呢？<br>在一款开发版系统里打开设置界面，获得Activity名称为：  </p>
-<blockquote>
-<p>com.miui.securitycenter/com.miui.permcenter.SettingsAcitivty </p>
-</blockquote>
-<p>换到稳定版手机，使用  </p>
-<blockquote>
-<p>am start -W -n com.miui.securitycenter/com.miui.permcenter.SettingsAcitivty  </p>
-</blockquote>
-<p>命令打开Activity，果然成功关闭</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>miui</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Javascript中的原型链分析</title>
-    <url>/2019/12/14/js-prototype/</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Javascript中的prototype是一个十分重要的概念，但是网上的教程一般分析得比较绕，结果越看越晕，反而变得更加难以理解了。</p>
-<p>本文尝试由浅入深，从实验入手，来深入地理解这一概念。</p>
-<h2 id="0x01-函数与对象"><a href="#0x01-函数与对象" class="headerlink" title="0x01 函数与对象"></a>0x01 函数与对象</h2><p>函数是JS中最为重要的一个概念，下面是创建函数最简单的方法：</p>
-<pre><code class="javascript">function func(){
-    return 0;
-}
-</code></pre>
-<p>通过Chrome开发者工具，可以得到以下输出：</p>
-<pre><code>&gt; typeof func
-&lt; &quot;function&quot;
-&gt; func instanceof Function
-&lt; true
-&gt; func instanceof Object
-&lt; true
-</code></pre><p>可以看出，<code>func</code>是<code>Function</code>的一个实例，同时也是<code>Object</code>的一个实例。这点可以理解成<code>Function</code>本质上也是<code>Object</code>的一种。</p>
-<pre><code>&gt; typeof Function
-&lt; &quot;function&quot;
-&gt; typeof Object
-&lt; &quot;function&quot;
-</code></pre><p>再来看这段输出，按照通常<code>OOP</code>语言的理解，<code>Function</code>和<code>Object</code>的类型应该是<code>class</code>之类的值，但偏偏这里返回的是<code>function</code>。这是为什么呢？</p>
-<p>我们知道，js中<code>class</code>的概念是在<code>ES6</code>中才出现的，可以通过以下代码创建一个<code>class</code>：</p>
-<pre><code class="javascript">class MyClass {
-    constructor(name) {
-        this.name = name;
-    }
-    show(){
-        console.log(this.name);
-    }
-}
-
-var obj = new MyClass(&#39;drunkdream&#39;);
-obj.show();
-</code></pre>
-<p>现在来测试一下<code>obj</code>实例的相关情况：</p>
-<pre><code>&gt; typeof obj
-&lt; &quot;object&quot;
-&gt; obj instanceof MyClass
-&lt; true
-&gt; obj instanceof Object
-&lt; true
-&gt; typeof MyClass
-&lt; &quot;function&quot;
-&gt; MyClass instanceof Function
-&lt; true
-</code></pre><p>可以看出，<code>obj</code>的确是<code>MyClass</code>的一个实例。但是，奇怪的是：<code>MyClass</code>的类型竟然是<code>function</code>，这点和其它语言的确不太一样。</p>
-<p>这是因为：</p>
-<blockquote>
-<p>js中并没有真正的<code>class</code>的概念，<code>class</code>仅仅是<code>function</code>的一种语法糖而已。</p>
-</blockquote>
-<p>来看下在<code>ES5</code>中一般怎么构造一个<code>class</code>的。</p>
-<pre><code class="javascript">function MyClass(name) {
-    this.name = name;
-}
-
-MyClass.prototype.show = function () {
-    console.log(this.name);
-}
-</code></pre>
-<p>这种写法可以实现和上面那段代码相同的功能，但是很明显，<code>MyClass</code>真的是一个<code>function</code>。也就是说：<code>new</code>一个<code>function</code>得到的其实是一个对象。这和其它语言差异是比较大的。</p>
-<p>而<code>prototype</code>在其中就是扮演了添加类的成员函数的作用。</p>
-<p>其实，将上面的代码改成：</p>
-<pre><code class="javascript">function MyClass(name) {
-    this.name = name;
-    this.show = function () {
-        console.log(this.name);
-    }
-}
-</code></pre>
-<p>这样的形式对于使用者也是完全没有问题的，差别只是每次实例化都会创建出一个<code>show</code>函数，显然这种写法是不好的。</p>
-<h2 id="0x02-prototype与proto"><a href="#0x02-prototype与proto" class="headerlink" title="0x02 prototype与proto"></a>0x02 prototype与<strong>proto</strong></h2><p>那<code>prototype</code>到底是个什么样的存在呢？</p>
-<pre><code>&gt; MyClass.prototype
-&lt; {show: ƒ, constructor: ƒ}
-    show: ƒ ()
-    constructor: ƒ MyClass(name)
-    __proto__: Object
-&gt; typeof MyClass.prototype
-&lt; &quot;object&quot;
-&gt; MyClass.prototype.constructor === MyClass
-&lt; true
-&gt; MyClass.prototype.__proto__
-&lt; {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …}
-    constructor: ƒ Object()
-    hasOwnProperty: ƒ hasOwnProperty()
-    isPrototypeOf: ƒ isPrototypeOf()
-    propertyIsEnumerable: ƒ propertyIsEnumerable()
-    toLocaleString: ƒ toLocaleString()
-    toString: ƒ toString()
-    valueOf: ƒ valueOf()
-    __defineGetter__: ƒ __defineGetter__()
-    __defineSetter__: ƒ __defineSetter__()
-    __lookupGetter__: ƒ __lookupGetter__()
-    __lookupSetter__: ƒ __lookupSetter__()
-    get __proto__: ƒ __proto__()
-    set __proto__: ƒ __proto__()
-</code></pre><p>上面这段看起来有点绕，需要仔细思索一下。</p>
-<p>可以看出，<code>prototype</code>本质上是一个对象，必须要包含<code>constructor</code>构造函数和<code>__proto__</code>对象。</p>
-<p><code>constructor</code>其实就是<code>MyClass</code>函数本身，而<code>__proto__</code>对象看起来就有些神秘了。不过从<code>__proto__.constructor</code>可以看出，它其实就是<code>Object</code>。是不是觉得<code>__proto__</code>指向的是当前类的基类呢？</p>
-<p>我们再来测试一下：</p>
-<pre><code>&gt; class MyClass1 extends String{}
-&gt; MyClass1.prototype.__proto__.constructor == String
-&lt; true
-</code></pre><p>看来的确是这样的，只不过由于js中的类本质上都是<code>function</code>，而每个<code>function</code>都有一个原型，通过这种方式将原型<code>链接</code>起来，就起到了类继承的作用。</p>
-<h2 id="0x03-将对象变成函数"><a href="#0x03-将对象变成函数" class="headerlink" title="0x03 将对象变成函数"></a>0x03 将对象变成函数</h2><p>下面是网上找的一段代码：</p>
-<pre><code class="javascript">function classcallable(cls) {
-    /*
-     * Replicate the __call__ magic method of python and let class instances
-     * be callable.
-     */
-    var new_cls = function () {
-        var obj = Object.create(cls.prototype);
-        // create callable
-        // we use func.__call__ because call might be defined in
-        // init which hasn&#39;t been called yet.
-        var func = function () {
-            return func.__call__.apply(func, arguments);
-        };
-        func.__proto__ = obj;
-        // apply init late so it is bound to func and not cls
-        cls.apply(func, arguments);
-        return func;
-    }
-    new_cls.prototype = cls.prototype;
-    return new_cls
-}
-</code></pre>
-<p>它可以将一个类实例类型从<code>object</code>变成<code>function</code>。</p>
-<pre><code class="javascript">var s = new String();
-console.log(typeof s);
-
-var s = new classcallable(String)();
-console.log(typeof s);
-</code></pre>
-<p>输出结果为：</p>
-<pre><code>object
-function
-</code></pre><p>也就是说，使用<code>classcallable</code>之后创建的对象，可以当做函数来调用。我们分析一下这里面的原因。</p>
-<p>在js中是允许在类的构造函数中返回一个<code>function</code>的，可以使用以下代码进行测试：</p>
-<pre><code class="javascript">function MyClass(flag){
-    var func = function(){
-        console.log(&quot;call func&quot;);
-    }
-    if(flag === 1)
-        return func;
-    else
-        return 0;
-}
-
-console.log(typeof new MyClass(0));
-console.log(typeof new MyClass(1));
-</code></pre>
-<p>输出结果为：</p>
-<pre><code>object
-function
-</code></pre><p>因此，只要修改构造函数的返回值，就可以改变创建出的实例类型，这里正是用了这种方法。</p>
-]]></content>
-      <categories>
-        <category>Javascript</category>
-      </categories>
-      <tags>
-        <tag>prototype</tag>
-      </tags>
   </entry>
   <entry>
     <title>Linux上C语言写的简易telnet客户端</title>
@@ -1284,6 +922,138 @@ int main(int argc,char **argv){
       </tags>
   </entry>
   <entry>
+    <title>本地部署Jenkins环境</title>
+    <url>/2019/12/06/local-deploy-jenkins/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Jenkins是一款使用比较广泛的<code>CI/CD</code>平台，2.0版本开始支持了<code>pipeline</code>，通过<code>jenkinsfile</code>文件进行流水线的控制。本文提供了一种在本地Linux环境中快速搭建Jenkins测试环境的方法。</p>
+<h2 id="0x01-环境部署"><a href="#0x01-环境部署" class="headerlink" title="0x01 环境部署"></a>0x01 环境部署</h2><p>直接使用docker镜像搭建环境是一种比较快捷的方法。编写如下<code>Dockerfile</code>文件：</p>
+<pre><code class="Dockerfile">FROM jenkins/jenkins:lts
+
+USER root
+RUN apt -y update \
+    &amp;&amp; apt -y upgrade \
+    &amp;&amp; apt -y install python-pip
+</code></pre>
+<p>使用命令：<code>docker build -t jenkins .</code>进行镜像编译。</p>
+<p>编译后使用命令：<code>docker run --name jenkins -i -p 8787:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker -v /data/jenkins/jenkins_home:/var/jenkins_home:rw jenkins</code>启动镜像。</p>
+<p><code>/var/run/docker.sock</code>和<code>/usr/bin/docker</code>这两个挂载是为了支持<code>Docker in Docker</code>。<code>/data/jenkins/jenkins_home</code>这个挂载是为了便于保存Jenkins数据，以免容器重启后又要重新配置。</p>
+<h2 id="0x02-初始化Jenkins配置"><a href="#0x02-初始化Jenkins配置" class="headerlink" title="0x02 初始化Jenkins配置"></a>0x02 初始化Jenkins配置</h2><p>使用浏览器访问<code>http:/127.0.0.1:8787/</code>页面，进行初始化操作。</p>
+<h3 id="配置代理"><a href="#配置代理" class="headerlink" title="配置代理"></a>配置代理</h3><h2 id="0x03-编写Jenkinsfile"><a href="#0x03-编写Jenkinsfile" class="headerlink" title="0x03 编写Jenkinsfile"></a>0x03 编写Jenkinsfile</h2><p>文档地址：<a href="https://jenkins.io/zh/doc/book/pipeline/syntax/" target="_blank" rel="noopener">https://jenkins.io/zh/doc/book/pipeline/syntax/</a>。</p>
+<p><code>Jenkinsfile</code>分为<code>声明式</code>和<code>脚本式</code>，这里主要介绍<code>声明式</code>。</p>
+<p>下面是一个简单的模板：</p>
+<pre><code class="Jenkinsfile">pipeline {
+  agent {
+    label &quot;default&quot;
+  }
+
+  stages  {
+    stage(&quot;检出&quot;) {
+      steps {
+        sh &#39;ci-init&#39;
+        checkout(
+          [$class: &#39;GitSCM&#39;, branches: [[name: env.GIT_BUILD_REF]], 
+                  userRemoteConfigs: [[url: env.GIT_REPO_URL]]]
+        )
+      }
+    }
+
+    stage(&quot;构建&quot;) {
+      steps {
+        echo &quot;构建中...&quot;
+        sh &#39;go version&#39;
+        sh &#39;node -v&#39;
+        sh &#39;java -version&#39;
+        sh &#39;php -v&#39;
+        sh &#39;python -V&#39;
+        sh &#39;gcc -v&#39;
+        sh &#39;make -v&#39;
+        // 请在这里放置您项目代码的单元测试调用过程，例如:
+        // sh &#39;mvn package&#39; // mvn 示例
+        // sh &#39;make&#39; // make 示例
+        echo &quot;构建完成.&quot;
+        // archiveArtifacts artifacts: &#39;**/target/*.jar&#39;, fingerprint: true // 收集构建产物
+      }
+    }
+
+    stage(&quot;测试&quot;) {
+      steps {
+        echo &quot;单元测试中...&quot;
+        // 请在这里放置您项目代码的单元测试调用过程，例如:
+        // sh &#39;mvn test&#39; // mvn 示例
+        // sh &#39;make test&#39; // make 示例
+        echo &quot;单元测试完成.&quot;
+        // junit &#39;target/surefire-reports/*.xml&#39; // 收集单元测试报告的调用过程
+      }
+    }
+
+    stage(&quot;部署&quot;) {
+      steps {
+        echo &quot;部署中...&quot;
+        // 请在这里放置收集单元测试报告的调用过程，例如:
+        // sh &#39;mvn tomcat7:deploy&#39; // Maven tomcat7 插件示例：
+        // sh &#39;./deploy.sh&#39; // 自研部署脚本
+        echo &quot;部署完成&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<h3 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h3><h4 id="指定docker镜像"><a href="#指定docker镜像" class="headerlink" title="指定docker镜像"></a>指定docker镜像</h4><pre><code>  agent {
+    docker {
+      image &#39;demo/test/base:latest&#39;
+      registryUrl &#39;https://drunkdream-docker.pkg.coding.net&#39;
+    }
+  }
+</code></pre><h4 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h4><pre><code>  environment {
+    MY_ENV = &#39;test&#39;
+  }
+</code></pre><h4 id="访问环境变量"><a href="#访问环境变量" class="headerlink" title="访问环境变量"></a>访问环境变量</h4><p>Jenkins内置的环境变量列表可以在<code>http://jenkins-server/pipeline-syntax/globals#env</code>地址中获取。</p>
+<p>环境变量可以通过<code>${env.My_ENV}</code>或<code>${My_ENV}</code>或<code>$My_ENV</code>来访问。需要注意的是，使用引号的时候尽量使用<code>&quot;</code>，如：<code>echo &quot;${env.My_ENV}&quot;</code>，否则会无法生效。Jenkins应该是在运行时将变量动态替换成了实际值，使用单引号的话，则不会进行替换。</p>
+<p>而如果写成<code>sh &#39;echo ${MY_ENV}&#39;</code>则是可以正常工作的，因为此时是由<code>shell</code>程序进行环境变量的读取。</p>
+<pre><code>  stage(&#39;测试&#39;) {
+    steps {
+      echo &quot;${env.MY_ENV}&quot;
+      echo &quot;${MY_ENV}&quot;
+      echo &quot;$MY_ENV&quot;
+      sh &#39;echo $MY_ENV&#39;
+      sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;MY_ENV\&#39;])&quot;&#39;
+      echo &#39;${env.MY_ENV}&#39; //输出`${env.MY_ENV}`
+    }
+  }
+</code></pre><p>前五条命令都可以正常输出变量值，但最后一条却无法输出。</p>
+<h4 id="将命令行输出赋值给变量"><a href="#将命令行输出赋值给变量" class="headerlink" title="将命令行输出赋值给变量"></a>将命令行输出赋值给变量</h4><p>Jenkins的<code>${env.My_ENV}</code>方式不支持默认值，也就是<code>bash</code>中的<code>${MY_ENV:-&quot;test&quot;}</code>写法。如果需要这种用法，可以使用以下方式：</p>
+<pre><code>  stage(&#39;测试&#39;) {
+    steps {
+      script {
+        ENV1 = sh(returnStdout: true, script: &#39;echo ${MY_ENV:-&quot;default&quot;}&#39;).trim()
+      }
+      sh &#39;echo ${ENV1}&#39; //可以正常输出
+      sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;ENV1\&#39;])&quot;&#39; //会报错
+    }
+  }
+</code></pre><p><code>trim()</code>方法可以去掉前后的空白字符。</p>
+<blockquote>
+<p>注意：<code>${MY_ENV:-&quot;default&quot;}</code>不能写成<code>${env.MY_ENV:-&quot;default&quot;}</code></p>
+</blockquote>
+<p>虽然这种方式赋值的变量也可以通过<code>${env.ENV1}</code>方式访问，但其实它并不是环境变量。</p>
+<h4 id="动态配置环境变量"><a href="#动态配置环境变量" class="headerlink" title="动态配置环境变量"></a>动态配置环境变量</h4><pre><code>  stage(&#39;测试&#39;) {
+    steps {
+      script {
+        ENV1 = sh(returnStdout: true, script: &#39;echo ${MY_ENV:-&quot;default&quot;}&#39;).trim()
+      }
+      withEnv([&quot;MY_ENV=${ENV1}&quot;]) {
+        sh &#39;python -c &quot;print(__import__(\&#39;os\&#39;).environ[\&#39;MY_ENV\&#39;])&quot;&#39; //输出default
+      }
+    }
+  }
+</code></pre>]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>logcat无法使用</title>
     <url>/2017/01/07/logcat-cannot-use/</url>
     <content><![CDATA[<p>最近为三星Note2|N7100刷入内核版本为3.0.31-1071214的ROM，发现使用logcat时给出如下错误提示：</p>
@@ -1321,6 +1091,39 @@ int main(int argc,char **argv){
       </tags>
   </entry>
   <entry>
+    <title>今天学了个新技能</title>
+    <url>/2017/01/07/new-web-skill/</url>
+    <content><![CDATA[<pre><code>&lt;img/src=\&quot;#\&quot;/onerror=alert(1)&gt;
+</code></pre><p>这样子写是可以正常解析的，至少Chrome是可以的</p>
+]]></content>
+      <categories>
+        <category>Web</category>
+      </categories>
+      <tags>
+        <tag>web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MIUI v6稳定版中关闭授权管理</title>
+    <url>/2017/01/07/miui-v6-disable-perm/</url>
+    <content><![CDATA[<p>在稳定版MIUI v6中，设置=》安全中心 里没有“授权管理”设置的入口，之前都是刷开发版解决该问题。今天突发奇想，我直接调起设置的Activity行不行呢？<br>在一款开发版系统里打开设置界面，获得Activity名称为：  </p>
+<blockquote>
+<p>com.miui.securitycenter/com.miui.permcenter.SettingsAcitivty </p>
+</blockquote>
+<p>换到稳定版手机，使用  </p>
+<blockquote>
+<p>am start -W -n com.miui.securitycenter/com.miui.permcenter.SettingsAcitivty  </p>
+</blockquote>
+<p>命令打开Activity，果然成功关闭</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>miui</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>魅族MX4关闭强制GPU渲染的方法</title>
     <url>/2017/01/07/meizu-mx4-close-gpu/</url>
     <content><![CDATA[<p>默认在设置里没有该开关，需要<br>在手机拨号界面输入<strong>*#*#6961#*#*</strong><br>再到手机设置里关掉</p>
@@ -1334,16 +1137,69 @@ int main(int argc,char **argv){
       </tags>
   </entry>
   <entry>
-    <title>今天学了个新技能</title>
-    <url>/2017/01/07/new-web-skill/</url>
-    <content><![CDATA[<pre><code>&lt;img/src=\&quot;#\&quot;/onerror=alert(1)&gt;
-</code></pre><p>这样子写是可以正常解析的，至少Chrome是可以的</p>
+    <title>MIUI关闭系统自动升级</title>
+    <url>/2017/01/07/disable-miui-update/</url>
+    <content><![CDATA[<p>&emsp;&emsp;这几天手机老是自动更新到MIUI v6，但是我又不喜欢v6，只好降级，结果降级后又自动升级，只好研究了下禁止升级的方法。<br>&emsp;&emsp;结果发现只能卸载<strong>/system/app/Updater.apk</strong>，不然就算禁止“系统更新”联网也没用，它还是会偷偷下载新版本，然后提示重启升级。此时千万不能重启，要进到recovery里，选择另外一个系统（不显示“最近”的系统），进去，这样进到的还是旧系统。因为MIUI会将新版本放到新系统里，重启后自动进的就是新系统（这也是双系统的好处）。<br>&emsp;&emsp;如果不小心进到新系统里升级了，也不要紧，重启到recovery，清除用户数据，再重启到旧系统就可以了。然后一定要卸载Updater.apk。这样就不会再自动升级了。</p>
 ]]></content>
       <categories>
-        <category>Web</category>
+        <category>Android</category>
       </categories>
       <tags>
-        <tag>web</tag>
+        <tag>miui</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nginx自动重定向</title>
+    <url>/2020/09/24/nginx-302-to-200/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>在使用Nginx作为反向代理的时候，如果源服务返回了<code>30x</code>（301、302、303、307等）返回码，需要用户再重新发送一次HTTP请求。但此时有可能出现用户不能直接访问重定向后的URL，就需要Nginx能自动进行重定向，读取新的URL后，通过200返回码返回真正的内容。<br>本文主要就是研究了怎么配置Nginx以实现这样的功能。</p>
+<h2 id="0x01-使用错误处理进行反代"><a href="#0x01-使用错误处理进行反代" class="headerlink" title="0x01 使用错误处理进行反代"></a>0x01 使用错误处理进行反代</h2><p>Ngnix提供了<code>error_page</code>错误处理机制，允许用户在出现指定错误时进行自己的处理逻辑。</p>
+<pre><code class="conf">error_page 403 404 =200 /error.html;
+location = /error.html {
+    root /data/www;
+}  
+</code></pre>
+<p>这样可以在出现<code>403</code>、<code>404</code>错误时返回<code>error.html</code>页面的内容，同时用户看到的还是<code>200</code>返回码。</p>
+<p>事实上，<code>error_page</code>也支持指定一个处理函数。</p>
+<pre><code class="conf">resolver 10.1.1.1;
+
+location / {
+    proxy_pass http://xxx.com/;
+    error_page 301 302 303 = @handle_redirect;
+}
+
+location @handle_redirect {
+    proxy_pass $upstream_http_location;
+}
+</code></pre>
+<p>这样Nginx就可以自动请求重定向后的URL了。</p>
+<p><code>resolver 10.1.1.1;</code>这行是为了指定DNS服务器，否则会有<code>no resolver defined to resolve xxx.com while sending to client</code>的报错。</p>
+<h2 id="0x02-嵌套重定向"><a href="#0x02-嵌套重定向" class="headerlink" title="0x02 嵌套重定向"></a>0x02 嵌套重定向</h2><p>但是如果请求重定向后的URL返回的还是<code>30x</code>会怎样呢？按照现在的写法，Nginx并不会继续请求了。这种情况可以通过多次配置<code>error_page</code>来解决。</p>
+<pre><code class="conf">location / {
+    proxy_pass http://xxx.com/;
+    error_page 301 302 303 = @handle_redirect;
+}
+
+location @handle_redirect {
+    proxy_pass $upstream_http_location;
+    error_page 307 = @handle_redirect_307;
+}
+
+location @handle_redirect_307 {
+    return 302 &quot;http://yyy.com$upstream_http_location&quot;;
+}
+</code></pre>
+<p>测试发现，现在这种写法并不会引起多次自动重定向，这是为什么呢？</p>
+<p>这是因为Nginx默认只会处理一次错误码，要支持多次，需要添加以下配置项：</p>
+<pre><code class="conf">recursive_error_pages on;
+</code></pre>
+<h2 id="0x03-后记"><a href="#0x03-后记" class="headerlink" title="0x03 后记"></a>0x03 后记</h2><p>Nginx最大的优势就是高效，如果自己实现服务来支持这个自动跳转特性的话，成本会增加，性能也不见得会比Nginx好。因此，对于这种场景，优先考虑通过配置Nginx来解决是最佳方案。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>nginx</tag>
+        <tag>http</tag>
       </tags>
   </entry>
   <entry>
@@ -1471,18 +1327,6 @@ exit(0)
       </categories>
   </entry>
   <entry>
-    <title>Nexus5 进入recovery提示“无命令”</title>
-    <url>/2017/01/07/nexus5-recovery/</url>
-    <content><![CDATA[<p>每次都要刷入recovery，然后使用音量键选择“Recovery mode”，按电源键进入</p>
-]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>Nexus5</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>NGINX部署HTTPS</title>
     <url>/2018/06/03/nginx-https/</url>
     <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>nginx是一款高性能的Web服务器，可以用作反向代理和负载均衡。随着HTTPS的不断推进，越来越多的网站都开始转到HTTPS方式，HTTP仅仅作为重定向到HTTPS的途径。</p>
@@ -1572,60 +1416,6 @@ server{
       </tags>
   </entry>
   <entry>
-    <title>Nginx自动重定向</title>
-    <url>/2020/09/24/nginx-302-to-200/</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>在使用Nginx作为反向代理的时候，如果源服务返回了<code>30x</code>（301、302、303、307等）返回码，需要用户再重新发送一次HTTP请求。但此时有可能出现用户不能直接访问重定向后的URL，就需要Nginx能自动进行重定向，读取新的URL后，通过200返回码返回真正的内容。<br>本文主要就是研究了怎么配置Nginx以实现这样的功能。</p>
-<h2 id="0x01-使用错误处理进行反代"><a href="#0x01-使用错误处理进行反代" class="headerlink" title="0x01 使用错误处理进行反代"></a>0x01 使用错误处理进行反代</h2><p>Ngnix提供了<code>error_page</code>错误处理机制，允许用户在出现指定错误时进行自己的处理逻辑。</p>
-<pre><code class="conf">error_page 403 404 =200 /error.html;
-location = /error.html {
-    root /data/www;
-}  
-</code></pre>
-<p>这样可以在出现<code>403</code>、<code>404</code>错误时返回<code>error.html</code>页面的内容，同时用户看到的还是<code>200</code>返回码。</p>
-<p>事实上，<code>error_page</code>也支持指定一个处理函数。</p>
-<pre><code class="conf">resolver 10.1.1.1;
-
-location / {
-    proxy_pass http://xxx.com/;
-    error_page 301 302 303 = @handle_redirect;
-}
-
-location @handle_redirect {
-    proxy_pass $upstream_http_location;
-}
-</code></pre>
-<p>这样Nginx就可以自动请求重定向后的URL了。</p>
-<p><code>resolver 10.1.1.1;</code>这行是为了指定DNS服务器，否则会有<code>no resolver defined to resolve xxx.com while sending to client</code>的报错。</p>
-<h2 id="0x02-嵌套重定向"><a href="#0x02-嵌套重定向" class="headerlink" title="0x02 嵌套重定向"></a>0x02 嵌套重定向</h2><p>但是如果请求重定向后的URL返回的还是<code>30x</code>会怎样呢？按照现在的写法，Nginx并不会继续请求了。这种情况可以通过多次配置<code>error_page</code>来解决。</p>
-<pre><code class="conf">location / {
-    proxy_pass http://xxx.com/;
-    error_page 301 302 303 = @handle_redirect;
-}
-
-location @handle_redirect {
-    proxy_pass $upstream_http_location;
-    error_page 307 = @handle_redirect_307;
-}
-
-location @handle_redirect_307 {
-    return 302 &quot;http://yyy.com$upstream_http_location&quot;;
-}
-</code></pre>
-<p>测试发现，现在这种写法并不会引起多次自动重定向，这是为什么呢？</p>
-<p>这是因为Nginx默认只会处理一次错误码，要支持多次，需要添加以下配置项：</p>
-<pre><code class="conf">recursive_error_pages on;
-</code></pre>
-<h2 id="0x03-后记"><a href="#0x03-后记" class="headerlink" title="0x03 后记"></a>0x03 后记</h2><p>Nginx最大的优势就是高效，如果自己实现服务来支持这个自动跳转特性的话，成本会增加，性能也不见得会比Nginx好。因此，对于这种场景，优先考虑通过配置Nginx来解决是最佳方案。</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>nginx</tag>
-        <tag>http</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>运行ping命令报错误</title>
     <url>/2017/01/07/ping-error/</url>
     <content><![CDATA[<p>在三星S4上运行ping -c 4 <a href="http://www.qq.com" target="_blank" rel="noopener">www.qq.com</a> 命令报错  </p>
@@ -1643,6 +1433,229 @@ location @handle_redirect_307 {
       </categories>
       <tags>
         <tag>ping</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用PyInstaller打包可执行文件</title>
+    <url>/2018/12/21/pyinstaller/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>之前都是使用<code>py2exe</code>将Python程序打包成可执行文件，但是最近需要打包成<code>Macos</code>上的可执行程序。于是，选择了<code>py2app</code>，但是使用下来发现坑比较多，最终还是放弃了。</p>
+<p>于是，将目光转向了<code>PyInstaller</code>，它可以同时支持Windows和Macos，并且使用方法差异也很小。</p>
+<p>PyInstaller与py2exe的主要差异（Windows）：</p>
+<ul>
+<li><p>PyInstaller打包出来的是一个正常的exe；py2exe打包出来的既是exe，也是zip文件，可以进行解压</p>
+</li>
+<li><p>PyInstaller打包出来的程序在运行后会创建一个临时目录，把dll等文件解压到临时目录中；py2exe使用了内存加载dll的技术，可以在不解压dll的情况下直接加载，看上去更优雅一些</p>
+</li>
+</ul>
+<h2 id="0x01-环境准备"><a href="#0x01-环境准备" class="headerlink" title="0x01 环境准备"></a>0x01 环境准备</h2><p>测试过程使用了<code>virtualenv</code>创建的虚拟环境，可以保证测试过程不会影响到系统的Python环境。</p>
+<pre><code class="bash">$ virtualenv .env
+$ .env\Scripts\activate.bat（Windows）
+$ source .env/bin/activate （类Unix）
+$ pip install PyInstaller
+$ pyinstaller
+usage: pyinstaller [-h] [-v] [-D] [-F] [--specpath DIR] [-n NAME]
+                   [--add-data &lt;SRC;DEST or SRC:DEST&gt;]
+                   [--add-binary &lt;SRC;DEST or SRC:DEST&gt;] [-p DIR]
+                   [--hidden-import MODULENAME]
+                   [--additional-hooks-dir HOOKSPATH]
+                   [--runtime-hook RUNTIME_HOOKS] [--exclude-module EXCLUDES]
+                   [--key KEY] [-d [{all,imports,bootloader,noarchive}]] [-s]
+                   [--noupx] [-c] [-w]
+                   [-i &lt;FILE.ico or FILE.exe,ID or FILE.icns&gt;]
+                   [--version-file FILE] [-m &lt;FILE or XML&gt;] [-r RESOURCE]
+                   [--uac-admin] [--uac-uiaccess] [--win-private-assemblies]
+                   [--win-no-prefer-redirects]
+                   [--osx-bundle-identifier BUNDLE_IDENTIFIER]
+                   [--runtime-tmpdir PATH] [--bootloader-ignore-signals]
+                   [--distpath DIR] [--workpath WORKPATH] [-y]
+                   [--upx-dir UPX_DIR] [-a] [--clean] [--log-level LEVEL]
+                   scriptname [scriptname ...]
+pyinstaller: error: too few arguments
+</code></pre>
+<h2 id="0x02-PyInstaller参数说明"><a href="#0x02-PyInstaller参数说明" class="headerlink" title="0x02 PyInstaller参数说明"></a>0x02 PyInstaller参数说明</h2><p>官方文档地址为：<a href="https://pyinstaller.readthedocs.io/en/stable/usage.html" target="_blank" rel="noopener">https://pyinstaller.readthedocs.io/en/stable/usage.html</a></p>
+<p>常用参数含义如下：</p>
+<pre><code>+--------------+----------------------------------------------+
+|-h, --help    | 帮助信息                                      |
++-------------------------------------------------------------+
+|-v, --version | 版本信息                                      |
++-------------------------------------------------------------+
+|--distpath DIR| 打包文件的保存目录（默认：dist）                |
++-------------------------------------------------------------+
+|--workpath WORKPATH| 临时文件的保存目录（默认：build）          |
++-------------------------------------------------------------+
+|-y, --noconfirm    | 替换文件时无需确认                        |
++-------------------------------------------------------------+
+|--upx-dir UPX_DIR  | UPX程序所在目录                          |
++-------------------------------------------------------------+
+|-a, --ascii        | 不包含unicode编码支持                    |
++-------------------------------------------------------------+
+|--clean            | 编译前先清理缓存和临时文件                |
++-------------------------------------------------------------+
+|--log-level LEVEL  | 编译时的日志等级：TRACE, DEBUG, INFO,     |
+|                   | WARN, ERROR, CRITICAL，默认是：INFO      |
++-------------------------------------------------------------+
+|-D, --onedir       | 生成的所有文件保存到一个目录（默认）       |
++-------------------------------------------------------------+
+|-F, --onefile      | 只生成一个文件（exe）                     |
++-------------------------------------------------------------+
+|–specpath          | .spec文件保存目录（默认是当前目录）        |
++-------------------------------------------------------------+
+|-n                 | 生成的文件名（默认是指定的Python脚本名称） |
++-------------------------------------------------------------+
+|-i                 | 指定程序图标 Windows: *.ico Macos: *.icns|
++-------------------------------------------------------------+
+|-w                 | 不显示命令行窗口                         |
++-------------------------------------------------------------+
+</code></pre><p>一般可以使用以下命令行创建一个GUI的可执行文件：</p>
+<pre><code>pyinstaller -F -w main.py -n demo
+</code></pre><p>执行后，可以在<code>dist</code>目录下创建<code>demo.exe</code>（Windows）或<code>demo.app</code>（Macos）</p>
+<h2 id="0x03-指定程序图标"><a href="#0x03-指定程序图标" class="headerlink" title="0x03 指定程序图标"></a>0x03 指定程序图标</h2><p>一般可执行程序都会包含个性化的图标，但是Windows和Macos使用了不同的图标格式。Windows上一般是常见的<code>*.ico</code>格式；而Macos上则是<code>*.icns</code></p>
+<p>ico图标的制作可以使用一些在线网站或小工具</p>
+<p>制作icns图标可以使用如下方法（Macos）：</p>
+<ol>
+<li><p>准备好一张长宽相等的png图片（最好背景透明），重命名为<code>pic.png</code></p>
+</li>
+<li><p>创建目录<code>tmp.iconset</code></p>
+</li>
+<li><p>执行以下命令，生成图标集</p>
+</li>
+</ol>
+<pre><code class="bash">sips -z 16 16     pic.png --out tmp.iconset/icon_16x16.png
+sips -z 32 32     pic.png --out tmp.iconset/icon_16x16@2x.png
+sips -z 32 32     pic.png --out tmp.iconset/icon_32x32.png
+sips -z 64 64     pic.png --out tmp.iconset/icon_32x32@2x.png
+sips -z 128 128   pic.png --out tmp.iconset/icon_128x128.png
+sips -z 256 256   pic.png --out tmp.iconset/icon_128x128@2x.png
+sips -z 256 256   pic.png --out tmp.iconset/icon_256x256.png
+sips -z 512 512   pic.png --out tmp.iconset/icon_256x256@2x.png
+sips -z 512 512   pic.png --out tmp.iconset/icon_512x512.png
+sips -z 1024 1024 pic.png --out tmp.iconset/icon_512x512@2x.png
+</code></pre>
+<ol start="4">
+<li>执行以下命令创建icns图标文件</li>
+</ol>
+<pre><code>$ iconutil -c icns tmp.iconset -o pic.icns
+</code></pre><p>指定程序图标只要在命令行后面增加参数：</p>
+<pre><code>-i pic.icon/pic.icns
+</code></pre><h2 id="0x04-添加数据文件"><a href="#0x04-添加数据文件" class="headerlink" title="0x04 添加数据文件"></a>0x04 添加数据文件</h2><p>程序中有时需要用到一些数据文件，可以使用<code>--add-data=src;dst</code>（Windows）或<code>--add-data=src:ds</code>（类Unix）参数将<code>src</code>路径对应的<code>文件（夹）</code>拷贝到<code>dst</code>指向的路径，程序中可以使用<code>dst</code>路径进行访问。</p>
+<p>由于PyInstaller打包出来的程序在运行时会解压数据文件到临时目录中，因此程序中可以直接访问这些数据文件；而py2exe则需要手动将数据文件从程序体中解压出来使用。</p>
+<h2 id="0x05-添加版本信息（Windows）"><a href="#0x05-添加版本信息（Windows）" class="headerlink" title="0x05 添加版本信息（Windows）"></a>0x05 添加版本信息（Windows）</h2><p>PyInstaller允许在Windows上给程序添加版本信息，使用<code>--version-file version_file.txt</code>参数进行添加。</p>
+<p><code>version_file.txt</code>文件的制作方法如下：</p>
+<ol>
+<li>根据已有的exe文件生成版本文件模版</li>
+</ol>
+<pre><code>$ pyi-grab_version demo.exe version_file.txt
+</code></pre><ol start="2">
+<li>修改<code>version_file.txt</code>中的文件名、厂商、版本等信息，并保存</li>
+</ol>
+<p>为了动态修改版本信息，也可以使用脚本动态生成版本文件</p>
+<h2 id="0x06-打包成app（-Macos）"><a href="#0x06-打包成app（-Macos）" class="headerlink" title="0x06 打包成app（ Macos）"></a>0x06 打包成app（ Macos）</h2><p>在Macos上使用PyInstaller打包出来的是一个目录，可以直接压缩成zip文件给其他人使用，但更多的是打包成<code>dmg</code>格式。这可以使用<code>App2Dmg</code>这款应用完成。</p>
+<p><img src="/images/app2dmg.jpg" alt></p>
+<p>选择应用目录和要保存的目录后，就会生成<code>.dmg</code>文件了</p>
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python中实现单例的N种方法</title>
+    <url>/2019/11/19/python-singleton/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>单例是一种很常见的设计模式，在Python中不同的实现方法差异也比较大。这里介绍一些不同的实现方法。</p>
+<h2 id="0x01-基本法"><a href="#0x01-基本法" class="headerlink" title="0x01 基本法"></a>0x01 基本法</h2><pre><code class="python">class MyClass(object):
+    _instance = None
+
+    @staticmethod
+    def get_instance():
+        if not MyClass._instance:
+            MyClass._instance = MyClass()
+        return MyClass._instance
+
+inst = MyClass.get_instance()
+
+</code></pre>
+<p>这种方法是最简单的实现方法，但是需要使用者主动调用<code>get_instance</code>方法来获取实例，如果写成<code>inst = MyClass()</code>的话，就不会起到单例的作用了。</p>
+<h2 id="0x02-重载new大法"><a href="#0x02-重载new大法" class="headerlink" title="0x02 重载new大法"></a>0x02 重载<strong>new</strong>大法</h2><p>为了解决上面的问题，可以通过重载<code>__new__</code>方法来实现。</p>
+<pre><code class="python">class MyClass(object):
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(MyClass, cls).__new__(cls, *args, **kwargs)
+            cls._instance.initialize(*args, **kwargs)
+        return cls._instance
+
+    def initialize(self, *args, **kwargs):
+        pass
+
+inst = MyClass()
+</code></pre>
+<p>类在实例化的时候，会先调用<code>__new__</code>方法，在这里可以修改返回的实例。但是，这种方法有一个问题，就是实例化的时候一定会调用<code>__init__</code>方法，因此会出现重复初始化的问题。这里改为使用<code>initialize</code>方法进行初始化，也就是说，使用者需要避免使用<code>__init__</code>进行初始化。</p>
+<p>但是这种方法对用户不是透明的，体验上不是很好。</p>
+<h1 id="0x03-元类法"><a href="#0x03-元类法" class="headerlink" title="0x03 元类法"></a>0x03 元类法</h1><p>元类是一种特殊的类，它继承自<code>type</code>，拥有创造类的能力，因此成为<code>元类</code>。</p>
+<pre><code class="python">
+class SingletonMetaClass(type):
+
+    def __init__(cls, *args, **kwargs):
+        super(SingletonMetaClass, cls).__init__(*args, **kwargs)
+        print(&#39;SingletonMetaClass __init__&#39;)
+
+    def __call__(cls, *args, **kwargs):
+        print(&#39;SingletonMetaClass __call__&#39;)
+        if not hasattr(cls, &#39;_instance&#39;):
+            cls._instance = super(SingletonMetaClass, cls).__call__(*args, **kwargs)
+        print(&#39;SingletonMetaClass __call__ return&#39;)
+        return cls._instance
+
+class MyClass(object, metaclass=SingletonMetaClass):
+
+    def __new__(cls, *args, **kwargs):
+        print(&#39;MyClass __new__&#39;)
+        return super(MyClass, cls).__new__(cls, *args, **kwargs)
+
+    def __init__(self, *args, **kwargs):
+        print(&#39;MyClass __init__&#39;)
+
+inst = MyClass()
+</code></pre>
+<p>输出如下内容：</p>
+<pre><code>SingletonMetaClass __init__
+SingletonMetaClass __call__
+MyClass __new__
+MyClass __init__
+SingletonMetaClass __call__ return
+</code></pre><p>可以看出，正是在元类的<code>__call__</code>中，创造了<code>MyClass</code>这个类。</p>
+<p>这种方法一般用来是没什么问题的，但是有些情况下会报：<code>TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases</code>这个错误。这是因为基类中也使用了元类的原因，此时需要保证元类的继承关系，以避免元类冲突。</p>
+<h2 id="0x04-装饰器法"><a href="#0x04-装饰器法" class="headerlink" title="0x04 装饰器法"></a>0x04 装饰器法</h2><p>装饰器是一种常用的动态修改函数行为的方法，因此也可以用于实现单例。</p>
+<pre><code class="python">class Singleton(object):
+    &#39;&#39;&#39;singleton decorator
+    &#39;&#39;&#39;
+
+    def __init__(self, cls):
+        self.__instance = None
+        self.__cls = cls
+
+    def __call__(self, *args, **kwargs):
+        if not self.__instance:
+            self.__instance = self.__cls(*args, **kwargs)
+        return self.__instance
+
+@Singleton
+class MyClass(object):
+    pass
+
+</code></pre>
+<p>相比其它方法，这种方法缺点更少，使用也更加灵活，不需要修改类的实现。</p>
+<h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>为了实现通用的单例逻辑，主要思路就是修改类的实例化过程。</p>
+<p><code>__new__</code>方法、<code>元类法</code>、<code>装饰器法</code>都是通过在实例化之前判断是否已经实例化，从而返回对应的实例，差别只是在于实现逻辑位于实例化的不同阶段。<code>元类法</code>、<code>装饰器法</code>是通过在类实例化之前判断是否已经进行过实例化；而<code>__new__方法</code>是在已经进入实例化过程，但是尚未进到<code>__init__</code>过程，利用<code>__new__</code>函数可以改变返回实例的特点做到这一点。</p>
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>singleton</tag>
       </tags>
   </entry>
   <entry>
@@ -1812,131 +1825,6 @@ async_sleep();
       </tags>
   </entry>
   <entry>
-    <title>使用PyInstaller打包可执行文件</title>
-    <url>/2018/12/21/pyinstaller/</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>之前都是使用<code>py2exe</code>将Python程序打包成可执行文件，但是最近需要打包成<code>Macos</code>上的可执行程序。于是，选择了<code>py2app</code>，但是使用下来发现坑比较多，最终还是放弃了。</p>
-<p>于是，将目光转向了<code>PyInstaller</code>，它可以同时支持Windows和Macos，并且使用方法差异也很小。</p>
-<p>PyInstaller与py2exe的主要差异（Windows）：</p>
-<ul>
-<li><p>PyInstaller打包出来的是一个正常的exe；py2exe打包出来的既是exe，也是zip文件，可以进行解压</p>
-</li>
-<li><p>PyInstaller打包出来的程序在运行后会创建一个临时目录，把dll等文件解压到临时目录中；py2exe使用了内存加载dll的技术，可以在不解压dll的情况下直接加载，看上去更优雅一些</p>
-</li>
-</ul>
-<h2 id="0x01-环境准备"><a href="#0x01-环境准备" class="headerlink" title="0x01 环境准备"></a>0x01 环境准备</h2><p>测试过程使用了<code>virtualenv</code>创建的虚拟环境，可以保证测试过程不会影响到系统的Python环境。</p>
-<pre><code class="bash">$ virtualenv .env
-$ .env\Scripts\activate.bat（Windows）
-$ source .env/bin/activate （类Unix）
-$ pip install PyInstaller
-$ pyinstaller
-usage: pyinstaller [-h] [-v] [-D] [-F] [--specpath DIR] [-n NAME]
-                   [--add-data &lt;SRC;DEST or SRC:DEST&gt;]
-                   [--add-binary &lt;SRC;DEST or SRC:DEST&gt;] [-p DIR]
-                   [--hidden-import MODULENAME]
-                   [--additional-hooks-dir HOOKSPATH]
-                   [--runtime-hook RUNTIME_HOOKS] [--exclude-module EXCLUDES]
-                   [--key KEY] [-d [{all,imports,bootloader,noarchive}]] [-s]
-                   [--noupx] [-c] [-w]
-                   [-i &lt;FILE.ico or FILE.exe,ID or FILE.icns&gt;]
-                   [--version-file FILE] [-m &lt;FILE or XML&gt;] [-r RESOURCE]
-                   [--uac-admin] [--uac-uiaccess] [--win-private-assemblies]
-                   [--win-no-prefer-redirects]
-                   [--osx-bundle-identifier BUNDLE_IDENTIFIER]
-                   [--runtime-tmpdir PATH] [--bootloader-ignore-signals]
-                   [--distpath DIR] [--workpath WORKPATH] [-y]
-                   [--upx-dir UPX_DIR] [-a] [--clean] [--log-level LEVEL]
-                   scriptname [scriptname ...]
-pyinstaller: error: too few arguments
-</code></pre>
-<h2 id="0x02-PyInstaller参数说明"><a href="#0x02-PyInstaller参数说明" class="headerlink" title="0x02 PyInstaller参数说明"></a>0x02 PyInstaller参数说明</h2><p>官方文档地址为：<a href="https://pyinstaller.readthedocs.io/en/stable/usage.html" target="_blank" rel="noopener">https://pyinstaller.readthedocs.io/en/stable/usage.html</a></p>
-<p>常用参数含义如下：</p>
-<pre><code>+--------------+----------------------------------------------+
-|-h, --help    | 帮助信息                                      |
-+-------------------------------------------------------------+
-|-v, --version | 版本信息                                      |
-+-------------------------------------------------------------+
-|--distpath DIR| 打包文件的保存目录（默认：dist）                |
-+-------------------------------------------------------------+
-|--workpath WORKPATH| 临时文件的保存目录（默认：build）          |
-+-------------------------------------------------------------+
-|-y, --noconfirm    | 替换文件时无需确认                        |
-+-------------------------------------------------------------+
-|--upx-dir UPX_DIR  | UPX程序所在目录                          |
-+-------------------------------------------------------------+
-|-a, --ascii        | 不包含unicode编码支持                    |
-+-------------------------------------------------------------+
-|--clean            | 编译前先清理缓存和临时文件                |
-+-------------------------------------------------------------+
-|--log-level LEVEL  | 编译时的日志等级：TRACE, DEBUG, INFO,     |
-|                   | WARN, ERROR, CRITICAL，默认是：INFO      |
-+-------------------------------------------------------------+
-|-D, --onedir       | 生成的所有文件保存到一个目录（默认）       |
-+-------------------------------------------------------------+
-|-F, --onefile      | 只生成一个文件（exe）                     |
-+-------------------------------------------------------------+
-|–specpath          | .spec文件保存目录（默认是当前目录）        |
-+-------------------------------------------------------------+
-|-n                 | 生成的文件名（默认是指定的Python脚本名称） |
-+-------------------------------------------------------------+
-|-i                 | 指定程序图标 Windows: *.ico Macos: *.icns|
-+-------------------------------------------------------------+
-|-w                 | 不显示命令行窗口                         |
-+-------------------------------------------------------------+
-</code></pre><p>一般可以使用以下命令行创建一个GUI的可执行文件：</p>
-<pre><code>pyinstaller -F -w main.py -n demo
-</code></pre><p>执行后，可以在<code>dist</code>目录下创建<code>demo.exe</code>（Windows）或<code>demo.app</code>（Macos）</p>
-<h2 id="0x03-指定程序图标"><a href="#0x03-指定程序图标" class="headerlink" title="0x03 指定程序图标"></a>0x03 指定程序图标</h2><p>一般可执行程序都会包含个性化的图标，但是Windows和Macos使用了不同的图标格式。Windows上一般是常见的<code>*.ico</code>格式；而Macos上则是<code>*.icns</code></p>
-<p>ico图标的制作可以使用一些在线网站或小工具</p>
-<p>制作icns图标可以使用如下方法（Macos）：</p>
-<ol>
-<li><p>准备好一张长宽相等的png图片（最好背景透明），重命名为<code>pic.png</code></p>
-</li>
-<li><p>创建目录<code>tmp.iconset</code></p>
-</li>
-<li><p>执行以下命令，生成图标集</p>
-</li>
-</ol>
-<pre><code class="bash">sips -z 16 16     pic.png --out tmp.iconset/icon_16x16.png
-sips -z 32 32     pic.png --out tmp.iconset/icon_16x16@2x.png
-sips -z 32 32     pic.png --out tmp.iconset/icon_32x32.png
-sips -z 64 64     pic.png --out tmp.iconset/icon_32x32@2x.png
-sips -z 128 128   pic.png --out tmp.iconset/icon_128x128.png
-sips -z 256 256   pic.png --out tmp.iconset/icon_128x128@2x.png
-sips -z 256 256   pic.png --out tmp.iconset/icon_256x256.png
-sips -z 512 512   pic.png --out tmp.iconset/icon_256x256@2x.png
-sips -z 512 512   pic.png --out tmp.iconset/icon_512x512.png
-sips -z 1024 1024 pic.png --out tmp.iconset/icon_512x512@2x.png
-</code></pre>
-<ol start="4">
-<li>执行以下命令创建icns图标文件</li>
-</ol>
-<pre><code>$ iconutil -c icns tmp.iconset -o pic.icns
-</code></pre><p>指定程序图标只要在命令行后面增加参数：</p>
-<pre><code>-i pic.icon/pic.icns
-</code></pre><h2 id="0x04-添加数据文件"><a href="#0x04-添加数据文件" class="headerlink" title="0x04 添加数据文件"></a>0x04 添加数据文件</h2><p>程序中有时需要用到一些数据文件，可以使用<code>--add-data=src;dst</code>（Windows）或<code>--add-data=src:ds</code>（类Unix）参数将<code>src</code>路径对应的<code>文件（夹）</code>拷贝到<code>dst</code>指向的路径，程序中可以使用<code>dst</code>路径进行访问。</p>
-<p>由于PyInstaller打包出来的程序在运行时会解压数据文件到临时目录中，因此程序中可以直接访问这些数据文件；而py2exe则需要手动将数据文件从程序体中解压出来使用。</p>
-<h2 id="0x05-添加版本信息（Windows）"><a href="#0x05-添加版本信息（Windows）" class="headerlink" title="0x05 添加版本信息（Windows）"></a>0x05 添加版本信息（Windows）</h2><p>PyInstaller允许在Windows上给程序添加版本信息，使用<code>--version-file version_file.txt</code>参数进行添加。</p>
-<p><code>version_file.txt</code>文件的制作方法如下：</p>
-<ol>
-<li>根据已有的exe文件生成版本文件模版</li>
-</ol>
-<pre><code>$ pyi-grab_version demo.exe version_file.txt
-</code></pre><ol start="2">
-<li>修改<code>version_file.txt</code>中的文件名、厂商、版本等信息，并保存</li>
-</ol>
-<p>为了动态修改版本信息，也可以使用脚本动态生成版本文件</p>
-<h2 id="0x06-打包成app（-Macos）"><a href="#0x06-打包成app（-Macos）" class="headerlink" title="0x06 打包成app（ Macos）"></a>0x06 打包成app（ Macos）</h2><p>在Macos上使用PyInstaller打包出来的是一个目录，可以直接压缩成zip文件给其他人使用，但更多的是打包成<code>dmg</code>格式。这可以使用<code>App2Dmg</code>这款应用完成。</p>
-<p><img src="/images/app2dmg.jpg" alt></p>
-<p>选择应用目录和要保存的目录后，就会生成<code>.dmg</code>文件了</p>
-]]></content>
-      <categories>
-        <category>Python</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Python中使用MinGW编译C++扩展</title>
     <url>/2017/05/02/python-mingw-install-extension/</url>
     <content><![CDATA[<p>Python中可以使用</p>
@@ -1980,101 +1868,64 @@ sips -z 1024 1024 pic.png --out tmp.iconset/icon_512x512@2x.png
       </tags>
   </entry>
   <entry>
-    <title>Python中实现单例的N种方法</title>
-    <url>/2019/11/19/python-singleton/</url>
-    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>单例是一种很常见的设计模式，在Python中不同的实现方法差异也比较大。这里介绍一些不同的实现方法。</p>
-<h2 id="0x01-基本法"><a href="#0x01-基本法" class="headerlink" title="0x01 基本法"></a>0x01 基本法</h2><pre><code class="python">class MyClass(object):
-    _instance = None
-
-    @staticmethod
-    def get_instance():
-        if not MyClass._instance:
-            MyClass._instance = MyClass()
-        return MyClass._instance
-
-inst = MyClass.get_instance()
-
-</code></pre>
-<p>这种方法是最简单的实现方法，但是需要使用者主动调用<code>get_instance</code>方法来获取实例，如果写成<code>inst = MyClass()</code>的话，就不会起到单例的作用了。</p>
-<h2 id="0x02-重载new大法"><a href="#0x02-重载new大法" class="headerlink" title="0x02 重载new大法"></a>0x02 重载<strong>new</strong>大法</h2><p>为了解决上面的问题，可以通过重载<code>__new__</code>方法来实现。</p>
-<pre><code class="python">class MyClass(object):
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(MyClass, cls).__new__(cls, *args, **kwargs)
-            cls._instance.initialize(*args, **kwargs)
-        return cls._instance
-
-    def initialize(self, *args, **kwargs):
-        pass
-
-inst = MyClass()
-</code></pre>
-<p>类在实例化的时候，会先调用<code>__new__</code>方法，在这里可以修改返回的实例。但是，这种方法有一个问题，就是实例化的时候一定会调用<code>__init__</code>方法，因此会出现重复初始化的问题。这里改为使用<code>initialize</code>方法进行初始化，也就是说，使用者需要避免使用<code>__init__</code>进行初始化。</p>
-<p>但是这种方法对用户不是透明的，体验上不是很好。</p>
-<h1 id="0x03-元类法"><a href="#0x03-元类法" class="headerlink" title="0x03 元类法"></a>0x03 元类法</h1><p>元类是一种特殊的类，它继承自<code>type</code>，拥有创造类的能力，因此成为<code>元类</code>。</p>
-<pre><code class="python">
-class SingletonMetaClass(type):
-
-    def __init__(cls, *args, **kwargs):
-        super(SingletonMetaClass, cls).__init__(*args, **kwargs)
-        print(&#39;SingletonMetaClass __init__&#39;)
-
-    def __call__(cls, *args, **kwargs):
-        print(&#39;SingletonMetaClass __call__&#39;)
-        if not hasattr(cls, &#39;_instance&#39;):
-            cls._instance = super(SingletonMetaClass, cls).__call__(*args, **kwargs)
-        print(&#39;SingletonMetaClass __call__ return&#39;)
-        return cls._instance
-
-class MyClass(object, metaclass=SingletonMetaClass):
-
-    def __new__(cls, *args, **kwargs):
-        print(&#39;MyClass __new__&#39;)
-        return super(MyClass, cls).__new__(cls, *args, **kwargs)
-
-    def __init__(self, *args, **kwargs):
-        print(&#39;MyClass __init__&#39;)
-
-inst = MyClass()
-</code></pre>
-<p>输出如下内容：</p>
-<pre><code>SingletonMetaClass __init__
-SingletonMetaClass __call__
-MyClass __new__
-MyClass __init__
-SingletonMetaClass __call__ return
-</code></pre><p>可以看出，正是在元类的<code>__call__</code>中，创造了<code>MyClass</code>这个类。</p>
-<p>这种方法一般用来是没什么问题的，但是有些情况下会报：<code>TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases</code>这个错误。这是因为基类中也使用了元类的原因，此时需要保证元类的继承关系，以避免元类冲突。</p>
-<h2 id="0x04-装饰器法"><a href="#0x04-装饰器法" class="headerlink" title="0x04 装饰器法"></a>0x04 装饰器法</h2><p>装饰器是一种常用的动态修改函数行为的方法，因此也可以用于实现单例。</p>
-<pre><code class="python">class Singleton(object):
-    &#39;&#39;&#39;singleton decorator
-    &#39;&#39;&#39;
-
-    def __init__(self, cls):
-        self.__instance = None
-        self.__cls = cls
-
-    def __call__(self, *args, **kwargs):
-        if not self.__instance:
-            self.__instance = self.__cls(*args, **kwargs)
-        return self.__instance
-
-@Singleton
-class MyClass(object):
-    pass
-
-</code></pre>
-<p>相比其它方法，这种方法缺点更少，使用也更加灵活，不需要修改类的实现。</p>
-<h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>为了实现通用的单例逻辑，主要思路就是修改类的实例化过程。</p>
-<p><code>__new__</code>方法、<code>元类法</code>、<code>装饰器法</code>都是通过在实例化之前判断是否已经实例化，从而返回对应的实例，差别只是在于实现逻辑位于实例化的不同阶段。<code>元类法</code>、<code>装饰器法</code>是通过在类实例化之前判断是否已经进行过实例化；而<code>__new__方法</code>是在已经进入实例化过程，但是尚未进到<code>__init__</code>过程，利用<code>__new__</code>函数可以改变返回实例的特点做到这一点。</p>
+    <title>Nexus5 进入recovery提示“无命令”</title>
+    <url>/2017/01/07/nexus5-recovery/</url>
+    <content><![CDATA[<p>每次都要刷入recovery，然后使用音量键选择“Recovery mode”，按电源键进入</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Nexus5</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一款让跨网络访问变简单的工具——turbo-tunnel</title>
+    <url>/2021/02/27/turbo-tunnel/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>你是否遇到过以下这些情况：</p>
+<ul>
+<li><p>目标服务需要通过跳板机才能访问，每次都要将端口映射到本地，然后配置<code>hosts</code>访问</p>
+</li>
+<li><p>不同的服务需要配置不同的代理才能访问，管理起来很不方便</p>
+</li>
+<li><p>有些服务需要通过嵌套代理才能访问，本地不太好配置</p>
+</li>
+<li><p>本地开发、调试后端服务时，对于第三方依赖服务难以直连或通过同一个代理访问，而服务进程又只能配置固定的代理</p>
+</li>
+</ul>
+<p>总的来说，就是因为不同的开发、运维环境差异导致的跨网络访问，会影响到我们日常的开发、调试工作，而turbo-tunnel就是为了解决这一问题而诞生的。</p>
+<h2 id="0x01-常见的跨网络方式"><a href="#0x01-常见的跨网络方式" class="headerlink" title="0x01 常见的跨网络方式"></a>0x01 常见的跨网络方式</h2><h3 id="HTTPS代理"><a href="#HTTPS代理" class="headerlink" title="HTTPS代理"></a>HTTPS代理</h3><p>HTTPS代理是最常见的代理类型，多数在内网中使用，浏览器等应用可以直接用它来访问https的网站，但一般也可以访问其它任意类型的TCP服务，如：FTP、SSH、VNC等。</p>
+<h3 id="SSH隧道"><a href="#SSH隧道" class="headerlink" title="SSH隧道"></a>SSH隧道</h3><p>SSH隧道是一种常见的跨网络访问方式，一般以跳板机的形式提供。用户通过端口映射的方式访问目标网络区域里的服务。</p>
+<h3 id="Websocket代理"><a href="#Websocket代理" class="headerlink" title="Websocket代理"></a>Websocket代理</h3><p>Websocket代理不是一种标准的代理协议，因此，不同实现的协议会有一些差别，难以做到兼容。但这种方式最大的优势是：可以充分利用Web较好的访问连通性，从而实现在更多场景下的跨网络访问。同时，该协议是一种类似于TCP的流式协议，可以做到全双工通信，避免了HTTP本身短连接带来的通信实时性不高问题。</p>
+<p>另一方面，由于并非标准的代理协议，安全检查机制一般很难判断这是一个正常的Websocket服务，还是一个代理服务。通过与Nginx以及HTTPS的结合，可以进一步提升安全性，降低被检测出来的风险。</p>
+<h3 id="其它代理"><a href="#其它代理" class="headerlink" title="其它代理"></a>其它代理</h3><p>其它常见的代理协议还有<code>Socks4</code>、<code>Socks5</code>等，但使用上不及HTTPS广泛。</p>
+<h2 id="0x02-嵌套访问"><a href="#0x02-嵌套访问" class="headerlink" title="0x02 嵌套访问"></a>0x02 嵌套访问</h2><p>嵌套访问是一种很常见的使用场景，例如：在公司内需要先通过HTTPS访问外网，然后再通过公网的一台SSH跳板机来访问真正的目标服务，甚至有可能还要多次穿越SSH隧道。在不借助特定工具的情况下，这种场景一般比较难以支持，就算能够支持也比较复杂。</p>
+<p>支持嵌套访问的原理是：建立每一层的代理连接后，都会告诉它下一跳代理的地址，这样会建立一个请求链，最终将请求发送到真正的目标服务。</p>
+<p>turbo-tunnel目前支持将<code>HTTPS</code>、<code>SSH</code>、<code>Websocket</code>、<code>SOCKS4</code>等代理或隧道，进行任意层级或顺序的组合，从而达到支持嵌套访问的目的。</p>
+<h2 id="0x03-支持配置文件"><a href="#0x03-支持配置文件" class="headerlink" title="0x03 支持配置文件"></a>0x03 支持配置文件</h2><p>将配置存储到文件，可以避免因进程退出或系统重启导致的配置丢失问题，而且在配置内容较多时，可以有效地管理这些配置，避免混乱。如果需要将配置迁移到另一台机器，也只需要将配置文件拷贝到另一台机器即可。</p>
+<p>turbo-tunnel使用<code>yaml</code>格式来管理配置，具体使用方式可以<a href="https://ttun.top/config.html" target="_blank" rel="noopener">参考文档</a>。</p>
+<h2 id="0x04-路由管理"><a href="#0x04-路由管理" class="headerlink" title="0x04 路由管理"></a>0x04 路由管理</h2><p>在多个代理并存的情况下，必然会出现不同目标服务使用不同代理的需求。这种情况就需要进行路由的管理，这和<code>Proxifier</code>中的规则配置是一致的。</p>
+<p>turbo-tunnel通过在配置文件中配置路由规则，允许用户根据目标服务的域名、IP、端口等信息进行路由管理，并且可以设置规则的优先级。</p>
+<h2 id="0x05-使用本地的统一代理"><a href="#0x05-使用本地的统一代理" class="headerlink" title="0x05 使用本地的统一代理"></a>0x05 使用本地的统一代理</h2><p>turbo-tunnel可以在本地建立一个统一的代理服务（推荐使用http/https代理），自动将接收到请求进行路由分发。用户可以使用以下一些方式来使用这个代理服务：</p>
+<ul>
+<li><p>配置<code>http_proxy</code>或<code>https_proxy</code>环境变量，很多命令行工具，如：<code>curl</code>，会读取这个环境变量并通过代理访问。</p>
+</li>
+<li><p>浏览器可以通过配置代理服务器的地址，来将所有流量导入到本地的代理服务。</p>
+</li>
+<li><p>Windows和MacOS推荐使用Proxifier，规则可以设大一些，这样能够实现<code>全局透明代理</code>，应用程序不用再单独设置了。</p>
+</li>
+<li><p>Linux可以使用proxychains等工具进行流量转发，使用时在命令行前面加上<code>proxychains</code>，这样不会影响其它命令，较为灵活。</p>
+</li>
+</ul>
+<h2 id="0x06-总结"><a href="#0x06-总结" class="headerlink" title="0x06 总结"></a>0x06 总结</h2><p>turbo-tunnel是一款为简化复杂场景下跨网络访问的工具，提供了多种代理/隧道协议的支持，相信它能为你的工作带来帮助。</p>
+<p>详细文档地址：<a href="https://ttun.top/" target="_blank" rel="noopener">https://ttun.top/</a>。</p>
+<p>Github项目地址：<a href="https://github.com/drunkdream/turbo-tunnel" target="_blank" rel="noopener">https://github.com/drunkdream/turbo-tunnel</a>。</p>
 ]]></content>
       <categories>
         <category>Python</category>
       </categories>
       <tags>
-        <tag>singleton</tag>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -2092,60 +1943,6 @@ class MyClass(object):
       </categories>
       <tags>
         <tag>inject</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu安装VNC Server</title>
-    <url>/2017/09/26/ubuntu-install-vnc-server/</url>
-    <content><![CDATA[<p>之前在ubuntu上一般都是用vnc4server，但是它只能打开一个窗口，无法像windows上那样操作本地桌面，只能说比ssh强大一点。</p>
-<p>今天发现了一个强大的vnc服务端<strong>x11vnc</strong>，可以远程操作本地桌面。以下内容主要来自于：<a href="http://blog.csdn.net/longhr/article/details/51657610" target="_blank" rel="noopener">http://blog.csdn.net/longhr/article/details/51657610</a>。</p>
-<h2 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h2><p><strong>以下命令都需要在root权限下运行，因此不单独加上sudo。</strong></p>
-<h3 id="1-安装-X11VNC"><a href="#1-安装-X11VNC" class="headerlink" title="1. 安装 X11VNC"></a>1. 安装 X11VNC</h3><blockquote>
-<p>apt install x11vnc -y</p>
-</blockquote>
-<h3 id="2-配置访问密码"><a href="#2-配置访问密码" class="headerlink" title="2. 配置访问密码"></a>2. 配置访问密码</h3><blockquote>
-<p>x11vnc -storepasswd /etc/x11vnc.pass </p>
-</blockquote>
-<h3 id="3-创建服务"><a href="#3-创建服务" class="headerlink" title="3. 创建服务"></a>3. 创建服务</h3><h4 id="Ubuntu-16-04"><a href="#Ubuntu-16-04" class="headerlink" title="Ubuntu 16.04"></a>Ubuntu 16.04</h4><blockquote>
-<p>vi  /lib/systemd/system/x11vnc.service</p>
-</blockquote>
-<p>按i键进入编辑模式，粘贴如下代码，按esc键退出编辑模式，输入 :wq 保存。</p>
-<blockquote>
-<p>[Unit]<br>Description=Start x11vnc at startup.<br>After=multi-user.target<br>[Service]<br>Type=simple<br>ExecStart=/usr/bin/x11vnc -auth guess -forever -loop -noxdamage -repeat -rfbauth /etc/x11vnc.pass -rfbport 5900 -shared<br>[Install]<br>WantedBy=multi-user.target</p>
-</blockquote>
-<h4 id="Ubuntu-14-04"><a href="#Ubuntu-14-04" class="headerlink" title="Ubuntu 14.04"></a>Ubuntu 14.04</h4><blockquote>
-<p>vi /etc/init/x11vnc.conf</p>
-</blockquote>
-<p>按i键进入编辑模式，粘贴如下代码，按esc键退出编辑模式，输入 :wq 保存。</p>
-<blockquote>
-<p>start on login-session-start</p>
-</blockquote>
-<blockquote>
-<p>script</p>
-</blockquote>
-<blockquote>
-<p>x11vnc -display :0 -auth /var/run/lightdm/root/:0 -forever -bg -o /var/log/x11vnc.log -rfbauth /etc/x11vnc.pass -rfbport 5900</p>
-</blockquote>
-<blockquote>
-<p>end script</p>
-</blockquote>
-<h3 id="4-配置防火墙，配置和启动服务"><a href="#4-配置防火墙，配置和启动服务" class="headerlink" title="4. 配置防火墙，配置和启动服务"></a>4. 配置防火墙，配置和启动服务</h3><blockquote>
-<p>ufw allow 5900  </p>
-</blockquote>
-<p>下面两行适用于16.04 </p>
-<blockquote>
-<p>systemctl enable x11vnc.service<br>systemctl daemon-reload</p>
-</blockquote>
-<h3 id="5-重启电脑"><a href="#5-重启电脑" class="headerlink" title="5. 重启电脑"></a>5. 重启电脑</h3><blockquote>
-<p>reboot</p>
-</blockquote>
-<p><img src="http://images.drunkdream.cn/ubuntu_vnc.png" alt></p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>ubuntu</tag>
       </tags>
   </entry>
   <entry>
@@ -2209,76 +2006,6 @@ Fri May 18 09:18:28 2018
       <tags>
         <tag>ubuntu</tag>
         <tag>cuda</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>TOS中安装 SuperSU</title>
-    <url>/2017/01/07/tos-supersu/</url>
-    <content><![CDATA[<p>TOS中安装第三方recovery后，刷入SuperSU刷机包，重启后发现无法获取su权限，原因是daemonsu进程没有运行。<br>解决方法是将/system/etc/install-qrom-recovery.sh文件替换成/system/etc/install-recovery.sh，这样，重启手机后才会创建daemonsu进程。同时，还需要删除/system/vendor/bin/su，因为会优先使用这个su。<br>另外，贴一下TOS中每次自动刷recovery的脚本。  </p>
-<pre><code>#!/system/bin/sh  
-if ! applypatch -c EMMC:/dev/block/platform/msm_sdcc.1/by-name/recovery:12238848
-:ff0553f96edc2bffa97e4ee722422a04f2b66504; then  
-  log -t recovery &quot;Installing new recovery image&quot;  
-  # At most 32M, It is enough currently  
-  dd if=/dev/zero of=/dev/block/platform/msm_sdcc.1/by-name/recovery bs=4096 cou
-nt=8192  
-  dd if=/system/etc/recovery.img of=/dev/block/platform/msm_sdcc.1/by-name/recov
-ery || log -t recovery &quot;Dump into /dev/block/platform/msm_sdcc.1/by-name/recover
-y error!&quot;  
-else  
-  log -t recovery &quot;Recovery image already installed&quot;  
-fi
-</code></pre>]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>tos</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>安全大赛有感</title>
-    <url>/2017/01/07/web-security-thinking/</url>
-    <content><![CDATA[<p>&emsp;&emsp;前几天参加了公司的安全大赛，其中有几题感觉本应该做出来，却没做出来，归根到底还是自己知识面太窄了。<br>&emsp;&emsp;1、找xss漏洞，onclick=\”addMsg(\’<em>\’)\”，</em>表示是参数中可以传入的内容，但是会有过滤，“\”，“\’”，“\””等字符前面会加上“\”，“\’”，“\””会被替换为html编码形式，网页是gbk编码的。<br>&emsp;&emsp;感觉应该是利用gbk编码的漏洞来绕过去，一般来说gbk编码漏洞都是利用GBK双字节中的第二个字符为“\”，如果server把“\”替换为“\\”，返回到浏览器时就变成一个汉字加一个“\”，可是不管怎么弄“\’”还是变成“&#39;”，没法将前面的“\’”闭合。<br>&emsp;&emsp;最后发现答案是：“%c0%5c%27);alert(1);//”，返回的html代码是：“onclick=\”addMsg(\’繺\\&#039;);alert(1);//\’)\””，如果这里还看不出问题的话，用chrome开发者工具看一下就会发现，解析后的html代码是：“onclick=\”addMsg(\’繺\\\’);alert(1);//\’)\””。  &#39;已经被还原成了“\’”，从而闭合了前面的“\’”，这一点我之前是不知道的，而且也没有用开发者工具看一下，这一点太失败了。我离成功真的只有一步之遥了！<br>&emsp;&emsp;有时间好好研究下什么情况下会还原，什么情况下不会还原！这些是原理层面的东西，可惜都不清楚啊！</p>
-<p>&emsp;&emsp;2、传统的从一个页面找下一个页面的游戏，有一个页面是将秘密隐藏在了HTTP响应头中，可我一直都是在html代码中找线索，白白浪费了时间。下次遇到这类题目一定要立马开fiddler。这个失败主要还是思维定势，想问题一定要思路开阔，不能太死！！！</p>
-]]></content>
-      <categories>
-        <category>Web</category>
-      </categories>
-      <tags>
-        <tag>web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>创建Python3虚拟环境失败问题跟进</title>
-    <url>/2019/04/17/win10-python3-virtualenv/</url>
-    <content><![CDATA[<h2 id="0x00-问题描述"><a href="#0x00-问题描述" class="headerlink" title="0x00 问题描述"></a>0x00 问题描述</h2><p>今天在Win10上遇到一个很诡异的问题，使用python3的<code>virtualenv</code>创建虚拟环境失败，报错如下：</p>
-<pre><code>Using base prefix &#39;c:\\users\\xxx\\appdata\\local\\programs\\python\\python37&#39;
-New python executable in D:\env\Scripts\python3.exe
-Also creating executable in D:\env\Scripts\python.exe
-ERROR: The executable D:\env\Scripts\python3.exe is not functioning
-ERROR: It thinks sys.prefix is &#39;d:\\&#39; (should be &#39;d:\\env&#39;)
-ERROR: virtualenv is not compatible with this system or executable
-Note: some Windows users have reported this error when they installed Python for &quot;Only this user&quot; or have multiple versions of Python installed. Copying the appropriate PythonXX.dll to the virtualenv Scripts/ directory may fix this problem.
-</code></pre><p>同时还会有如下弹窗：</p>
-<p><img src="../images/python-0xc0000022.jpg" alt></p>
-<h2 id="定位原因"><a href="#定位原因" class="headerlink" title="定位原因"></a>定位原因</h2><p>根据错误信息在网上寻找解决方法，有说是pythonxx.dll有问题，还有说是权限问题，但试了下都没法解决这个问题。因此，只能尝试在本地寻找复现规律。</p>
-<p>发现将<code>python3.exe</code>复制到其它路径后都无法运行，报错与创建虚拟环境一致；而在另一台Win10机器上却没有这个问题。所以，看来原因应该是python环境有问题，但为什么默认路径运行却是正常的呢？</p>
-<p>一开始以为是<code>python37.dll</code>的问题，但是很快又排除了。此时，发现python3安装目录下有个<code>vcruntime140.dll</code>文件，而这个文件是不会被复制到虚拟环境中的，难道是这个dll的问题？</p>
-<p>将这个dll拷贝到虚拟环境目录后，果然python可以正常运行了。</p>
-<p>因此确定，就是<code>vcruntime140.dll</code>这个文件的锅了。</p>
-<h2 id="终极解决方案"><a href="#终极解决方案" class="headerlink" title="终极解决方案"></a>终极解决方案</h2><p>但是其它Win10上没有拷贝这个dll，也是正常的啊。所以，还需要进一步寻找原因。</p>
-<p>接着，将正常电脑上python安装目录里的<code>vcruntime140.dll</code>文件删掉，运行python，也是正常的。使用<code>procexp</code>查看加载的dll，发现原来python会从<code>C:\Windows\system32</code>目录下加载该dll。</p>
-<p>在有问题的电脑上看了下该目录，文件也是存在的啊，那是怎么回事呢？</p>
-<p>右键查看文件属性，终于发现了根本原因，原来文件的权限设置有问题，估计这个dll是在入域前装上去的，导致只能在管理员权限下访问。</p>
-<p>修改文件权限后，一切都正常了。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>根据程序的报错信息不一定能正确地找到解决问题的方法，有时还是需要进一步跟踪调试，才能找到问题的真正原因。</p>
-]]></content>
-      <categories>
-        <category>Windows</category>
-      </categories>
-      <tags>
-        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -2397,6 +2124,60 @@ exec &quot;$@&quot;
       </tags>
   </entry>
   <entry>
+    <title>Ubuntu安装VNC Server</title>
+    <url>/2017/09/26/ubuntu-install-vnc-server/</url>
+    <content><![CDATA[<p>之前在ubuntu上一般都是用vnc4server，但是它只能打开一个窗口，无法像windows上那样操作本地桌面，只能说比ssh强大一点。</p>
+<p>今天发现了一个强大的vnc服务端<strong>x11vnc</strong>，可以远程操作本地桌面。以下内容主要来自于：<a href="http://blog.csdn.net/longhr/article/details/51657610" target="_blank" rel="noopener">http://blog.csdn.net/longhr/article/details/51657610</a>。</p>
+<h2 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h2><p><strong>以下命令都需要在root权限下运行，因此不单独加上sudo。</strong></p>
+<h3 id="1-安装-X11VNC"><a href="#1-安装-X11VNC" class="headerlink" title="1. 安装 X11VNC"></a>1. 安装 X11VNC</h3><blockquote>
+<p>apt install x11vnc -y</p>
+</blockquote>
+<h3 id="2-配置访问密码"><a href="#2-配置访问密码" class="headerlink" title="2. 配置访问密码"></a>2. 配置访问密码</h3><blockquote>
+<p>x11vnc -storepasswd /etc/x11vnc.pass </p>
+</blockquote>
+<h3 id="3-创建服务"><a href="#3-创建服务" class="headerlink" title="3. 创建服务"></a>3. 创建服务</h3><h4 id="Ubuntu-16-04"><a href="#Ubuntu-16-04" class="headerlink" title="Ubuntu 16.04"></a>Ubuntu 16.04</h4><blockquote>
+<p>vi  /lib/systemd/system/x11vnc.service</p>
+</blockquote>
+<p>按i键进入编辑模式，粘贴如下代码，按esc键退出编辑模式，输入 :wq 保存。</p>
+<blockquote>
+<p>[Unit]<br>Description=Start x11vnc at startup.<br>After=multi-user.target<br>[Service]<br>Type=simple<br>ExecStart=/usr/bin/x11vnc -auth guess -forever -loop -noxdamage -repeat -rfbauth /etc/x11vnc.pass -rfbport 5900 -shared<br>[Install]<br>WantedBy=multi-user.target</p>
+</blockquote>
+<h4 id="Ubuntu-14-04"><a href="#Ubuntu-14-04" class="headerlink" title="Ubuntu 14.04"></a>Ubuntu 14.04</h4><blockquote>
+<p>vi /etc/init/x11vnc.conf</p>
+</blockquote>
+<p>按i键进入编辑模式，粘贴如下代码，按esc键退出编辑模式，输入 :wq 保存。</p>
+<blockquote>
+<p>start on login-session-start</p>
+</blockquote>
+<blockquote>
+<p>script</p>
+</blockquote>
+<blockquote>
+<p>x11vnc -display :0 -auth /var/run/lightdm/root/:0 -forever -bg -o /var/log/x11vnc.log -rfbauth /etc/x11vnc.pass -rfbport 5900</p>
+</blockquote>
+<blockquote>
+<p>end script</p>
+</blockquote>
+<h3 id="4-配置防火墙，配置和启动服务"><a href="#4-配置防火墙，配置和启动服务" class="headerlink" title="4. 配置防火墙，配置和启动服务"></a>4. 配置防火墙，配置和启动服务</h3><blockquote>
+<p>ufw allow 5900  </p>
+</blockquote>
+<p>下面两行适用于16.04 </p>
+<blockquote>
+<p>systemctl enable x11vnc.service<br>systemctl daemon-reload</p>
+</blockquote>
+<h3 id="5-重启电脑"><a href="#5-重启电脑" class="headerlink" title="5. 重启电脑"></a>5. 重启电脑</h3><blockquote>
+<p>reboot</p>
+</blockquote>
+<p><img src="http://images.drunkdream.cn/ubuntu_vnc.png" alt></p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>win7系统64位\&quot;禁用驱动程序签名强制\&quot;</title>
     <url>/2017/01/07/win7-64-signature/</url>
     <content><![CDATA[<blockquote>
@@ -2412,85 +2193,42 @@ exec &quot;$@&quot;
       </tags>
   </entry>
   <entry>
-    <title>WSL运行Chrome Headless模式</title>
-    <url>/2019/08/29/wsl-chrome-headless/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Google Chrome早就支持了<code>headless</code>模式，但一般都是在Linux上运行，而我则习惯于在<code>WSL</code>上开发，折腾了好久终于找到了可以在WSL上跑<code>headless</code>模式的方法。</p>
-<p>以下以<code>WSL</code>中安装的是<code>Ubuntu 18.04</code>系统为例。</p>
-<h2 id="常见安装方法"><a href="#常见安装方法" class="headerlink" title="常见安装方法"></a>常见安装方法</h2><h3 id="安装依赖库"><a href="#安装依赖库" class="headerlink" title="安装依赖库"></a>安装依赖库</h3><pre><code class="bash">$ sudo apt install gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release xdg-utils
-</code></pre>
-<h3 id="安装Chrome"><a href="#安装Chrome" class="headerlink" title="安装Chrome"></a>安装Chrome</h3><pre><code class="bash">$ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-$ sudo dpkg -i google-chrome-stable_current_amd64.deb
-$ which google-chrome
-/usr/bin/google-chrome
-</code></pre>
-<h2 id="使用Chrome-Headless访问网页"><a href="#使用Chrome-Headless访问网页" class="headerlink" title="使用Chrome Headless访问网页"></a>使用Chrome Headless访问网页</h2><p>使用 <a href="https://developers.google.com/web/updates/2017/04/headless-chrome" target="_blank" rel="noopener">官方文档</a>的方法打开Chrome：</p>
-<pre><code>$ google-chrome --headless --disable-gpu --screenshot https://www.baidu.com/
-</code></pre><p>出现如下报错信息：</p>
-<pre><code>Failed to move to new namespace: PID namespaces supported, Network namespace supported, but failed: errno = Permission denied
-Failed to generate minidump.Illegal instruction (core dumped)
-
-</code></pre><p>使用如下命令行也不行：</p>
-<pre><code>$ google-chrome --no-sandbox --headless --no-gpu --disable-setuid-sandbox --screenshot http://www.baidu.com/
-
-[0829/140949.035033:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 1 time(s)
-[0829/140950.200613:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 2 time(s)
-[0829/140951.306996:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 3 time(s)
-
-</code></pre><p>增加<code>--single-process</code>参数后打印如下信息：</p>
-<pre><code>[0829/141145.431580:ERROR:browser_main_loop.cc(584)] Failed to put Xlib into threaded mode.
-[0829/141146.090239:INFO:headless_shell.cc(572)] Written to file screenshot.png.
-</code></pre><p>虽然看起来有报错，但是的确生成网页截图了。</p>
-<p><code>screenshot.png</code>显示如下：</p>
-<p><img src="/images/chrome-headless-screenshot1.png" alt></p>
-<p>看起来有两个问题：</p>
-<ul>
-<li>中文没有正确显示</li>
-<li>窗口大小偏小</li>
-</ul>
-<p>中文显示的问题可以通过以下命令解决：</p>
-<pre><code>$ sudo apt install fonts-noto-cjk
-</code></pre><p>修改窗口大小可以通过增加<code>--window-size=1920,1080</code>参数进行修改。</p>
-<p><img src="/images/chrome-headless-screenshot2.png" alt></p>
-<h2 id="开启远程调试"><a href="#开启远程调试" class="headerlink" title="开启远程调试"></a>开启远程调试</h2><p><code>Headless</code>模式下一般需要通过Chrome远程调试协议进行访问。</p>
-<p>命令行增加<code>--remote-debugging-port=9200</code>参数启动Chrome后，打印出以下信息：</p>
-<pre><code>[0829/194236.072838:ERROR:browser_main_loop.cc(584)] Failed to put Xlib into threaded mode.
-
-DevTools listening on ws://127.0.0.1:9200/devtools/browser/18442c9f-b0ee-4149-a16b-f49622047621
-[0829/194236.299565:ERROR:command_buffer_proxy_impl.cc(107)] ContextResult::kTransientFailure: Shared memory region is not valid
-</code></pre><p>看起来调试端口是启动成功了。</p>
-<p>但是在访问调试页面后，Chrome进程<code>Crash</code>了。</p>
-<pre><code>Segmentation fault (core dumped)
-</code></pre><p>试了多个页面后发现，远程调试都会导致Crash，看来这条路不太好走。</p>
-<h2 id="使用puppeteer提供的Chrome"><a href="#使用puppeteer提供的Chrome" class="headerlink" title="使用puppeteer提供的Chrome"></a>使用puppeteer提供的Chrome</h2><p>无意中发现，<code>puppeteer</code>中提供的Chrome竟然可以在WSL中开启调试端口并正常访问。</p>
-<p>puppeteer默认下载地址的格式为：<code>https://storage.googleapis.com/chromium-browser-snapshots/${platform}/${revision}/chrome-${revision}.zip</code>。例如目前Linux上最新版本的URL为：<code>https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/674921/chrome-linux.zip</code></p>
-<p>也可以使用镜像网站下载，例如：<code>https://npm.taobao.org/mirrors/chromium-browser-snapshots/</code>。</p>
-<p>解压出来就可以直接用了。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>安装依赖库，包括中文字体库</li>
-<li>使用puppeteer提供的Chrome版本</li>
-<li>完整的启动命令行：<code>chrome --no-sandbox --headless --no-gpu --disable-setuid-sandbox --single-process --window-size=1920,1080 --screenshot --remote-debugging-port=9200 http://www.baidu.com/</code></li>
-</ul>
-<p>顺便提供一下<code>puppeteer</code>使用的完整命令行：</p>
-<pre><code>chrome --disable-background-networking --enable-features=NetworkService,NetworkServiceInProcess --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=site-per-process,TranslateUI,BlinkGenPropertyTrees --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-sync --force-color-profile=srgb --metrics-recording-only --no-first-run --enable-automation --password-store=basic --use-mock-keychain --headless --hide-scrollbars --mute-audio about:blank --no-sandbox --disable-setuid-sandbox --remote-debugging-port=0 --user-data-dir=/tmp/puppeteer_dev_profile-NkEdQ6
+    <title>TOS中安装 SuperSU</title>
+    <url>/2017/01/07/tos-supersu/</url>
+    <content><![CDATA[<p>TOS中安装第三方recovery后，刷入SuperSU刷机包，重启后发现无法获取su权限，原因是daemonsu进程没有运行。<br>解决方法是将/system/etc/install-qrom-recovery.sh文件替换成/system/etc/install-recovery.sh，这样，重启手机后才会创建daemonsu进程。同时，还需要删除/system/vendor/bin/su，因为会优先使用这个su。<br>另外，贴一下TOS中每次自动刷recovery的脚本。  </p>
+<pre><code>#!/system/bin/sh  
+if ! applypatch -c EMMC:/dev/block/platform/msm_sdcc.1/by-name/recovery:12238848
+:ff0553f96edc2bffa97e4ee722422a04f2b66504; then  
+  log -t recovery &quot;Installing new recovery image&quot;  
+  # At most 32M, It is enough currently  
+  dd if=/dev/zero of=/dev/block/platform/msm_sdcc.1/by-name/recovery bs=4096 cou
+nt=8192  
+  dd if=/system/etc/recovery.img of=/dev/block/platform/msm_sdcc.1/by-name/recov
+ery || log -t recovery &quot;Dump into /dev/block/platform/msm_sdcc.1/by-name/recover
+y error!&quot;  
+else  
+  log -t recovery &quot;Recovery image already installed&quot;  
+fi
 </code></pre>]]></content>
       <categories>
-        <category>Linux</category>
+        <category>Android</category>
       </categories>
       <tags>
-        <tag>WSL</tag>
-        <tag>Chrome</tag>
-        <tag>headless</tag>
+        <tag>tos</tag>
       </tags>
   </entry>
   <entry>
-    <title>御街行</title>
-    <url>/2017/01/14/yu-jei-xing/</url>
-    <content><![CDATA[<p>横风漫扫清商路&emsp;思益切&emsp;归难阻<br>愁云欲退月还明&emsp;忍痛徘徊寒幕<br>昔年此处&emsp;流星划逝&emsp;相伴成双宿 </p>
-<p>枯叶泪落惜缘舞&emsp;犹在盼&emsp;心头木<br>重逢自此更无期&emsp;化作残灰稍驻<br>来日芬馥&emsp;繁蕊若锦&emsp;勿忘枝间露 </p>
+    <title>安全大赛有感</title>
+    <url>/2017/01/07/web-security-thinking/</url>
+    <content><![CDATA[<p>&emsp;&emsp;前几天参加了公司的安全大赛，其中有几题感觉本应该做出来，却没做出来，归根到底还是自己知识面太窄了。<br>&emsp;&emsp;1、找xss漏洞，onclick=\”addMsg(\’<em>\’)\”，</em>表示是参数中可以传入的内容，但是会有过滤，“\”，“\’”，“\””等字符前面会加上“\”，“\’”，“\””会被替换为html编码形式，网页是gbk编码的。<br>&emsp;&emsp;感觉应该是利用gbk编码的漏洞来绕过去，一般来说gbk编码漏洞都是利用GBK双字节中的第二个字符为“\”，如果server把“\”替换为“\\”，返回到浏览器时就变成一个汉字加一个“\”，可是不管怎么弄“\’”还是变成“&#39;”，没法将前面的“\’”闭合。<br>&emsp;&emsp;最后发现答案是：“%c0%5c%27);alert(1);//”，返回的html代码是：“onclick=\”addMsg(\’繺\\&#039;);alert(1);//\’)\””，如果这里还看不出问题的话，用chrome开发者工具看一下就会发现，解析后的html代码是：“onclick=\”addMsg(\’繺\\\’);alert(1);//\’)\””。  &#39;已经被还原成了“\’”，从而闭合了前面的“\’”，这一点我之前是不知道的，而且也没有用开发者工具看一下，这一点太失败了。我离成功真的只有一步之遥了！<br>&emsp;&emsp;有时间好好研究下什么情况下会还原，什么情况下不会还原！这些是原理层面的东西，可惜都不清楚啊！</p>
+<p>&emsp;&emsp;2、传统的从一个页面找下一个页面的游戏，有一个页面是将秘密隐藏在了HTTP响应头中，可我一直都是在html代码中找线索，白白浪费了时间。下次遇到这类题目一定要立马开fiddler。这个失败主要还是思维定势，想问题一定要思路开阔，不能太死！！！</p>
 ]]></content>
       <categories>
-        <category>诗词</category>
+        <category>Web</category>
       </categories>
+      <tags>
+        <tag>web</tag>
+      </tags>
   </entry>
   <entry>
     <title>WSL中部署nginx作为反向代理</title>
@@ -2621,6 +2359,77 @@ server {
       </tags>
   </entry>
   <entry>
+    <title>WSL运行Chrome Headless模式</title>
+    <url>/2019/08/29/wsl-chrome-headless/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Google Chrome早就支持了<code>headless</code>模式，但一般都是在Linux上运行，而我则习惯于在<code>WSL</code>上开发，折腾了好久终于找到了可以在WSL上跑<code>headless</code>模式的方法。</p>
+<p>以下以<code>WSL</code>中安装的是<code>Ubuntu 18.04</code>系统为例。</p>
+<h2 id="常见安装方法"><a href="#常见安装方法" class="headerlink" title="常见安装方法"></a>常见安装方法</h2><h3 id="安装依赖库"><a href="#安装依赖库" class="headerlink" title="安装依赖库"></a>安装依赖库</h3><pre><code class="bash">$ sudo apt install gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator3-1 libnss3 lsb-release xdg-utils
+</code></pre>
+<h3 id="安装Chrome"><a href="#安装Chrome" class="headerlink" title="安装Chrome"></a>安装Chrome</h3><pre><code class="bash">$ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+$ sudo dpkg -i google-chrome-stable_current_amd64.deb
+$ which google-chrome
+/usr/bin/google-chrome
+</code></pre>
+<h2 id="使用Chrome-Headless访问网页"><a href="#使用Chrome-Headless访问网页" class="headerlink" title="使用Chrome Headless访问网页"></a>使用Chrome Headless访问网页</h2><p>使用 <a href="https://developers.google.com/web/updates/2017/04/headless-chrome" target="_blank" rel="noopener">官方文档</a>的方法打开Chrome：</p>
+<pre><code>$ google-chrome --headless --disable-gpu --screenshot https://www.baidu.com/
+</code></pre><p>出现如下报错信息：</p>
+<pre><code>Failed to move to new namespace: PID namespaces supported, Network namespace supported, but failed: errno = Permission denied
+Failed to generate minidump.Illegal instruction (core dumped)
+
+</code></pre><p>使用如下命令行也不行：</p>
+<pre><code>$ google-chrome --no-sandbox --headless --no-gpu --disable-setuid-sandbox --screenshot http://www.baidu.com/
+
+[0829/140949.035033:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 1 time(s)
+[0829/140950.200613:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 2 time(s)
+[0829/140951.306996:WARNING:gpu_process_host.cc(1188)] The GPU process has crashed 3 time(s)
+
+</code></pre><p>增加<code>--single-process</code>参数后打印如下信息：</p>
+<pre><code>[0829/141145.431580:ERROR:browser_main_loop.cc(584)] Failed to put Xlib into threaded mode.
+[0829/141146.090239:INFO:headless_shell.cc(572)] Written to file screenshot.png.
+</code></pre><p>虽然看起来有报错，但是的确生成网页截图了。</p>
+<p><code>screenshot.png</code>显示如下：</p>
+<p><img src="/images/chrome-headless-screenshot1.png" alt></p>
+<p>看起来有两个问题：</p>
+<ul>
+<li>中文没有正确显示</li>
+<li>窗口大小偏小</li>
+</ul>
+<p>中文显示的问题可以通过以下命令解决：</p>
+<pre><code>$ sudo apt install fonts-noto-cjk
+</code></pre><p>修改窗口大小可以通过增加<code>--window-size=1920,1080</code>参数进行修改。</p>
+<p><img src="/images/chrome-headless-screenshot2.png" alt></p>
+<h2 id="开启远程调试"><a href="#开启远程调试" class="headerlink" title="开启远程调试"></a>开启远程调试</h2><p><code>Headless</code>模式下一般需要通过Chrome远程调试协议进行访问。</p>
+<p>命令行增加<code>--remote-debugging-port=9200</code>参数启动Chrome后，打印出以下信息：</p>
+<pre><code>[0829/194236.072838:ERROR:browser_main_loop.cc(584)] Failed to put Xlib into threaded mode.
+
+DevTools listening on ws://127.0.0.1:9200/devtools/browser/18442c9f-b0ee-4149-a16b-f49622047621
+[0829/194236.299565:ERROR:command_buffer_proxy_impl.cc(107)] ContextResult::kTransientFailure: Shared memory region is not valid
+</code></pre><p>看起来调试端口是启动成功了。</p>
+<p>但是在访问调试页面后，Chrome进程<code>Crash</code>了。</p>
+<pre><code>Segmentation fault (core dumped)
+</code></pre><p>试了多个页面后发现，远程调试都会导致Crash，看来这条路不太好走。</p>
+<h2 id="使用puppeteer提供的Chrome"><a href="#使用puppeteer提供的Chrome" class="headerlink" title="使用puppeteer提供的Chrome"></a>使用puppeteer提供的Chrome</h2><p>无意中发现，<code>puppeteer</code>中提供的Chrome竟然可以在WSL中开启调试端口并正常访问。</p>
+<p>puppeteer默认下载地址的格式为：<code>https://storage.googleapis.com/chromium-browser-snapshots/${platform}/${revision}/chrome-${revision}.zip</code>。例如目前Linux上最新版本的URL为：<code>https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/674921/chrome-linux.zip</code></p>
+<p>也可以使用镜像网站下载，例如：<code>https://npm.taobao.org/mirrors/chromium-browser-snapshots/</code>。</p>
+<p>解压出来就可以直接用了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>安装依赖库，包括中文字体库</li>
+<li>使用puppeteer提供的Chrome版本</li>
+<li>完整的启动命令行：<code>chrome --no-sandbox --headless --no-gpu --disable-setuid-sandbox --single-process --window-size=1920,1080 --screenshot --remote-debugging-port=9200 http://www.baidu.com/</code></li>
+</ul>
+<p>顺便提供一下<code>puppeteer</code>使用的完整命令行：</p>
+<pre><code>chrome --disable-background-networking --enable-features=NetworkService,NetworkServiceInProcess --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=site-per-process,TranslateUI,BlinkGenPropertyTrees --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-sync --force-color-profile=srgb --metrics-recording-only --no-first-run --enable-automation --password-store=basic --use-mock-keychain --headless --hide-scrollbars --mute-audio about:blank --no-sandbox --disable-setuid-sandbox --remote-debugging-port=0 --user-data-dir=/tmp/puppeteer_dev_profile-NkEdQ6
+</code></pre>]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>WSL</tag>
+        <tag>Chrome</tag>
+        <tag>headless</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>WSL2入坑指北</title>
     <url>/2020/07/27/wsl2-guide/</url>
     <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>随着Win10 2004版本的发布，WSL2的时代也正式到来。使用过WSL的用户，都遇到过一些很不爽的问题，例如：不能直接使用docker，一些系统相关的函数不能调用，netstat命令不能使用等。这些问题在WSL2中都得到了解决，因此，是时候切换到WSL2了。</p>
@@ -2681,6 +2490,236 @@ export NO_PROXY=internal.com
       </categories>
       <tags>
         <tag>wsl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>创建Python3虚拟环境失败问题跟进</title>
+    <url>/2019/04/17/win10-python3-virtualenv/</url>
+    <content><![CDATA[<h2 id="0x00-问题描述"><a href="#0x00-问题描述" class="headerlink" title="0x00 问题描述"></a>0x00 问题描述</h2><p>今天在Win10上遇到一个很诡异的问题，使用python3的<code>virtualenv</code>创建虚拟环境失败，报错如下：</p>
+<pre><code>Using base prefix &#39;c:\\users\\xxx\\appdata\\local\\programs\\python\\python37&#39;
+New python executable in D:\env\Scripts\python3.exe
+Also creating executable in D:\env\Scripts\python.exe
+ERROR: The executable D:\env\Scripts\python3.exe is not functioning
+ERROR: It thinks sys.prefix is &#39;d:\\&#39; (should be &#39;d:\\env&#39;)
+ERROR: virtualenv is not compatible with this system or executable
+Note: some Windows users have reported this error when they installed Python for &quot;Only this user&quot; or have multiple versions of Python installed. Copying the appropriate PythonXX.dll to the virtualenv Scripts/ directory may fix this problem.
+</code></pre><p>同时还会有如下弹窗：</p>
+<p><img src="../images/python-0xc0000022.jpg" alt></p>
+<h2 id="定位原因"><a href="#定位原因" class="headerlink" title="定位原因"></a>定位原因</h2><p>根据错误信息在网上寻找解决方法，有说是pythonxx.dll有问题，还有说是权限问题，但试了下都没法解决这个问题。因此，只能尝试在本地寻找复现规律。</p>
+<p>发现将<code>python3.exe</code>复制到其它路径后都无法运行，报错与创建虚拟环境一致；而在另一台Win10机器上却没有这个问题。所以，看来原因应该是python环境有问题，但为什么默认路径运行却是正常的呢？</p>
+<p>一开始以为是<code>python37.dll</code>的问题，但是很快又排除了。此时，发现python3安装目录下有个<code>vcruntime140.dll</code>文件，而这个文件是不会被复制到虚拟环境中的，难道是这个dll的问题？</p>
+<p>将这个dll拷贝到虚拟环境目录后，果然python可以正常运行了。</p>
+<p>因此确定，就是<code>vcruntime140.dll</code>这个文件的锅了。</p>
+<h2 id="终极解决方案"><a href="#终极解决方案" class="headerlink" title="终极解决方案"></a>终极解决方案</h2><p>但是其它Win10上没有拷贝这个dll，也是正常的啊。所以，还需要进一步寻找原因。</p>
+<p>接着，将正常电脑上python安装目录里的<code>vcruntime140.dll</code>文件删掉，运行python，也是正常的。使用<code>procexp</code>查看加载的dll，发现原来python会从<code>C:\Windows\system32</code>目录下加载该dll。</p>
+<p>在有问题的电脑上看了下该目录，文件也是存在的啊，那是怎么回事呢？</p>
+<p>右键查看文件属性，终于发现了根本原因，原来文件的权限设置有问题，估计这个dll是在入域前装上去的，导致只能在管理员权限下访问。</p>
+<p>修改文件权限后，一切都正常了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>根据程序的报错信息不一定能正确地找到解决问题的方法，有时还是需要进一步跟踪调试，才能找到问题的真正原因。</p>
+]]></content>
+      <categories>
+        <category>Windows</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git回滚代码</title>
+    <url>/2018/05/10/git-rollback/</url>
+    <content><![CDATA[<p>有时我们需要回滚git上已经提交的代码，特别是已经提交到<code>github上</code>的代码。可以使用如下步骤：</p>
+<p>1、 <code>git reflog</code></p>
+<pre><code>$ git reflog
+1bd6100 (HEAD -&gt; master) HEAD@{0}: commit: Site updated: 2018-05-10 12:20:40
+f681615 HEAD@{1}: commit: Site updated: 2018-04-25 19:31:25
+78f096f HEAD@{2}: commit: Site updated: 2018-04-25 19:11:23
+14b480b HEAD@{3}: commit: Site updated: 2018-04-24 20:01:27
+</code></pre><p>2、 <code>git reset --hard version</code></p>
+<pre><code>$ git reset --hard f681615
+HEAD is now at f681615 Site updated: 2018-04-25 19:31:25
+</code></pre><p>3、 <code>git log</code></p>
+<pre><code>$ git log
+commit f68161540b8c3400c4ab4a35eef67039c732781d (HEAD -&gt; master)
+Author: drunkdream &lt;drunkdream@gmail.com&gt;
+Date:   Wed Apr 25 19:31:53 2018 +0800
+
+    Site updated: 2018-04-25 19:31:25
+</code></pre><p>4、 <code>git push --force</code></p>
+<pre><code>$ git push --force
+Total 0 (delta 0), reused 0 (delta 0)
+To github.com:drunkdream/xxx.git
+ + 1bd6100...f681615 master -&gt; master (forced update)
+</code></pre>]]></content>
+      <categories>
+        <category>Tool</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Javascript中的原型链分析</title>
+    <url>/2019/12/14/js-prototype/</url>
+    <content><![CDATA[<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Javascript中的prototype是一个十分重要的概念，但是网上的教程一般分析得比较绕，结果越看越晕，反而变得更加难以理解了。</p>
+<p>本文尝试由浅入深，从实验入手，来深入地理解这一概念。</p>
+<h2 id="0x01-函数与对象"><a href="#0x01-函数与对象" class="headerlink" title="0x01 函数与对象"></a>0x01 函数与对象</h2><p>函数是JS中最为重要的一个概念，下面是创建函数最简单的方法：</p>
+<pre><code class="javascript">function func(){
+    return 0;
+}
+</code></pre>
+<p>通过Chrome开发者工具，可以得到以下输出：</p>
+<pre><code>&gt; typeof func
+&lt; &quot;function&quot;
+&gt; func instanceof Function
+&lt; true
+&gt; func instanceof Object
+&lt; true
+</code></pre><p>可以看出，<code>func</code>是<code>Function</code>的一个实例，同时也是<code>Object</code>的一个实例。这点可以理解成<code>Function</code>本质上也是<code>Object</code>的一种。</p>
+<pre><code>&gt; typeof Function
+&lt; &quot;function&quot;
+&gt; typeof Object
+&lt; &quot;function&quot;
+</code></pre><p>再来看这段输出，按照通常<code>OOP</code>语言的理解，<code>Function</code>和<code>Object</code>的类型应该是<code>class</code>之类的值，但偏偏这里返回的是<code>function</code>。这是为什么呢？</p>
+<p>我们知道，js中<code>class</code>的概念是在<code>ES6</code>中才出现的，可以通过以下代码创建一个<code>class</code>：</p>
+<pre><code class="javascript">class MyClass {
+    constructor(name) {
+        this.name = name;
+    }
+    show(){
+        console.log(this.name);
+    }
+}
+
+var obj = new MyClass(&#39;drunkdream&#39;);
+obj.show();
+</code></pre>
+<p>现在来测试一下<code>obj</code>实例的相关情况：</p>
+<pre><code>&gt; typeof obj
+&lt; &quot;object&quot;
+&gt; obj instanceof MyClass
+&lt; true
+&gt; obj instanceof Object
+&lt; true
+&gt; typeof MyClass
+&lt; &quot;function&quot;
+&gt; MyClass instanceof Function
+&lt; true
+</code></pre><p>可以看出，<code>obj</code>的确是<code>MyClass</code>的一个实例。但是，奇怪的是：<code>MyClass</code>的类型竟然是<code>function</code>，这点和其它语言的确不太一样。</p>
+<p>这是因为：</p>
+<blockquote>
+<p>js中并没有真正的<code>class</code>的概念，<code>class</code>仅仅是<code>function</code>的一种语法糖而已。</p>
+</blockquote>
+<p>来看下在<code>ES5</code>中一般怎么构造一个<code>class</code>的。</p>
+<pre><code class="javascript">function MyClass(name) {
+    this.name = name;
+}
+
+MyClass.prototype.show = function () {
+    console.log(this.name);
+}
+</code></pre>
+<p>这种写法可以实现和上面那段代码相同的功能，但是很明显，<code>MyClass</code>真的是一个<code>function</code>。也就是说：<code>new</code>一个<code>function</code>得到的其实是一个对象。这和其它语言差异是比较大的。</p>
+<p>而<code>prototype</code>在其中就是扮演了添加类的成员函数的作用。</p>
+<p>其实，将上面的代码改成：</p>
+<pre><code class="javascript">function MyClass(name) {
+    this.name = name;
+    this.show = function () {
+        console.log(this.name);
+    }
+}
+</code></pre>
+<p>这样的形式对于使用者也是完全没有问题的，差别只是每次实例化都会创建出一个<code>show</code>函数，显然这种写法是不好的。</p>
+<h2 id="0x02-prototype与proto"><a href="#0x02-prototype与proto" class="headerlink" title="0x02 prototype与proto"></a>0x02 prototype与<strong>proto</strong></h2><p>那<code>prototype</code>到底是个什么样的存在呢？</p>
+<pre><code>&gt; MyClass.prototype
+&lt; {show: ƒ, constructor: ƒ}
+    show: ƒ ()
+    constructor: ƒ MyClass(name)
+    __proto__: Object
+&gt; typeof MyClass.prototype
+&lt; &quot;object&quot;
+&gt; MyClass.prototype.constructor === MyClass
+&lt; true
+&gt; MyClass.prototype.__proto__
+&lt; {constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …}
+    constructor: ƒ Object()
+    hasOwnProperty: ƒ hasOwnProperty()
+    isPrototypeOf: ƒ isPrototypeOf()
+    propertyIsEnumerable: ƒ propertyIsEnumerable()
+    toLocaleString: ƒ toLocaleString()
+    toString: ƒ toString()
+    valueOf: ƒ valueOf()
+    __defineGetter__: ƒ __defineGetter__()
+    __defineSetter__: ƒ __defineSetter__()
+    __lookupGetter__: ƒ __lookupGetter__()
+    __lookupSetter__: ƒ __lookupSetter__()
+    get __proto__: ƒ __proto__()
+    set __proto__: ƒ __proto__()
+</code></pre><p>上面这段看起来有点绕，需要仔细思索一下。</p>
+<p>可以看出，<code>prototype</code>本质上是一个对象，必须要包含<code>constructor</code>构造函数和<code>__proto__</code>对象。</p>
+<p><code>constructor</code>其实就是<code>MyClass</code>函数本身，而<code>__proto__</code>对象看起来就有些神秘了。不过从<code>__proto__.constructor</code>可以看出，它其实就是<code>Object</code>。是不是觉得<code>__proto__</code>指向的是当前类的基类呢？</p>
+<p>我们再来测试一下：</p>
+<pre><code>&gt; class MyClass1 extends String{}
+&gt; MyClass1.prototype.__proto__.constructor == String
+&lt; true
+</code></pre><p>看来的确是这样的，只不过由于js中的类本质上都是<code>function</code>，而每个<code>function</code>都有一个原型，通过这种方式将原型<code>链接</code>起来，就起到了类继承的作用。</p>
+<h2 id="0x03-将对象变成函数"><a href="#0x03-将对象变成函数" class="headerlink" title="0x03 将对象变成函数"></a>0x03 将对象变成函数</h2><p>下面是网上找的一段代码：</p>
+<pre><code class="javascript">function classcallable(cls) {
+    /*
+     * Replicate the __call__ magic method of python and let class instances
+     * be callable.
+     */
+    var new_cls = function () {
+        var obj = Object.create(cls.prototype);
+        // create callable
+        // we use func.__call__ because call might be defined in
+        // init which hasn&#39;t been called yet.
+        var func = function () {
+            return func.__call__.apply(func, arguments);
+        };
+        func.__proto__ = obj;
+        // apply init late so it is bound to func and not cls
+        cls.apply(func, arguments);
+        return func;
+    }
+    new_cls.prototype = cls.prototype;
+    return new_cls
+}
+</code></pre>
+<p>它可以将一个类实例类型从<code>object</code>变成<code>function</code>。</p>
+<pre><code class="javascript">var s = new String();
+console.log(typeof s);
+
+var s = new classcallable(String)();
+console.log(typeof s);
+</code></pre>
+<p>输出结果为：</p>
+<pre><code>object
+function
+</code></pre><p>也就是说，使用<code>classcallable</code>之后创建的对象，可以当做函数来调用。我们分析一下这里面的原因。</p>
+<p>在js中是允许在类的构造函数中返回一个<code>function</code>的，可以使用以下代码进行测试：</p>
+<pre><code class="javascript">function MyClass(flag){
+    var func = function(){
+        console.log(&quot;call func&quot;);
+    }
+    if(flag === 1)
+        return func;
+    else
+        return 0;
+}
+
+console.log(typeof new MyClass(0));
+console.log(typeof new MyClass(1));
+</code></pre>
+<p>输出结果为：</p>
+<pre><code>object
+function
+</code></pre><p>因此，只要修改构造函数的返回值，就可以改变创建出的实例类型，这里正是用了这种方法。</p>
+]]></content>
+      <categories>
+        <category>Javascript</category>
+      </categories>
+      <tags>
+        <tag>prototype</tag>
       </tags>
   </entry>
   <entry>
@@ -4177,6 +4216,16 @@ output from new class A_B
         <tag>python</tag>
         <tag>class</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>御街行</title>
+    <url>/2017/01/14/yu-jei-xing/</url>
+    <content><![CDATA[<p>横风漫扫清商路&emsp;思益切&emsp;归难阻<br>愁云欲退月还明&emsp;忍痛徘徊寒幕<br>昔年此处&emsp;流星划逝&emsp;相伴成双宿 </p>
+<p>枯叶泪落惜缘舞&emsp;犹在盼&emsp;心头木<br>重逢自此更无期&emsp;化作残灰稍驻<br>来日芬馥&emsp;繁蕊若锦&emsp;勿忘枝间露 </p>
+]]></content>
+      <categories>
+        <category>诗词</category>
+      </categories>
   </entry>
   <entry>
     <title>解决Android模拟器中修改IMSI后无法上网问题</title>
