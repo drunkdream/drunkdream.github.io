@@ -1,0 +1,1375 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="hook,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="0x00 缘起最近在使用一款Art Hook框架对应用进行Hook的时候发现，函数Hook之后却总是没有被触发，于是怀疑是被dex2oat做了Inline处理。 以下环境以Android 5.0 x86 为例。 0x01 迷途使用oatdump --oat-file=oat_path命令进行dump，却发现几乎所有的函数都无法看到汇编代码：     OatMethodOffsets (offset">
+<meta name="keywords" content="hook">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次Art Hook失败问题的跟进">
+<meta property="og:url" content="https://www.drunkdream.com/2019/03/01/art-oat-build/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 缘起最近在使用一款Art Hook框架对应用进行Hook的时候发现，函数Hook之后却总是没有被触发，于是怀疑是被dex2oat做了Inline处理。 以下环境以Android 5.0 x86 为例。 0x01 迷途使用oatdump --oat-file=oat_path命令进行dump，却发现几乎所有的函数都无法看到汇编代码：     OatMethodOffsets (offset">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-05-16T15:42:44.533Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一次Art Hook失败问题的跟进">
+<meta name="twitter:description" content="0x00 缘起最近在使用一款Art Hook框架对应用进行Hook的时候发现，函数Hook之后却总是没有被触发，于是怀疑是被dex2oat做了Inline处理。 以下环境以Android 5.0 x86 为例。 0x01 迷途使用oatdump --oat-file=oat_path命令进行dump，却发现几乎所有的函数都无法看到汇编代码：     OatMethodOffsets (offset">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.drunkdream.com/2019/03/01/art-oat-build/">
+
+
+
+
+
+  <title>一次Art Hook失败问题的跟进 | 醉梦轩</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6b044934808dac49251aa0a35cf37875";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">醉梦轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">醉中无日月，梦里有乾坤</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2019/03/01/art-oat-build/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="drunkdream">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/logo.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一次Art Hook失败问题的跟进</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-01T06:05:09+00:00">
+                2019-03-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  1.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-缘起"><a href="#0x00-缘起" class="headerlink" title="0x00 缘起"></a>0x00 缘起</h2><p>最近在使用一款Art Hook框架对应用进行Hook的时候发现，函数Hook之后却总是没有被触发，于是怀疑是被<code>dex2oat</code>做了<code>Inline</code>处理。</p>
+<p>以下环境以Android 5.0 x86 为例。</p>
+<h2 id="0x01-迷途"><a href="#0x01-迷途" class="headerlink" title="0x01 迷途"></a>0x01 迷途</h2><p>使用<code>oatdump --oat-file=oat_path</code>命令进行dump，却发现几乎所有的函数都无法看到汇编代码：</p>
+<pre><code>    OatMethodOffsets (offset=0x00000000)
+
+      code_offset: 0x00000000 
+
+      gc_map: (offset=0x00000000)
+
+    OatQuickMethodHeader (offset=0x00000000)
+
+      mapping_table: (offset=0x00000000)
+
+      vmap_table: (offset=0x00000000)
+
+    QuickMethodFrameInfo
+
+      frame_size_in_bytes: 0
+
+      core_spill_mask: 0x00000000 
+
+      fp_spill_mask: 0x00000000 
+
+    CODE: (code_offset=0x00000000 size_offset=0x00000000 size=0)
+
+      NO CODE!
+
+</code></pre><p>看起来像是没有进行<code>oat</code>，但是dump的文件却真真实实是一个<code>oat</code>文件啊。不是说Android 5.0都是进行oat编译的吗，总不会是<code>oatdump</code>有问题吧！</p>
+<h2 id="0x02-明心"><a href="#0x02-明心" class="headerlink" title="0x02 明心"></a>0x02 明心</h2><p>于是，又重新安装了一次，抓<code>logcat</code>看了以下，发现以下日志很可疑：</p>
+<pre><code>I/PackageManager( 1546): Running dexopt on: /data/app/com.autonavi.minimap-1/base.apk pkg=com.autonavi.minimap isa=x86 vmSafeMode=true
+
+I/dex2oat ( 3779): /system/bin/dex2oat --zip-fd=5 --zip-location=/data/app/com.autonavi.minimap-1/base.apk --oat-fd=6 --oat-location=/data/dalvik-cache/x86/data@app@com.autonavi.minimap-1@base.apk@classes.dex --instruction-set=x86 --instruction-set-features=default --runtime-arg -Xms64m --runtime-arg -Xmx512m --compiler-filter=interpret-only
+</code></pre><p>看起来是<code>interpret-only</code>导致使用了解释方式编译。虽然不确定是不是因为<code>interpret</code>导致Hook不生效，但是看不到汇编代码，心里总是没有底。</p>
+<p>所以，现在就要将编译模式改成非解释方式。</p>
+<p>在<code>/frameworks/native/cmds/installd/commands.c</code>文件的<code>run_dex2oat</code>函数中找到了如下代码：</p>
+<pre><code class="c">if (skip_compilation) {
+    strcpy(dex2oat_compiler_filter_arg, &quot;--compiler-filter=verify-none&quot;);
+    have_dex2oat_compiler_filter_flag = true;
+} else if (vm_safe_mode) {
+    strcpy(dex2oat_compiler_filter_arg, &quot;--compiler-filter=interpret-only&quot;);
+    have_dex2oat_compiler_filter_flag = true;
+} else if (have_dex2oat_compiler_filter_flag) {
+    sprintf(dex2oat_compiler_filter_arg, &quot;--compiler-filter=%s&quot;, dex2oat_compiler_filter_flag);
+</code></pre>
+<p>看来就是这个<code>vm_safe_mode</code>导致使用了<code>interpret-only</code>模式，而上面<code>logcat</code>日志显示：<code>vm_safe_mode</code>的值是<code>true</code>。</p>
+<p>顺便提一句，当<code>vm_safe_mode</code>为<code>false</code>时，系统会使用<code>dex2oat_compiler_filter_flag</code>的值作为编译类型。</p>
+<pre><code class="c">char dex2oat_compiler_filter_flag[PROPERTY_VALUE_MAX];
+bool have_dex2oat_compiler_filter_flag = property_get(&quot;dalvik.vm.dex2oat-filter&quot;, dex2oat_compiler_filter_flag, NULL) &gt; 0;
+</code></pre>
+<p>从上面的代码可以看出，<code>dex2oat_compiler_filter_flag</code>的值是取自<code>dalvik.vm.dex2oat-filter</code>这个系统属性。</p>
+<p>可选的值有：<code>verify-none | interpret-only | space | balanced | speed | everything</code> 。而系统默认是没有设置这个属性的，如果我们想设置默认的编译类型，可以修改<code>/system/build.prop</code>文件，添加<code>dalvik.vm.dex2oat-filter=interpret-only</code>，保存文件并重启手机，但是这步操作需要<code>root</code>权限。</p>
+<p>系统默认使用的编译类型设置如下：</p>
+<pre><code class="java">  UsageError(&quot;  --compiler-filter=(verify-none|interpret-only|space|balanced|speed|everything):&quot;);
+  UsageError(&quot;      select compiler filter.&quot;);
+  UsageError(&quot;      Example: --compiler-filter=everything&quot;);
+#if ART_SMALL_MODE
+  UsageError(&quot;      Default: interpret-only&quot;);
+#else
+  UsageError(&quot;      Default: speed&quot;);
+#endif
+</code></pre>
+<p>因此， 在应用没有设置<code>vm_safe_mode</code>，并且系统没有设置<code>dalvik.vm.dex2oat-filter</code>属性时，就会使用<code>speed</code>模式。</p>
+<h2 id="0x03-见性"><a href="#0x03-见性" class="headerlink" title="0x03 见性"></a>0x03 见性</h2><p>下面来看<code>vm_safe_mode</code>是怎么设置的。</p>
+<p><code>/frameworks/native/cmds/installd/commands.c</code></p>
+<pre><code class="c">int dexopt(const char *apk_path, uid_t uid, bool is_public,
+           const char *pkgname, const char *instruction_set,
+           bool vm_safe_mode, bool is_patchoat){
+    // ......
+    run_dex2oat(input_fd, out_fd, input_file, out_path, pkgname, instruction_set, vm_safe_mode);
+    // ......
+}
+</code></pre>
+<p>一路向上，找到<code>/frameworks/base/services/core/java/com/android/server/pm/PackageManagerService.java</code>中的<code>performDexOptLI</code>函数，里面包含如下代码：</p>
+<pre><code class="java">final boolean vmSafeMode = (pkg.applicationInfo.flags &amp; ApplicationInfo.FLAG_VM_SAFE_MODE) != 0;
+
+Log.i(TAG, &quot;Running dexopt on: &quot; + path + &quot; pkg=&quot;
+                                + pkg.applicationInfo.packageName + &quot; isa=&quot; + dexCodeInstructionSet
+                                + &quot; vmSafeMode=&quot; + vmSafeMode);
+
+final int ret = mInstaller.dexopt(path, sharedGid, !isForwardLocked(pkg),
+                                pkg.packageName, dexCodeInstructionSet, vmSafeMode);
+</code></pre>
+<p>可以看出，<code>vmSafeMode</code>是从应用信息里读出来的，最终在反编译出来的<code>AndroidManifest.xml</code>里，我们找到了以下配置：</p>
+<pre><code class="xml">&lt;application android:allowBackup=&quot;false&quot; android:hardwareAccelerated=&quot;true&quot; android:icon=&quot;@0x7f0213b0&quot; android:label=&quot;@0x7f090000&quot; android:largeHeap=&quot;true&quot; android:name=&quot;com.autonavi.minimap.MapApplication&quot; android:resizeableActivity=&quot;false&quot; android:roundIcon=&quot;@0x7f0213b0&quot; android:supportsRtl=&quot;true&quot; android:theme=&quot;@0x7f0b0065&quot; android:vmSafeMode=&quot;true&quot;&gt;
+</code></pre>
+<h2 id="0x04-缘灭"><a href="#0x04-缘灭" class="headerlink" title="0x04 缘灭"></a>0x04 缘灭</h2><p>解决方法就是，将<code>android:vmSafeMode</code>字段设为<code>false</code>，重打包应用，然后安装。</p>
+<pre><code>I/PackageManager( 1546): Running dexopt on: /data/app/com.autonavi.minimap-1/base.apk pkg=com.autonavi.minimap isa=x86 vmSafeMode=false
+</code></pre><p><code>vmSafeMode</code>已经被成功修改成<code>false</code>了。</p>
+<p>使用<code>oatduump</code>命令查看oat信息：</p>
+<pre><code>    OatMethodOffsets (offset=0x0282dfa0)
+
+      code_offset: 0x0520ff08 
+
+      gc_map: (offset=0x02c554ba)
+
+    OatQuickMethodHeader (offset=0x0520fef0)
+
+      mapping_table: (offset=0x03202b8b)
+
+      vmap_table: (offset=0x034095d5)
+
+      v65534/r5, v2/r6, v0/r7, v65535/r16
+
+    QuickMethodFrameInfo
+
+      frame_size_in_bytes: 48
+
+      core_spill_mask: 0x000100e0 (r5, r6, r7, r16)
+
+      fp_spill_mask: 0x00000000 
+
+    CODE: (code_offset=0x0520ff08 size_offset=0x0520ff04 size=192)...
+
+      0x0520ff08:         85842400E0FFFF        test    eax, [esp + -8192]
+
+      suspend point dex PC: 0x0000
+
+      GC map objects:  v2 (r6)
+
+      0x0520ff0f:                 83EC2C        sub     esp, 44
+
+      0x0520ff12:               896C2420        mov     [esp + 32], ebp
+
+      0x0520ff16:               89742424        mov     [esp + 36], esi
+
+      0x0520ff1a:               897C2428        mov     [esp + 40], edi
+
+      0x0520ff1e:                   8BE8        mov     ebp, eax
+
+      0x0520ff20:                 890424        mov     [esp], eax
+
+      0x0520ff23:                   8BF1        mov     esi, ecx
+
+      0x0520ff25:                 8B4514        mov     eax, [ebp + 20]
+
+      0x0520ff28:           8B80D4AC0100        mov     eax, [eax + 109780]
+
+      0x0520ff2e:                   85C0        test    eax, eax
+
+      0x0520ff30:                   746A        jz/eq   +106 (0x0520ff9c)
+
+      0x0520ff32:                   8BF8        mov     edi, eax
+
+      0x0520ff34:                 8B4514        mov     eax, [ebp + 20]
+
+      0x0520ff37:           8B805C7C0000        mov     eax, [eax + 31836]
+</code></pre><p>汇编指令也可以正常显示了。</p>
+<p>经过测试，Hook也被正常调用了。所以，应该是该Hook框架还不支持解释模式编译的应用。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      drunkdream
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2019/03/01/art-oat-build/" title="一次Art Hook失败问题的跟进">https://www.drunkdream.com/2019/03/01/art-oat-build/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/hook/" rel="tag"># hook</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/28/install-squid-server/" rel="next" title="Ubuntu部署squid代理服务器">
+                <i class="fa fa-chevron-left"></i> Ubuntu部署squid代理服务器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/14/qt4a-repack-implementation/" rel="prev" title="QT4A重打包实现原理">
+                QT4A重打包实现原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=1e64ff5cae2be"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+      <div id="gitalk-container"></div>
+      <script src="https://unpkg.com/gitalk@1.5.0/dist/gitalk.min.js"></script>
+      <script type="text/javascript">
+          var gitalk = new Gitalk({
+              clientID: 'Iv1.bbffb0360439c133',
+              clientSecret: '6c02cd39741abd9ceae5cf5a8fdf5cbc0d5d4eda',
+              id: window.location.pathname,
+              repo: 'drunkdream.github.io',
+              owner: 'drunkdream',
+              admin: 'drunkdream',
+              proxy: '/github/login/oauth/access_token'
+          })
+          gitalk.render('gitalk-container')
+      </script>
+      <style>
+          .gt-container a {
+              border: none;
+          }
+          .gt-container .gt-header-controls-tip {
+              font-size: 12px;
+              position: relative;
+              top: -10px;
+          }
+      </style>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/logo.gif" alt="drunkdream">
+          <p class="site-author-name" itemprop="name">drunkdream</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-缘起"><span class="nav-number">1.</span> <span class="nav-text">0x00 缘起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-迷途"><span class="nav-number">2.</span> <span class="nav-text">0x01 迷途</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-明心"><span class="nav-number">3.</span> <span class="nav-text">0x02 明心</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-见性"><span class="nav-number">4.</span> <span class="nav-text">0x03 见性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-缘灭"><span class="nav-number">5.</span> <span class="nav-text">0x04 缘灭</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">drunkdream</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (search_path.endsWith("json")) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

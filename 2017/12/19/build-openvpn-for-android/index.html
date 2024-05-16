@@ -1,0 +1,1489 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Android,OpenVPN,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="0x00 前言目前网上看到的Android端OpenVPN客户端都是基于VPNService开发的，这种方法不需要root权限，因此使用非常广泛。但是，这种方法需要UI操作，还是不够完美，我更喜欢使用纯命令行的openvpn（需要root权限）。 以下是编译2.3.17 x86版本openvpn过程的记录。编译环境为：Ubuntu 14.04 64位系统 源码下载地址为：http://build.">
+<meta name="keywords" content="Android,OpenVPN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译Android版本的OpenVPN">
+<meta property="og:url" content="https://www.drunkdream.com/2017/12/19/build-openvpn-for-android/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言目前网上看到的Android端OpenVPN客户端都是基于VPNService开发的，这种方法不需要root权限，因此使用非常广泛。但是，这种方法需要UI操作，还是不够完美，我更喜欢使用纯命令行的openvpn（需要root权限）。 以下是编译2.3.17 x86版本openvpn过程的记录。编译环境为：Ubuntu 14.04 64位系统 源码下载地址为：http://build.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-05-16T15:42:44.534Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编译Android版本的OpenVPN">
+<meta name="twitter:description" content="0x00 前言目前网上看到的Android端OpenVPN客户端都是基于VPNService开发的，这种方法不需要root权限，因此使用非常广泛。但是，这种方法需要UI操作，还是不够完美，我更喜欢使用纯命令行的openvpn（需要root权限）。 以下是编译2.3.17 x86版本openvpn过程的记录。编译环境为：Ubuntu 14.04 64位系统 源码下载地址为：http://build.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.drunkdream.com/2017/12/19/build-openvpn-for-android/">
+
+
+
+
+
+  <title>编译Android版本的OpenVPN | 醉梦轩</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6b044934808dac49251aa0a35cf37875";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">醉梦轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">醉中无日月，梦里有乾坤</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2017/12/19/build-openvpn-for-android/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="drunkdream">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/logo.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">编译Android版本的OpenVPN</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-19T12:41:31+00:00">
+                2017-12-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  1.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>目前网上看到的Android端OpenVPN客户端都是基于VPNService开发的，这种方法不需要root权限，因此使用非常广泛。但是，这种方法需要UI操作，还是不够完美，我更喜欢使用纯命令行的openvpn（需要root权限）。</p>
+<p>以下是编译2.3.17 x86版本openvpn过程的记录。<br>编译环境为：Ubuntu 14.04 64位系统</p>
+<p>源码下载地址为：<a href="http://build.openvpn.net/downloads/releases/" target="_blank" rel="noopener">http://build.openvpn.net/downloads/releases/</a>。</p>
+<h2 id="0x01-依赖库编译"><a href="#0x01-依赖库编译" class="headerlink" title="0x01 依赖库编译"></a>0x01 依赖库编译</h2><p>openvpn依赖的库主要有：openssl、liblzo</p>
+<h3 id="编译openssl"><a href="#编译openssl" class="headerlink" title="编译openssl"></a>编译openssl</h3><p>github上找到一个提供编译方法的<a href="https://github.com/leenjewel/openssl_for_ios_and_android" target="_blank" rel="noopener">项目</a>，它提供的是openssl-1.1.0f版本的编译，按照如下命令可以很快编译出x86版本的静态库。</p>
+<blockquote>
+<p>./build-openssl4android.sh android-x86 x86</p>
+</blockquote>
+<p>但是后来发现，openvpn用到的一些函数已经不支持openssl 1.1以上版本，因此改用1.0.2版本的openssl。下载地址为：<a href="https://www.openssl.org/source/old/1.0.2/" target="_blank" rel="noopener">https://www.openssl.org/source/old/1.0.2/</a>。</p>
+<p>修改build-openssl4android.sh中openssl的文件名，然后运行脚本编译。完成后在会在<code>libs\x86\lib</code>目录下生成<code>libcrypto.a</code>和<code>libssl.a</code>两个文件。</p>
+<p>网上还找到另外一种<a href="https://stackoverflow.com/questions/24130501/openssl-compiled-to-run-on-android-x86-architecture" target="_blank" rel="noopener">方法</a>，原理是一致的，方法略有差异。</p>
+<pre><code>export CC=&quot;$STANDALONE_TOOCHAIN_PATH/bin/i686-linux-android-gcc -mtune=atom -march=atom --sysroot=$STANDALONE_TOOCHAIN_PATH/sysroot&quot;
+export AR=$STANDALONE_TOOCHAIN_PATH/bin/i686-linux-android-ar
+export RANLIB=$STANDALONE_TOOCHAIN_PATH/bin/i686-linux-android-ranlib
+./Configure android-x86 -DOPENSSL_IA32_SSE2 -DAES_ASM -DVPAES_ASM
+make
+</code></pre><p><code>$STANDALONE_TOOCHAIN_PATH</code>是生成的工具链目录，使用build-openssl4android.sh会自动生成该目录。</p>
+<p>经过测试，也是可以的。</p>
+<h3 id="编译liblzo"><a href="#编译liblzo" class="headerlink" title="编译liblzo"></a>编译liblzo</h3><p>liblzo源码可以从<a href="http://www.oberhumer.com/opensource/lzo/download/" target="_blank" rel="noopener">http://www.oberhumer.com/opensource/lzo/download/</a>下载。</p>
+<p>编译可以参考<a href="https://github.com/fries/android-external-liblzo" target="_blank" rel="noopener">这个项目</a>，在源码根目录下创建<code>jni</code>目录并进入该目录，创建<code>Android.mk</code>文件，输入以下内容：</p>
+<pre><code>LOCAL_PATH:= $(call my-dir)
+
+common_SRC_FILES:=  \
+    ../src/lzo_crc.c \
+    ../src/lzo_init.c \
+    ../src/lzo_ptr.c \
+    ../src/lzo_str.c \
+    ../src/lzo_util.c \
+    ../src/lzo1.c \
+    ../src/lzo1_99.c \
+    ../src/lzo1a.c \
+    ../src/lzo1a_99.c \
+    ../src/lzo1b_1.c \
+    ../src/lzo1b_2.c \
+    ../src/lzo1b_3.c \
+    ../src/lzo1b_4.c \
+    ../src/lzo1b_5.c \
+    ../src/lzo1b_6.c \
+    ../src/lzo1b_7.c \
+    ../src/lzo1b_8.c \
+    ../src/lzo1b_9.c \
+    ../src/lzo1b_99.c \
+    ../src/lzo1b_9x.c \
+    ../src/lzo1b_cc.c \
+    ../src/lzo1b_d1.c \
+    ../src/lzo1b_d2.c \
+    ../src/lzo1b_rr.c \
+    ../src/lzo1b_xx.c \
+    ../src/lzo1c_1.c \
+    ../src/lzo1c_2.c \
+    ../src/lzo1c_3.c \
+    ../src/lzo1c_4.c \
+    ../src/lzo1c_5.c \
+    ../src/lzo1c_6.c \
+    ../src/lzo1c_7.c \
+    ../src/lzo1c_8.c \
+    ../src/lzo1c_9.c \
+    ../src/lzo1c_99.c \
+    ../src/lzo1c_d1.c \
+    ../src/lzo1c_d2.c \
+    ../src/lzo1c_rr.c \
+    ../src/lzo1c_xx.c \
+    ../src/lzo1f_1.c \
+    ../src/lzo1f_9x.c \
+    ../src/lzo1f_d1.c \
+    ../src/lzo1f_d2.c \
+    ../src/lzo1x_1.c \
+    ../src/lzo1x_9x.c \
+    ../src/lzo1x_d1.c \
+    ../src/lzo1x_d2.c \
+    ../src/lzo1x_d3.c \
+    ../src/lzo1x_o.c \
+    ../src/lzo1x_1k.c \
+    ../src/lzo1x_1l.c \
+    ../src/lzo1x_1o.c \
+    ../src/lzo1y_1.c \
+    ../src/lzo1y_9x.c \
+    ../src/lzo1y_d1.c \
+    ../src/lzo1y_d2.c \
+    ../src/lzo1y_d3.c \
+    ../src/lzo1y_o.c \
+    ../src/lzo1z_9x.c \
+    ../src/lzo1z_d1.c \
+    ../src/lzo1z_d2.c \
+    ../src/lzo1z_d3.c \
+    ../src/lzo2a_9x.c \
+    ../src/lzo2a_d1.c \
+    ../src/lzo2a_d2.c
+
+
+common_C_INCLUDES += $(LOCAL_PATH)/../include
+
+# static library
+# =====================================================
+
+include $(CLEAR_VARS)
+LOCAL_SRC_FILES:= $(common_SRC_FILES)
+LOCAL_C_INCLUDES:= $(common_C_INCLUDES)
+LOCAL_MODULE := liblzo
+LOCAL_PRELINK_MODULE:= false
+include $(BUILD_STATIC_LIBRARY)
+</code></pre><p>然后，再创建<code>Application.mk</code>文件，输入以下内容：</p>
+<pre><code># The ARMv7 is significanly faster due to the use of the hardware FPU
+NDK_TOOLCHAIN_VERSION := 4.9
+APP_ABI := x86  
+#
+APP_PLATFORM := android-8
+#APP_STL:=stlport_static
+APP_STL := gnustl_static
+APP_CPPFLAGS += -std=c++11
+</code></pre><p>这样可以只编译x86版本。</p>
+<p>最后，调用ndk编译（<code>$NDK</code>为NDK根目录）。</p>
+<blockquote>
+<p>$NDK/ndk-build</p>
+</blockquote>
+<p>编译完会生成<code>/path/to/liblzo/source/obj/local/x86/liblzo.a</code>文件。</p>
+<h2 id="0x02-编译openvpn"><a href="#0x02-编译openvpn" class="headerlink" title="0x02 编译openvpn"></a>0x02 编译openvpn</h2><h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><p>进入openvpn源码根目录，执行：</p>
+<blockquote>
+<p>./configure</p>
+</blockquote>
+<p>这步操作主要是为了生成<code>config.h</code>文件，里面包含了编译时用到的各种宏定义。</p>
+<p>在源码根目录下创建<code>jni</code>目录，将<code>config.h</code>拷贝到<code>jni</code>目录中，并编辑该文件。</p>
+<ul>
+<li>注释掉<code>#define HAVE_GETPASS 1</code>行，因为Android中没有<code>getpass</code>函数</li>
+<li>将<code>#define IFCONFIG_PATH &quot;/sbin/ifconfig&quot;</code>修改为<code>#define IFCONFIG_PATH &quot;/system/bin/ifconfig&quot;</code></li>
+<li>将<code>#define IPROUTE_PATH &quot;/sbin/ip&quot;</code>修改为<code>#define IPROUTE_PATH &quot;/system/bin/ip&quot;</code></li>
+<li>将<code>#define ROUTE_PATH &quot;/sbin/route&quot;</code>修改为<code>#define ROUTE_PATH &quot;/system/bin/route&quot;</code></li>
+</ul>
+<p>进入<code>jni</code>目录，使用前面的方法创建<code>Application.mk</code>文件；然后创建<code>Android.mk</code>文件，输入以下内容（修改自：<a href="https://github.com/fries/android-external-openvpn/blob/master/Android.mk" target="_blank" rel="noopener">https://github.com/fries/android-external-openvpn/blob/master/Android.mk</a>）：</p>
+<pre><code>LOCAL_PATH:= $(call my-dir)
+
+#on a 32bit maschine run ./configure --enable-password-save --disable-pkcs11 --with-ifconfig-path=/system/bin/ifconfig --with-route-path=/system/bin/route
+#from generated Makefile copy variable contents of openvpn_SOURCES to common_SRC_FILES
+# append missing.c to the end of the list
+# missing.c defines undefined functions.
+# in tun.c replace /dev/net/tun with /dev/tun
+
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libcrypto
+LOCAL_SRC_FILES := $(LOCAL_PATH)/openssl/$(TARGET_ARCH_ABI)/lib/libcrypto.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libssl
+LOCAL_SRC_FILES := $(LOCAL_PATH)/openssl/$(TARGET_ARCH_ABI)/lib/libssl.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := liblzo
+LOCAL_SRC_FILES := $(LOCAL_PATH)/liblzo/$(TARGET_ARCH_ABI)/lib/liblzo.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+
+common_SRC_FILES:= \
+        ../src/openvpn/openvpn.c \
+        ../src/openvpn/base64.c \
+        ../src/openvpn/buffer.c \
+        ../src/openvpn/clinat.c \
+        ../src/openvpn/console.c \
+        ../src/openvpn/cryptoapi.c \
+        ../src/openvpn/crypto.c \
+        ../src/openvpn/crypto_openssl.c \
+        ../src/openvpn/dhcp.c \
+        ../src/openvpn/error.c \
+        ../src/openvpn/event.c \
+        ../src/openvpn/fdmisc.c \
+        ../src/openvpn/forward.c \
+        ../src/openvpn/fragment.c \
+        ../src/openvpn/gremlin.c \
+        ../src/openvpn/helper.c \
+        ../src/openvpn/httpdigest.c \
+        ../src/openvpn/init.c \
+        ../src/openvpn/interval.c \
+        ../src/openvpn/list.c \
+        ../src/openvpn/lladdr.c \
+        ../src/openvpn/lzo.c \
+        ../src/openvpn/manage.c \
+        ../src/openvpn/mbuf.c \
+        ../src/openvpn/misc.c \
+        ../src/openvpn/mroute.c \
+        ../src/openvpn/mss.c \
+        ../src/openvpn/mstats.c \
+        ../src/openvpn/mtcp.c \
+        ../src/openvpn/mtu.c \
+        ../src/openvpn/mudp.c \
+        ../src/openvpn/multi.c \
+        ../src/openvpn/ntlm.c \
+        ../src/openvpn/occ.c \
+        ../src/openvpn/options.c \
+        ../src/openvpn/otime.c \
+        ../src/openvpn/packet_id.c \
+        ../src/openvpn/perf.c \
+        ../src/openvpn/pf.c \
+        ../src/openvpn/ping.c \
+        ../src/openvpn/pkcs11.c \
+        ../src/openvpn/pkcs11_openssl.c \
+        ../src/openvpn/platform.c \
+        ../src/openvpn/plugin.c \
+        ../src/openvpn/pool.c \
+        ../src/openvpn/proto.c \
+        ../src/openvpn/proxy.c \
+        ../src/openvpn/ps.c \
+        ../src/openvpn/push.c \
+        ../src/openvpn/reliable.c \
+        ../src/openvpn/route.c \
+        ../src/openvpn/schedule.c \
+        ../src/openvpn/session_id.c \
+        ../src/openvpn/shaper.c \
+        ../src/openvpn/sig.c \
+        ../src/openvpn/socket.c \
+        ../src/openvpn/socks.c \
+        ../src/openvpn/ssl.c \
+        ../src/openvpn/ssl_openssl.c \
+        ../src/openvpn/ssl_verify.c \
+        ../src/openvpn/ssl_verify_openssl.c \
+        ../src/openvpn/status.c \
+        ../src/openvpn/tun.c 
+
+common_CFLAGS += -DHAVE_CONFIG_H
+
+common_C_INCLUDES += \
+    $(LOCAL_PATH)/openssl/include \
+    $(LOCAL_PATH)/liblzo/include \
+    $(LOCAL_PATH)/../include \
+    $(LOCAL_PATH)/../src/compat
+
+common_SHARED_LIBRARIES := 
+
+
+
+# static linked binary
+# =====================================================
+
+include $(CLEAR_VARS)
+LOCAL_SRC_FILES:= $(common_SRC_FILES)
+LOCAL_CFLAGS:= $(common_CFLAGS)
+LOCAL_C_INCLUDES:= $(common_C_INCLUDES)
+
+LOCAL_SHARED_LIBRARIES += $(common_SHARED_LIBRARIES)
+LOCAL_STATIC_LIBRARIES:= libssl libcrypto liblzo
+LOCAL_LDLIBS += -lz
+
+LOCAL_MODULE:= openvpn
+LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
+include $(BUILD_EXECUTABLE)
+</code></pre><p>将<code>libcrypto.a</code>和<code>libssl.a</code>拷贝到<code>jni/openssl/x86/lib</code>目录下（自行创建）。<br>将<code>liblzo.a</code>拷贝到<code>jni/liblzo/x86/lib</code>目录下。<br>将liblzo源码根目录下的<code>include</code>目录拷贝到<code>jni/liblzo</code>目录下。<br>将openssl源码根目录下的<code>include</code>目录拷贝到<code>jni/openssl</code>目录下。  </p>
+<h3 id="开始编译"><a href="#开始编译" class="headerlink" title="开始编译"></a>开始编译</h3><blockquote>
+<p>$NDK/ndk-build</p>
+</blockquote>
+<p>完成后，会生成<code>/path/to/openvpn/source/libs/x86/openvpn</code>文件。</p>
+<h2 id="0x03-使用Android模拟器测试"><a href="#0x03-使用Android模拟器测试" class="headerlink" title="0x03 使用Android模拟器测试"></a>0x03 使用Android模拟器测试</h2><p>将<code>openvpn</code>拷贝到模拟器，修改可执行权限；准备好<code>ovpn</code>文件。</p>
+<ol>
+<li>确保<code>ovpn</code>文件中存在<code>dev-node /dev/tun</code>这行，因为Android中和Linux中tun设备路径不一致</li>
+<li>由于默认临时目录为<code>/tmp</code>，需要修改为<code>export TMPDIR=/data/local/tmp</code>；不要通过在命令行增加<code>--tmp-dir /data/local/tmp</code>的方法来实现，否则会导致<code>ovpn</code>文件里的配置项无法被正常加载</li>
+<li><code>ip rule add from 0/0 table main pref 1000</code>修改默认路由表的优先级，避免openvpn修改的路由信息不生效（我不确定这种做法会不会有副作用）</li>
+<li><code>./openvpn client.ovpn</code></li>
+</ol>
+<p>如果一切顺利的话，此时已经连接成功，可以使用浏览器打开ip138.com进行测试。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      drunkdream
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2017/12/19/build-openvpn-for-android/" title="编译Android版本的OpenVPN">https://www.drunkdream.com/2017/12/19/build-openvpn-for-android/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/OpenVPN/" rel="tag"># OpenVPN</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/16/install-openvpn-server/" rel="next" title="Ubuntu部署OpenVPN服务">
+                <i class="fa fa-chevron-left"></i> Ubuntu部署OpenVPN服务
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/25/android-emulator-modify-imsi-no-network/" rel="prev" title="解决Android模拟器中修改IMSI后无法上网问题">
+                解决Android模拟器中修改IMSI后无法上网问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=1e64ff5cae2be"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+      <div id="gitalk-container"></div>
+      <script src="https://unpkg.com/gitalk@1.5.0/dist/gitalk.min.js"></script>
+      <script type="text/javascript">
+          var gitalk = new Gitalk({
+              clientID: 'Iv1.bbffb0360439c133',
+              clientSecret: '6c02cd39741abd9ceae5cf5a8fdf5cbc0d5d4eda',
+              id: window.location.pathname,
+              repo: 'drunkdream.github.io',
+              owner: 'drunkdream',
+              admin: 'drunkdream',
+              proxy: '/github/login/oauth/access_token'
+          })
+          gitalk.render('gitalk-container')
+      </script>
+      <style>
+          .gt-container a {
+              border: none;
+          }
+          .gt-container .gt-header-controls-tip {
+              font-size: 12px;
+              position: relative;
+              top: -10px;
+          }
+      </style>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/logo.gif" alt="drunkdream">
+          <p class="site-author-name" itemprop="name">drunkdream</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-依赖库编译"><span class="nav-number">2.</span> <span class="nav-text">0x01 依赖库编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编译openssl"><span class="nav-number">2.1.</span> <span class="nav-text">编译openssl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编译liblzo"><span class="nav-number">2.2.</span> <span class="nav-text">编译liblzo</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-编译openvpn"><span class="nav-number">3.</span> <span class="nav-text">0x02 编译openvpn</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境准备"><span class="nav-number">3.1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始编译"><span class="nav-number">3.2.</span> <span class="nav-text">开始编译</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-使用Android模拟器测试"><span class="nav-number">4.</span> <span class="nav-text">0x03 使用Android模拟器测试</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">drunkdream</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (search_path.endsWith("json")) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

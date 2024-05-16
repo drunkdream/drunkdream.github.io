@@ -1,0 +1,1444 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="ssh,python,asyncio,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="0x00 前言为了加深对SSH协议的理解，准备自己实现一个SSH服务端，需要同时支持Windows、Linux、MacOS三大系统。为了尽量提升性能，准备使用协程(asyncio)来开发。 0x01 基于AsyncSSH开发一个最简单的SSH服务端在调研了几个开源的python SSH库后，最终选择了AsyncSSH。这个库基于asyncio开发，符合我们的要求，同时扩展性也比较好。 下面实现了一">
+<meta name="keywords" content="ssh,python,asyncio">
+<meta property="og:type" content="article">
+<meta property="og:title" content="创建一个简单的SSH服务器">
+<meta property="og:url" content="https://www.drunkdream.com/2022/07/26/create-simple-ssh-server/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言为了加深对SSH协议的理解，准备自己实现一个SSH服务端，需要同时支持Windows、Linux、MacOS三大系统。为了尽量提升性能，准备使用协程(asyncio)来开发。 0x01 基于AsyncSSH开发一个最简单的SSH服务端在调研了几个开源的python SSH库后，最终选择了AsyncSSH。这个库基于asyncio开发，符合我们的要求，同时扩展性也比较好。 下面实现了一">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-05-16T15:42:44.534Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="创建一个简单的SSH服务器">
+<meta name="twitter:description" content="0x00 前言为了加深对SSH协议的理解，准备自己实现一个SSH服务端，需要同时支持Windows、Linux、MacOS三大系统。为了尽量提升性能，准备使用协程(asyncio)来开发。 0x01 基于AsyncSSH开发一个最简单的SSH服务端在调研了几个开源的python SSH库后，最终选择了AsyncSSH。这个库基于asyncio开发，符合我们的要求，同时扩展性也比较好。 下面实现了一">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.drunkdream.com/2022/07/26/create-simple-ssh-server/">
+
+
+
+
+
+  <title>创建一个简单的SSH服务器 | 醉梦轩</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6b044934808dac49251aa0a35cf37875";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">醉梦轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">醉中无日月，梦里有乾坤</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2022/07/26/create-simple-ssh-server/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="drunkdream">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/logo.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">创建一个简单的SSH服务器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-26T16:20:17+00:00">
+                2022-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>为了加深对SSH协议的理解，准备自己实现一个SSH服务端，需要同时支持<code>Windows</code>、<code>Linux</code>、<code>MacOS</code>三大系统。为了尽量提升性能，准备使用<code>协程(asyncio)</code>来开发。</p>
+<h2 id="0x01-基于AsyncSSH开发一个最简单的SSH服务端"><a href="#0x01-基于AsyncSSH开发一个最简单的SSH服务端" class="headerlink" title="0x01 基于AsyncSSH开发一个最简单的SSH服务端"></a>0x01 基于AsyncSSH开发一个最简单的SSH服务端</h2><p>在调研了几个开源的python SSH库后，最终选择了<a href="https://github.com/ronf/asyncssh" target="_blank" rel="noopener">AsyncSSH</a>。这个库基于asyncio开发，符合我们的要求，同时扩展性也比较好。</p>
+<p>下面实现了一个使用固定账号密码登录的SSH服务器，登录成果后会打印一串字符串，并退出：</p>
+<pre><code class="python">import asyncio
+import asyncssh
+
+async def start_ssh_server():
+    def handle_client(process):
+        process.stdout.write(&quot;Welcome to my SSH server, byebye!\n&quot;)
+        process.exit(0)
+
+    class MySSHServer(asyncssh.SSHServer):
+        def __init__(self):
+            self._conn = None
+
+        def password_auth_supported(self):
+            return True
+
+        def validate_password(self, username, password):
+            return username == &quot;drunkdream&quot; and password == &quot;123456&quot;
+
+        def connection_made(self, conn):
+            print(&quot;Connection created&quot;, conn.get_extra_info(&quot;peername&quot;)[0])
+            self._conn = conn
+
+        def connection_lost(self, exc):
+            print(&quot;Connection lost&quot;, exc)
+
+    await asyncssh.create_server(
+        MySSHServer,
+        &quot;&quot;,
+        2222,
+        server_host_keys=[&quot;skey&quot;],
+        process_factory=handle_client,
+    )
+
+    await asyncio.sleep(1000)
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(start_ssh_server())
+</code></pre>
+<p><code>server_host_keys</code>是服务端的私钥文件列表，用于在建立连接时验证服务端的合法性；在第一次连接时客户端会弹出验证指纹的提示，选择<code>yes</code>后会将指纹保存到本地，下次连接时会验证指纹是否匹配，不匹配会报错。</p>
+<pre><code>The authenticity of host &#39;[127.0.0.1]:2222 ([127.0.0.1]:2222)&#39; can&#39;t be established.
+RSA key fingerprint is SHA256:nyXXvfYgedKWPRnhl1ss6k+R5cqFleUQu/fDhYYXESI.
+Are you sure you want to continue connecting (yes/no)?
+</code></pre><pre><code class="bash">ssh drunkdream@127.0.0.1 -p 2222
+Password:
+Welcome to my SSH server, byebye!
+Connection to 127.0.0.1 closed.
+</code></pre>
+<p>这样就实现了一个最简单的SSH服务器了，由此可见，使用<code>AsyncSSH</code>开发SSH服务端是非常方便的。</p>
+<h2 id="0x02-支持Shell命令"><a href="#0x02-支持Shell命令" class="headerlink" title="0x02 支持Shell命令"></a>0x02 支持Shell命令</h2><p>SSH最常用的功能就是远程终端（shell），下面来实现一个支持执行命令的SSH服务：</p>
+<pre><code class="python">async def start_ssh_server():
+    import asyncssh
+
+    async def handle_client(process):
+        proc = await asyncio.create_subprocess_shell(
+            process.command or &quot;bash -i&quot;,
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            close_fds=True,
+        )
+        stdin = proc.stdin
+        stdout = proc.stdout
+        stderr = proc.stderr
+
+        tasks = [None, None, None]
+
+        while proc.returncode is None:
+            if tasks[0] is None:
+                tasks[0] = asyncio.ensure_future(process.stdin.read(4096))
+            if tasks[1] is None:
+                tasks[1] = asyncio.ensure_future(stdout.read(4096))
+            if tasks[2] is None:
+                tasks[2] = asyncio.ensure_future(stderr.read(4096))
+
+            done_tasks, _ = await asyncio.wait(
+                tasks, return_when=asyncio.FIRST_COMPLETED
+            )
+
+            for task in done_tasks:
+                index = tasks.index(task)
+                assert index &gt;= 0
+                tasks[index] = None
+                buffer = task.result()
+                if not buffer:
+                    return -1
+
+                if index == 0:
+                    stdin.write(buffer)
+                elif index == 1:
+                    process.stdout.write(buffer.replace(b&quot;\n&quot;, b&quot;\r\n&quot;))
+                else:
+                    process.stderr.write(buffer.replace(b&quot;\n&quot;, b&quot;\r\n&quot;))
+        return proc.returncode
+
+    class MySSHServer(asyncssh.SSHServer):
+        def __init__(self):
+            self._conn = None
+
+        def password_auth_supported(self):
+            return True
+
+        def validate_password(self, username, password):
+            return username == &quot;drunkdream&quot; and password == &quot;123456&quot;
+
+        def connection_made(self, conn):
+            print(&quot;Connection created&quot;, conn.get_extra_info(&quot;peername&quot;)[0])
+            self._conn = conn
+
+        def connection_lost(self, exc):
+            print(&quot;Connection lost&quot;, exc)
+
+    await asyncssh.create_server(
+        MySSHServer,
+        &quot;&quot;,
+        2222,
+        server_host_keys=[&quot;skey&quot;],
+        process_factory=lambda process: asyncio.ensure_future(handle_client(process)),
+        encoding=None,
+        line_editor=False
+    )
+
+    await asyncio.sleep(1000)
+</code></pre>
+<p>与前一个版本相比，主要是修改了<code>handle_client</code>实现，变成了一个协程函数，里面创建了子进程，并支持将ssh客户端输入的命令传给子进程，然后将子进程的stdout和stderr转发给ssh客户端。注意到，这里将<code>line_editor</code>参数设置成了<code>False</code>，主要是为了支持实时命令交互。这个参数后面还会详细介绍。</p>
+<p>上面的代码在实际使用中发现，对于很快执行完的命令，如：<code>ifconfig</code>等，使用上没什么问题，但是如果输入<code>python</code>命令进入交互式界面，就会卡住没有任务输入。这是因为使用<code>create_subprocess_shell</code>方式创建的子进程不支持<code>pty</code>导致的。</p>
+<h2 id="0x03-支持pty"><a href="#0x03-支持pty" class="headerlink" title="0x03 支持pty"></a>0x03 支持pty</h2><p><code>pty(pseudo-tty)</code>是伪终端的意思，也就是虚拟了一个终端出来，让进程可以像正常终端一样进行交互（通常情况下通过管道重定向输入输出的进程都无法支持交互式操作）。交互式终端下缓冲模式是<code>无缓冲</code>（字符模式），也就是stdout每次只要有输出就会打印出来；而非交互式终端是<code>行缓冲</code>模式，stdout必须收到<code>\n</code>换行符才会打印出来。</p>
+<p>也就是说，如果终端要支持像python交互式命令这样的场景，必须支持<code>pty</code>。python中可以通过<code>sys.stdout.isatty()</code>来判断当前进程是否支持伪终端。</p>
+<pre><code class="bash">python -c &#39;import sys;print(sys.stdout.isatty())&#39;
+True
+
+python -c &#39;import sys;print(sys.stdout.isatty())&#39; &gt; /tmp/1.txt &amp;&amp; cat /tmp/1.txt
+False
+
+python -c &#39;import pty; pty.spawn([&quot;python&quot;, &quot;-c&quot;, &quot;import sys;print(sys.stdout.isatty())&quot;])&#39; &gt; /tmp/1.txt &amp;&amp; cat /tmp/1.txt
+True
+</code></pre>
+<p>从上面可以看出，经过重定向之后，<code>isatty</code>返回值变成了<code>False</code>；但是使用<code>pty.spawn</code>函数之后，重定向就不会影响<code>isatty</code>的返回值了。这里的秘密就在于<code>pty</code>库实现了一个虚拟的tty，具体实现原理我们后面有时间再来分析。</p>
+<p>因此，可以使用以下代码创建一个支持pty的子进程：</p>
+<pre><code class="python">import pty
+
+cmdline = list(shlex.split(command or os.environ.get(&quot;SHELL&quot;, &quot;sh&quot;)))
+exe = cmdline[0]
+if exe[0] != &quot;/&quot;:
+    for it in os.environ[&quot;PATH&quot;].split(&quot;:&quot;):
+        path = os.path.join(it, exe)
+        if os.path.isfile(path):
+            exe = path
+            break
+
+pid, fd = pty.fork()
+if pid == 0:
+    # child process
+    sys.stdout.flush()
+    try:
+        os.execve(exe, cmdline, os.environ)
+    except Exception as e:
+        sys.stderr.write(str(e))
+else:
+    # parent process
+    print(os.read(fd, 4096))
+</code></pre>
+<p>上面的方法只能支持Linux和MacOS系统，Windows 1809以上版本可以使用以下方法：</p>
+<pre><code class="python">cmd = (
+    &quot;conhost.exe&quot;,
+    &quot;--headless&quot;,
+    &quot;--width&quot;,
+    str(size[0]),
+    &quot;--height&quot;,
+    str(size[1]),
+    &quot;--&quot;,
+    command or &quot;cmd.exe&quot;,
+)
+proc = await asyncio.create_subprocess_exec(
+    *cmd,
+    stdin=asyncio.subprocess.PIPE,
+    stdout=asyncio.subprocess.PIPE,
+    stderr=asyncio.subprocess.PIPE,
+)
+</code></pre>
+<p><code>conhost.exe</code>里使用<code>CreatePseudoConsole</code>等相关函数，实现了伪终端。低版本Windows上就需要使用其它方式来支持了，例如：<a href="https://github.com/rprichard/winpty" target="_blank" rel="noopener">winpty</a>。</p>
+<h2 id="0x04-行编辑器模式"><a href="#0x04-行编辑器模式" class="headerlink" title="0x04 行编辑器模式"></a>0x04 行编辑器模式</h2><p>前面提到，在使用<code>asyncssh.create_server</code>函数创建SSH服务端时，有个<code>line_editor</code>参数设置成了<code>False</code>。这表示关闭了行编辑器模式，也就是说任何输入的字符都会被实时发送给shell进程，一般这种都是shell进程拥有伪终端的情况。</p>
+<p>但如果创建的是一个不支持伪终端的shell进程，就必须关闭行编辑器模式，也就是将<code>line_editor</code>置为<code>True</code>。此时，SSH客户端输入的字符会被asyncssh库捕获并进行处理，直到用户按下<code>Enter</code>键的时候，才会将输入一次性发送给shell进程。</p>
+<p>具体可以参考<a href="https://asyncssh.readthedocs.io/en/latest/#line-editing" target="_blank" rel="noopener">文档</a>。</p>
+<h2 id="0x05-支持端口转发"><a href="#0x05-支持端口转发" class="headerlink" title="0x05 支持端口转发"></a>0x05 支持端口转发</h2><p>SSH服务器有个非常有用的功能就是端口转发，包括正向端口转发和反向端口转发。使用方法如下：</p>
+<p>正向端口转发：</p>
+<pre><code class="bash">ssh -L 127.0.0.1:7778:127.0.0.1:7777 root@1.2.3.4
+</code></pre>
+<p>此时，可以将远程机器上的7777端口映射到本地的7778端口。</p>
+<p>反向端口转发：</p>
+<pre><code class="bash">ssh -R 127.0.0.1:7778:127.0.0.1:7777 root@1.2.3.4
+</code></pre>
+<p>此时，可以将本地的7777端口映射到远程机器上的7778端口。</p>
+<p>要支持端口转发，只需要<code>MySSHServer</code>类增加<code>connection_requested</code>和<code>server_requested</code>方法即可。</p>
+<pre><code class="python">    async def connection_requested(self, dest_host, dest_port, orig_host, orig_port):
+        # 正向端口转发
+        return await self._conn.forward_connection(dest_host, dest_port)
+
+    def server_requested(self, listen_host, listen_port):
+        # 反向端口转发
+        return True
+</code></pre>
+<h2 id="0x06-支持密钥登录"><a href="#0x06-支持密钥登录" class="headerlink" title="0x06 支持密钥登录"></a>0x06 支持密钥登录</h2><p>通常我们登录SSH服务器，更多的是使用密钥方式登录。要开启这个特性只需要增加以下两个方法即可：</p>
+<pre><code class="python">    def public_key_auth_supported(self):
+        return True
+
+    def validate_public_key(self, username, key):
+        return True
+</code></pre>
+<h2 id="0x07-总结"><a href="#0x07-总结" class="headerlink" title="0x07 总结"></a>0x07 总结</h2><p>使用AsyncSSH库开发SSH服务器还是比较简单的，很多特性都已经封装好了，只要重写一下对应的方法，返回True就可以了。同时，它也提供了高级可定制化的能力，以便实现较为复杂的功能。</p>
+<p>完整的SSH服务器代码可以参考：<a href="https://github.com/drunkdream/turbo-tunnel/blob/master/turbo_tunnel/ssh.py#L24" target="_blank" rel="noopener">https://github.com/drunkdream/turbo-tunnel/blob/master/turbo_tunnel/ssh.py#L24</a>。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      drunkdream
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2022/07/26/create-simple-ssh-server/" title="创建一个简单的SSH服务器">https://www.drunkdream.com/2022/07/26/create-simple-ssh-server/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ssh/" rel="tag"># ssh</a>
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/asyncio/" rel="tag"># asyncio</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/06/27/debug-github-actions/" rel="next" title="在线调试Github Actions">
+                <i class="fa fa-chevron-left"></i> 在线调试Github Actions
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/08/02/bypass-ssh-port-forward/" rel="prev" title="绕过SSH服务器的端口转发限制">
+                绕过SSH服务器的端口转发限制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=1e64ff5cae2be"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+      <div id="gitalk-container"></div>
+      <script src="https://unpkg.com/gitalk@1.5.0/dist/gitalk.min.js"></script>
+      <script type="text/javascript">
+          var gitalk = new Gitalk({
+              clientID: 'Iv1.bbffb0360439c133',
+              clientSecret: '6c02cd39741abd9ceae5cf5a8fdf5cbc0d5d4eda',
+              id: window.location.pathname,
+              repo: 'drunkdream.github.io',
+              owner: 'drunkdream',
+              admin: 'drunkdream',
+              proxy: '/github/login/oauth/access_token'
+          })
+          gitalk.render('gitalk-container')
+      </script>
+      <style>
+          .gt-container a {
+              border: none;
+          }
+          .gt-container .gt-header-controls-tip {
+              font-size: 12px;
+              position: relative;
+              top: -10px;
+          }
+      </style>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/logo.gif" alt="drunkdream">
+          <p class="site-author-name" itemprop="name">drunkdream</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-基于AsyncSSH开发一个最简单的SSH服务端"><span class="nav-number">2.</span> <span class="nav-text">0x01 基于AsyncSSH开发一个最简单的SSH服务端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-支持Shell命令"><span class="nav-number">3.</span> <span class="nav-text">0x02 支持Shell命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-支持pty"><span class="nav-number">4.</span> <span class="nav-text">0x03 支持pty</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-行编辑器模式"><span class="nav-number">5.</span> <span class="nav-text">0x04 行编辑器模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-支持端口转发"><span class="nav-number">6.</span> <span class="nav-text">0x05 支持端口转发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-支持密钥登录"><span class="nav-number">7.</span> <span class="nav-text">0x06 支持密钥登录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-总结"><span class="nav-number">8.</span> <span class="nav-text">0x07 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">drunkdream</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (search_path.endsWith("json")) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

@@ -1,0 +1,1790 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="emulator,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="0x00 前言百度百科中对IMSI的介绍如下：  国际移动用户识别码（IMSI：International Mobile Subscriber Identification Number）是区别移动用户的标志，储存在SIM卡中，可用于区别移动用户的有效信息。其总长度不超过15位，同样使用0~9的数字。其中MCC是移动用户所属国家代号，占3位数字，中国的MCC规定为460；MNC是移动网号码，由两位">
+<meta name="keywords" content="emulator">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解决Android模拟器中修改IMSI后无法上网问题">
+<meta property="og:url" content="https://www.drunkdream.com/2018/01/25/android-emulator-modify-imsi-no-network/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言百度百科中对IMSI的介绍如下：  国际移动用户识别码（IMSI：International Mobile Subscriber Identification Number）是区别移动用户的标志，储存在SIM卡中，可用于区别移动用户的有效信息。其总长度不超过15位，同样使用0~9的数字。其中MCC是移动用户所属国家代号，占3位数字，中国的MCC规定为460；MNC是移动网号码，由两位">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://www.drunkdream.com/images/apn.png">
+<meta property="og:updated_time" content="2024-05-16T15:42:44.533Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="解决Android模拟器中修改IMSI后无法上网问题">
+<meta name="twitter:description" content="0x00 前言百度百科中对IMSI的介绍如下：  国际移动用户识别码（IMSI：International Mobile Subscriber Identification Number）是区别移动用户的标志，储存在SIM卡中，可用于区别移动用户的有效信息。其总长度不超过15位，同样使用0~9的数字。其中MCC是移动用户所属国家代号，占3位数字，中国的MCC规定为460；MNC是移动网号码，由两位">
+<meta name="twitter:image" content="https://www.drunkdream.com/images/apn.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.drunkdream.com/2018/01/25/android-emulator-modify-imsi-no-network/">
+
+
+
+
+
+  <title>解决Android模拟器中修改IMSI后无法上网问题 | 醉梦轩</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6b044934808dac49251aa0a35cf37875";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">醉梦轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">醉中无日月，梦里有乾坤</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2018/01/25/android-emulator-modify-imsi-no-network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="drunkdream">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/logo.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">解决Android模拟器中修改IMSI后无法上网问题</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-25T03:01:35+00:00">
+                2018-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  3.3k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  18
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>百度百科中对IMSI的介绍如下：</p>
+<blockquote>
+<p>国际移动用户识别码（IMSI：International Mobile Subscriber Identification Number）是区别移动用户的标志，储存在SIM卡中，可用于区别移动用户的有效信息。其总长度不超过15位，同样使用0~9的数字。其中MCC是移动用户所属国家代号，占3位数字，中国的MCC规定为460；MNC是移动网号码，由两位或者三位数字组成，中国移动的移动网络编码（MNC）为00；用于识别移动用户所归属的移动通信网；MSIN是移动用户识别码，用以识别某一移动通信网中的移动用户。</p>
+</blockquote>
+<p>通过IMSI可以知道移动用户所在的国家。在Android中可以通过以下方法获取设备的IMSI号：</p>
+<pre><code>TelephonyManager telephonyManager= (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+String android_imsi = telephonyManager.getSubscriberId();
+</code></pre><p>Android模拟器中默认使用的IMSI是：<code>310260000000000</code>。其中，310代表美国，260代表T-Mobile US。事实上，我们期望在模拟器上获取的IMSI应当以460开头（460代表中国）。</p>
+<h2 id="0x01-问题定位"><a href="#0x01-问题定位" class="headerlink" title="0x01 问题定位"></a>0x01 问题定位</h2><p>但是，这串数字是硬编码在模拟器中的，路径是<code>external/qemu/android/telephony/modem.c</code>，只能通过修改模拟器源码来实现。</p>
+<pre><code>#define  OPERATOR_HOME_MCC   310
+#define  OPERATOR_HOME_MNC   260
+#define  OPERATOR_HOME_MCCMNC  STRINGIFY(OPERATOR_HOME_MCC) \
+                               STRINGIFY(OPERATOR_HOME_MNC)
+{ &quot;+CIMI&quot;, OPERATOR_HOME_MCCMNC &quot;0000000000&quot;, NULL },   /* request internation subscriber identification number */
+</code></pre><p>将以上代码改为：</p>
+<pre><code>#define  OPERATOR_HOME_MCC   460 //中国
+#define  OPERATOR_HOME_MNC   00  //移动
+#define  OPERATOR_HOME_MCCMNC  STRINGIFY(OPERATOR_HOME_MCC) \
+                               STRINGIFY(OPERATOR_HOME_MNC)
+{ &quot;+CIMI&quot;, OPERATOR_HOME_MCCMNC &quot;00000000000&quot;, NULL }
+</code></pre><p>重新编译，运行，使用getSubscriberId获取的值的确变成了我们期望的值：<code>460000000000000</code><br>，但是出现了新的问题：模拟器不能上网了。一番Google之后，发现也有别人遇到了这个<a href="http://stackoverflow.com/questions/6212626/changing-android-emulators-imsi-number-results-with-networks-connection" target="_blank" rel="noopener">问题</a>，但是也没有找到好的解决方法。</p>
+<p>于是，决定自己寻找原因，从TelephonyManager一路翻下去，最终到ril层，也没有看出问题出在哪儿。但是，直觉告诉我，问题应当出在APN上。</p>
+<p>Android系统中APN的配置信息是在<code>/system/etc/apns-conf.xml</code>中。下面是模拟器中默认的APN配置。</p>
+<pre><code>&lt;!-- use empty string to specify no proxy or port --&gt;
+&lt;!-- This version must agree with that in apps/common/res/apns.xml --&gt;
+&lt;apns version=&quot;8&quot;&gt;
+    &lt;apn carrier=&quot;T-Mobile US&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;260&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+    /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 250&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;250&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 660&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;660&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 230&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;230&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 310&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;310&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 580&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;580&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 240&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;240&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 800&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;800&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 210&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;210&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 160&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;160&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 270&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;270&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 200&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;200&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 220&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;220&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile US 490&quot;
+         mcc=&quot;310&quot;
+         mnc=&quot;490&quot;
+         apn=&quot;epc.tmobile.com&quot;
+         user=&quot;none&quot;
+         server=&quot;*&quot;
+         password=&quot;none&quot;
+         mmsc=&quot;http://mms.msg.eng.t-mobile.com/mms/wapenc&quot;
+            /&gt;
+
+    &lt;!-- T-Mobile Europe --&gt;
+    &lt;apn carrier=&quot;T-Mobile UK&quot;
+         mcc=&quot;234&quot;
+         mnc=&quot;30&quot;
+         apn=&quot;general.t-mobile.uk&quot;
+         user=&quot;t-mobile&quot;
+         password=&quot;tm&quot;
+         server=&quot;*&quot;
+         mmsproxy=&quot;149.254.201.135&quot;
+         mmsport=&quot;8080&quot;
+         mmsc=&quot;http://mmsc.t-mobile.co.uk:8002&quot;
+    /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile D&quot;
+         mcc=&quot;262&quot;
+         mnc=&quot;01&quot;
+         apn=&quot;internet.t-mobile&quot;
+         user=&quot;t-mobile&quot;
+         password=&quot;tm&quot;
+         server=&quot;*&quot;
+         mmsproxy=&quot;172.028.023.131&quot;
+         mmsport=&quot;8008&quot;
+         mmsc=&quot;http://mms.t-mobile.de/servlets/mms&quot;
+    /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile A&quot;
+         mcc=&quot;232&quot;
+         mnc=&quot;03&quot;
+         apn=&quot;gprsinternet&quot;
+         user=&quot;t-mobile&quot;
+         password=&quot;tm&quot;
+         server=&quot;*&quot;
+         mmsproxy=&quot;010.012.000.020&quot;
+         mmsport=&quot;80&quot;
+         mmsc=&quot;http://mmsc.t-mobile.at/servlets/mms&quot;
+         type=&quot;default,supl&quot;
+    /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile A MMS&quot;
+         mcc=&quot;232&quot;
+         mnc=&quot;03&quot;
+         apn=&quot;gprsmms&quot;
+         user=&quot;t-mobile&quot;
+         password=&quot;tm&quot;
+         server=&quot;*&quot;
+         mmsproxy=&quot;010.012.000.020&quot;
+         mmsport=&quot;80&quot;
+         mmsc=&quot;http://mmsc.t-mobile.at/servlets/mms&quot;
+         type=&quot;mms&quot;
+    /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile CZ&quot;
+         mcc=&quot;230&quot;
+         mnc=&quot;01&quot;
+         apn=&quot;internet.t-mobile.cz&quot;
+         user=&quot;wap&quot;
+         password=&quot;wap&quot;
+         server=&quot;*&quot;
+         mmsproxy=&quot;010.000.000.010&quot;
+         mmsport=&quot;80&quot;
+         mmsc=&quot;http://mms&quot;
+         type=&quot;default,supl&quot;
+    /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile CZ MMS&quot;
+         mcc=&quot;230&quot;
+         mnc=&quot;01&quot;
+         apn=&quot;mms.t-mobile.cz&quot;
+         user=&quot;mms&quot;
+         password=&quot;mms&quot;
+         server=&quot;*&quot;
+         mmsproxy=&quot;010.000.000.010&quot;
+         mmsport=&quot;80&quot;
+         mmsc=&quot;http://mms&quot;
+         type=&quot;mms&quot;
+    /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile NL&quot;
+         mcc=&quot;204&quot;
+         mnc=&quot;16&quot;
+         apn=&quot;internet&quot;
+         user=&quot;*&quot;
+         password=&quot;*&quot;
+         server=&quot;*&quot;
+         mmsproxy=&quot;010.010.010.011&quot;
+         mmsport=&quot;8080&quot;
+         mmsc=&quot;http://t-mobilemms&quot;
+         type=&quot;default,supl&quot;
+    /&gt;
+
+    &lt;apn carrier=&quot;T-Mobile NL MMS&quot;
+         mcc=&quot;204&quot;
+         mnc=&quot;16&quot;
+         apn=&quot;mms&quot;
+         user=&quot;tmobilemms&quot;
+         password=&quot;tmobilemms&quot;
+         server=&quot;*&quot;
+         mmsproxy=&quot;010.010.010.011&quot;
+         mmsport=&quot;8080&quot;
+         mmsc=&quot;http://t-mobilemms&quot;
+         type=&quot;mms&quot;
+    /&gt;
+&lt;/apns&gt;
+</code></pre><p>可以看出，这里是没有国内运营商的配置的。我从小米手机中提取出的国内运营商配置。</p>
+<pre><code>&lt;apn carrier=&quot;中国移动 (China Mobile) GPRS&quot;
+    mcc=&quot;460&quot;
+    mnc=&quot;00&quot;
+    apn=&quot;cmnet&quot;
+    type=&quot;default,supl&quot;
+/&gt;
+
+&lt;apn carrier=&quot;中国移动 (China Mobile) WAP&quot;
+    mcc=&quot;460&quot;
+    mnc=&quot;00&quot;
+    apn=&quot;cmwap&quot;
+    port=&quot;80&quot;
+    proxy=&quot;10.0.0.172&quot;
+    type=&quot;default,supl&quot;
+/&gt;
+
+&lt;apn carrier=&quot;中国移动彩信 (China Mobile)&quot;
+    mcc=&quot;460&quot;
+    mnc=&quot;00&quot;
+    apn=&quot;cmwap&quot;
+    mmsc=&quot;http://mmsc.monternet.com&quot;
+    mmsport=&quot;80&quot;
+    mmsproxy=&quot;10.0.0.172&quot;
+    port=&quot;80&quot;
+    proxy=&quot;10.0.0.172&quot;
+    type=&quot;mms&quot;
+/&gt;
+
+&lt;apn carrier=&quot;沃3G连接互联网 (China Unicom)&quot;
+    mcc=&quot;460&quot;
+    mnc=&quot;01&quot;
+    apn=&quot;3gnet&quot;
+    type=&quot;default,supl&quot;
+/&gt;
+
+&lt;apn carrier=&quot;沃3G手机上网 (China Unicom)&quot;
+    mcc=&quot;460&quot;
+    mnc=&quot;01&quot;
+    apn=&quot;3gwap&quot;
+    port=&quot;80&quot;
+    proxy=&quot;10.0.0.172&quot;
+    type=&quot;default,supl&quot;
+/&gt;
+
+&lt;apn carrier=&quot;联通彩信 (China Unicom)&quot;
+    mcc=&quot;460&quot;
+    mnc=&quot;01&quot;
+    apn=&quot;3gwap&quot;
+    mmsc=&quot;http://mmsc.myuni.com.cn&quot;
+    mmsport=&quot;80&quot;
+    mmsproxy=&quot;10.0.0.172&quot;
+    type=&quot;mms&quot;
+/&gt;
+
+&lt;apn carrier=&quot;中国移动 (China Mobile) GPRS&quot;
+    mcc=&quot;460&quot;
+    mnc=&quot;02&quot;
+    apn=&quot;cmnet&quot;
+    type=&quot;default,supl&quot;
+/&gt;
+
+&lt;apn carrier=&quot;中国移动 (China Mobile) WAP&quot;
+    mcc=&quot;460&quot;
+    mnc=&quot;02&quot;
+    apn=&quot;cmwap&quot;
+    port=&quot;80&quot;
+    proxy=&quot;10.0.0.172&quot;
+    type=&quot;default,supl&quot;
+/&gt;
+
+&lt;apn carrier=&quot;中国移动彩信 (China Mobile)&quot;
+    mcc=&quot;460&quot;
+    mnc=&quot;02&quot;
+    apn=&quot;cmwap&quot;
+    mmsc=&quot;http://mmsc.monternet.com&quot;
+    mmsport=&quot;80&quot;
+    mmsproxy=&quot;10.0.0.172&quot;
+    port=&quot;80&quot;
+    proxy=&quot;10.0.0.172&quot;
+    type=&quot;mms&quot;
+/&gt;
+</code></pre><p>添加到apns-conf.xml中，重启模拟器，能识别出“中国移动”了，但依然不能上网。<br><img src="/images/apn.png" alt></p>
+<p>此时，我想到通过对比默认情况和修改后的radio日志，来分析原因。</p>
+<p>使用</p>
+<blockquote>
+<p>adb logcat -b radio</p>
+</blockquote>
+<p>命令可以查查看ril相关的日志。接着，就发现了如下两条日志：</p>
+<blockquote>
+<p>D/DCT     ( 1739): [0]createAllApnList: selection=numeric = ‘460000’<br>D/DCT     ( 1739): [0]createAllApnList: No APN found for carrier: 460000</p>
+</blockquote>
+<p>注意到这里的<code>460000</code>，正确的应该是<code>46000</code>，多了一个<code>0</code>。由于美国的MNC是3个字符，而中国的MNC是2个字符，所以导致这里多了一个字符。来看下源码在这里是怎么实现的。</p>
+<p><code>/frameworks/opt/telephony/src/java/com/android/internal/telephony/dataconnection/DcTracker.java</code></p>
+<pre><code>/**
+ * Based on the sim operator numeric, create a list for all possible
+ * Data Connections and setup the preferredApn.
+ */
+private void createAllApnList() {
+    mAllApnSettings = new ArrayList&lt;ApnSetting&gt;();
+    IccRecords r = mIccRecords.get();
+    String operator = (r != null) ? r.getOperatorNumeric() : &quot;&quot;;
+    if (operator != null) {
+        String selection = &quot;numeric = &#39;&quot; + operator + &quot;&#39;&quot;;
+        // query only enabled apn.
+        // carrier_enabled : 1 means enabled apn, 0 disabled apn.
+        // selection += &quot; and carrier_enabled = 1&quot;;
+        if (DBG) log(&quot;createAllApnList: selection=&quot; + selection);
+
+        Cursor cursor = mPhone.getContext().getContentResolver().query(
+                Telephony.Carriers.CONTENT_URI, null, selection, null, null);
+
+        if (cursor != null) {
+            if (cursor.getCount() &gt; 0) {
+                mAllApnSettings = createApnList(cursor);
+            }
+            cursor.close();
+        }
+    }
+
+    addEmergencyApnSetting();
+
+    dedupeApnSettings();
+
+    if (mAllApnSettings.isEmpty()) {
+        if (DBG) log(&quot;createAllApnList: No APN found for carrier: &quot; + operator);
+        mPreferredApn = null;
+        // TODO: What is the right behavior?
+        //notifyNoData(DataConnection.FailCause.MISSING_UNKNOWN_APN);
+    } else {
+        mPreferredApn = getPreferredApn();
+        if (mPreferredApn != null &amp;&amp; !mPreferredApn.numeric.equals(operator)) {
+            mPreferredApn = null;
+            setPreferredApn(-1);
+        }
+        if (DBG) log(&quot;createAllApnList: mPreferredApn=&quot; + mPreferredApn);
+    }
+    if (DBG) log(&quot;createAllApnList: X mAllApnSettings=&quot; + mAllApnSettings);
+
+    setDataProfilesAsNeeded();
+}
+</code></pre><p>getOperatorNumeric的实现是在<code>/frameworks/opt/telephony/src/java/com/android/internal/telephony/uicc/SIMRecords.java</code>中。</p>
+<pre><code>@Override
+public String getOperatorNumeric() {
+    if (mImsi == null) {
+        log(&quot;getOperatorNumeric: IMSI == null&quot;);
+        return null;
+    }
+    if (mMncLength == UNINITIALIZED || mMncLength == UNKNOWN) {
+        log(&quot;getSIMOperatorNumeric: bad mncLength&quot;);
+        return null;
+    }
+
+    // Length = length of MCC + length of MNC
+    // length of mcc = 3 (TS 23.003 Section 2.2)
+    return mImsi.substring(0, 3 + mMncLength);
+}
+</code></pre><p>可见，numeric的长度是受mMncLength控制的，而mMncLength的值是从SIM卡中读出来的。</p>
+<pre><code>case EVENT_GET_AD_DONE:
+    try {
+        isRecordLoadResponse = true;
+
+        ar = (AsyncResult)msg.obj;
+        data = (byte[])ar.result;
+
+        if (ar.exception != null) {
+            break;
+        }
+
+        log(&quot;EF_AD: &quot; + IccUtils.bytesToHexString(data));
+
+        if (data.length &lt; 3) {
+            log(&quot;Corrupt AD data on SIM&quot;);
+            break;
+        }
+
+        if (data.length == 3) {
+            log(&quot;MNC length not present in EF_AD&quot;);
+            break;
+        }
+
+        mMncLength = data[3] &amp; 0xf;
+        log(&quot;setting4 mMncLength=&quot; + mMncLength);
+
+        if (mMncLength == 0xf) {
+            mMncLength = UNKNOWN;
+            log(&quot;setting5 mMncLength=&quot; + mMncLength);
+        }
+    }
+</code></pre><p>最终定位到模拟器中的<code>external/qemu/android/telephony/sim_card.c</code>中。</p>
+<pre><code>    { &quot;+CRSM=192,28589,0,0,15&quot;, &quot;+CRSM: 144,0,000000046fad04000aa0aa01020000&quot; },
+    { &quot;+CRSM=176,28589,0,0,4&quot;,  &quot;+CRSM: 144,0,00000003&quot; },
+</code></pre><p>将<code>00000003</code>改成<code>00000002</code>，重新编译，运行，终于可以正常上网了。</p>
+<h2 id="0x02-解决更新问题"><a href="#0x02-解决更新问题" class="headerlink" title="0x02 解决更新问题"></a>0x02 解决更新问题</h2><p>此时，对于新创建的模拟器已经正常了，但是对于存量模拟器，由于telephony.db数据库中的carriers表中的数据没有更新，因此重启后还是不能上网。</p>
+<p>查看carriers表中的内容可以在adb shell中执行命令：<br><code>content query --uri content://telephony/carriers</code></p>
+<p><code>/packages/providers/TelephonyProvider/src/com/android/providers/telephony/TelephonyProvider.java</code></p>
+<pre><code>@Override
+public void onCreate(SQLiteDatabase db) {
+    if (DBG) log(&quot;dbh.onCreate:+ db=&quot; + db);
+    createSimInfoTable(db);
+    createCarriersTable(db);
+    initDatabase(db);
+    if (DBG) log(&quot;dbh.onCreate:- db=&quot; + db);
+}
+
+private void initDatabase(SQLiteDatabase db) {
+    if (VDBG) log(&quot;dbh.initDatabase:+ db=&quot; + db);
+    // Read internal APNS data
+    Resources r = mContext.getResources();
+    XmlResourceParser parser = r.getXml(com.android.internal.R.xml.apns);
+    int publicversion = -1;
+    try {
+        XmlUtils.beginDocument(parser, &quot;apns&quot;);
+        publicversion = Integer.parseInt(parser.getAttributeValue(null, &quot;version&quot;));
+        loadApns(db, parser);
+    } catch (Exception e) {
+        loge(&quot;Got exception while loading APN database.&quot; + e);
+    } finally {
+        parser.close();
+    }
+
+    // Read external APNS data (partner-provided)
+    XmlPullParser confparser = null;
+    // Environment.getRootDirectory() is a fancy way of saying ANDROID_ROOT or &quot;/system&quot;.
+    File confFile = new File(Environment.getRootDirectory(), PARTNER_APNS_PATH);
+    File oemConfFile =  new File(Environment.getOemDirectory(), OEM_APNS_PATH);
+    if (oemConfFile.exists()) {
+        // OEM image exist APN xml, get the timestamp from OEM &amp; System image for comparison
+        long oemApnTime = oemConfFile.lastModified();
+        long sysApnTime = confFile.lastModified();
+        if (DBG) log(&quot;APNs Timestamp: oemTime = &quot; + oemApnTime + &quot; sysTime = &quot;
+                + sysApnTime);
+
+        // To get the latest version from OEM or System image
+        if (oemApnTime &gt; sysApnTime) {
+            if (DBG) log(&quot;APNs Timestamp: OEM image is greater than System image&quot;);
+            confFile = oemConfFile;
+        }
+    } else {
+        // No Apn in OEM image, so load it from system image.
+        if (DBG) log(&quot;No APNs in OEM image = &quot; + oemConfFile.getPath() +
+                &quot; Load APNs from system image&quot;);
+    }
+
+    FileReader confreader = null;
+    if (DBG) log(&quot;confFile = &quot; + confFile);
+    try {
+        confreader = new FileReader(confFile);
+        confparser = Xml.newPullParser();
+        confparser.setInput(confreader);
+        XmlUtils.beginDocument(confparser, &quot;apns&quot;);
+
+        // Sanity check. Force internal version and confidential versions to agree
+        int confversion = Integer.parseInt(confparser.getAttributeValue(null, &quot;version&quot;));
+        if (publicversion != confversion) {
+            throw new IllegalStateException(&quot;Internal APNS file version doesn&#39;t match &quot;
+                    + confFile.getAbsolutePath());
+        }
+
+        loadApns(db, confparser);
+    } catch (FileNotFoundException e) {
+        // It&#39;s ok if the file isn&#39;t found. It means there isn&#39;t a confidential file
+        // Log.e(TAG, &quot;File not found: &#39;&quot; + confFile.getAbsolutePath() + &quot;&#39;&quot;);
+    } catch (Exception e) {
+        loge(&quot;Exception while parsing &#39;&quot; + confFile.getAbsolutePath() + &quot;&#39;&quot; + e);
+    } finally {
+        try { if (confreader != null) confreader.close(); } catch (IOException e) { }
+    }
+    if (VDBG) log(&quot;dbh.initDatabase:- db=&quot; + db);
+
+}
+
+private DatabaseHelper mOpenHelper;
+
+private void restoreDefaultAPN(int subId) {
+    SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+    try {
+        db.delete(CARRIERS_TABLE, null, null);
+    } catch (SQLException e) {
+        loge(&quot;got exception when deleting to restore: &quot; + e);
+    }
+    setPreferredApnId((long)-1, subId);
+    mOpenHelper.initDatabase(db);
+}
+</code></pre><p>可以看出，在restoreDefaultAPN的时候可以重新初始化CARRIERS_TABLE。也就说，只要进入APN界面，点击右上角菜单 =&gt; 重置为默认设置，就可以解决存量设备的上网问题了。</p>
+<h2 id="0x03-解决方法总结"><a href="#0x03-解决方法总结" class="headerlink" title="0x03 解决方法总结"></a>0x03 解决方法总结</h2><ol>
+<li>修改模拟器源码modem.c中的MCC和MNC</li>
+<li>修改模拟器源码sim_card.c中控制mMncLength的值</li>
+<li>修改Android镜像中的/system/etc/apns-conf.xml，添加国内运营商的配置信息</li>
+<li>存量设备更新APN</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      drunkdream
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2018/01/25/android-emulator-modify-imsi-no-network/" title="解决Android模拟器中修改IMSI后无法上网问题">https://www.drunkdream.com/2018/01/25/android-emulator-modify-imsi-no-network/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/emulator/" rel="tag"># emulator</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/19/build-openvpn-for-android/" rel="next" title="编译Android版本的OpenVPN">
+                <i class="fa fa-chevron-left"></i> 编译Android版本的OpenVPN
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/11/fix-linux-kernel/" rel="prev" title="修复Linux内核文件丢失问题">
+                修复Linux内核文件丢失问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=1e64ff5cae2be"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+      <div id="gitalk-container"></div>
+      <script src="https://unpkg.com/gitalk@1.5.0/dist/gitalk.min.js"></script>
+      <script type="text/javascript">
+          var gitalk = new Gitalk({
+              clientID: 'Iv1.bbffb0360439c133',
+              clientSecret: '6c02cd39741abd9ceae5cf5a8fdf5cbc0d5d4eda',
+              id: window.location.pathname,
+              repo: 'drunkdream.github.io',
+              owner: 'drunkdream',
+              admin: 'drunkdream',
+              proxy: '/github/login/oauth/access_token'
+          })
+          gitalk.render('gitalk-container')
+      </script>
+      <style>
+          .gt-container a {
+              border: none;
+          }
+          .gt-container .gt-header-controls-tip {
+              font-size: 12px;
+              position: relative;
+              top: -10px;
+          }
+      </style>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/logo.gif" alt="drunkdream">
+          <p class="site-author-name" itemprop="name">drunkdream</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-问题定位"><span class="nav-number">2.</span> <span class="nav-text">0x01 问题定位</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-解决更新问题"><span class="nav-number">3.</span> <span class="nav-text">0x02 解决更新问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-解决方法总结"><span class="nav-number">4.</span> <span class="nav-text">0x03 解决方法总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">drunkdream</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (search_path.endsWith("json")) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

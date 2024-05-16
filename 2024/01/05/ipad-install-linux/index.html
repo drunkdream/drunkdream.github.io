@@ -1,0 +1,1307 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="ipad,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="0x00 背景以前研究过一次在iPad上安装Linux系统，当时的方案是：AltStore + UTM，由于没有硬件虚拟化，性能非常差，只能安装服务器版Linux，而且UTM由于签名问题需要每7天续签一次，几乎不具有可玩性。 最近看到有帖子说UTM支持硬件虚拟化了，于是稍微研究了一下，上面的两个问题也都解决了。 0x01 基本原理解决这两个问题的关键都在一个叫：Trollstore(巨魔)的工具。">
+<meta name="keywords" content="ipad">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iPad上使用UTM安装Linux arm64系统">
+<meta property="og:url" content="https://www.drunkdream.com/2024/01/05/ipad-install-linux/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 背景以前研究过一次在iPad上安装Linux系统，当时的方案是：AltStore + UTM，由于没有硬件虚拟化，性能非常差，只能安装服务器版Linux，而且UTM由于签名问题需要每7天续签一次，几乎不具有可玩性。 最近看到有帖子说UTM支持硬件虚拟化了，于是稍微研究了一下，上面的两个问题也都解决了。 0x01 基本原理解决这两个问题的关键都在一个叫：Trollstore(巨魔)的工具。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://sideloadly.io/screenshots/sideloadlylogs.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/misaka.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/install-trollstore1.jpg">
+<meta property="og:image" content="https://www.drunkdream.com/images/trollstore.jpg">
+<meta property="og:image" content="https://www.drunkdream.com/images/utm-1.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/utm-ubuntu.png">
+<meta property="og:updated_time" content="2024-05-16T15:42:44.536Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iPad上使用UTM安装Linux arm64系统">
+<meta name="twitter:description" content="0x00 背景以前研究过一次在iPad上安装Linux系统，当时的方案是：AltStore + UTM，由于没有硬件虚拟化，性能非常差，只能安装服务器版Linux，而且UTM由于签名问题需要每7天续签一次，几乎不具有可玩性。 最近看到有帖子说UTM支持硬件虚拟化了，于是稍微研究了一下，上面的两个问题也都解决了。 0x01 基本原理解决这两个问题的关键都在一个叫：Trollstore(巨魔)的工具。">
+<meta name="twitter:image" content="https://sideloadly.io/screenshots/sideloadlylogs.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.drunkdream.com/2024/01/05/ipad-install-linux/">
+
+
+
+
+
+  <title>iPad上使用UTM安装Linux arm64系统 | 醉梦轩</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6b044934808dac49251aa0a35cf37875";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">醉梦轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">醉中无日月，梦里有乾坤</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2024/01/05/ipad-install-linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="drunkdream">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/logo.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iPad上使用UTM安装Linux arm64系统</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-01-05T15:32:23+00:00">
+                2024-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  1.5k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-背景"><a href="#0x00-背景" class="headerlink" title="0x00 背景"></a>0x00 背景</h2><p>以前研究过一次在iPad上安装Linux系统，当时的方案是：<a href="https://altstore.io/" target="_blank" rel="noopener">AltStore</a> + <a href="https://github.com/utmapp/UTM" target="_blank" rel="noopener">UTM</a>，由于没有硬件虚拟化，性能非常差，只能安装服务器版Linux，而且UTM由于签名问题需要每7天续签一次，几乎不具有可玩性。</p>
+<p>最近看到有帖子说UTM支持硬件虚拟化了，于是稍微研究了一下，上面的两个问题也都解决了。</p>
+<h2 id="0x01-基本原理"><a href="#0x01-基本原理" class="headerlink" title="0x01 基本原理"></a>0x01 基本原理</h2><p>解决这两个问题的关键都在一个叫：<a href="https://trollstore.app/" target="_blank" rel="noopener">Trollstore(巨魔)</a>的工具。这个工具最强大的地方在于，可以免越狱安装未签名的应用，其原理是利用了iOS系统的一些安全漏洞，因此，这个工具会iOS版本有要求。例如：Trollstore1只支持<code>14.0 ~ 15.4.1 、15.5 Beta 4</code>版本；Trollstore2支持<code>14 - 16.5</code>（具体支持的系统版本可以看官网介绍）。因此，只要不是太新的系统，都是可以支持的。</p>
+<p>现在的问题变成了如何将这个工具安装到设备中，下面以iPad Pro 第三代(系统版本:<code>16.2</code>)为例进行介绍。</p>
+<p>基本流程是按照<a href="https://trollstore.app/installing-trollhelper-misaka/" target="_blank" rel="noopener">官方文档</a>进行操作。</p>
+<h2 id="0x02-准备工作"><a href="#0x02-准备工作" class="headerlink" title="0x02 准备工作"></a>0x02 准备工作</h2><ul>
+<li>将<code>Tips(提示)</code>应用安装到设备中</li>
+<li>最新版本的<a href="https://sideloadly.io/" target="_blank" rel="noopener">Sideloadly</a></li>
+<li>最新版本的<a href="https://www.apple.com/itunes/download/win32" target="_blank" rel="noopener">iTunes</a>（Windows端）</li>
+<li>最新版本的<a href="https://github.com/straight-tamago/misaka/releases/latest" target="_blank" rel="noopener">Misaka</a></li>
+</ul>
+<p><code>Sideloadly</code>是用来通过<code>侧载</code>方式安装<code>Misaka</code>；而<code>Misaka</code>用来溢出并注入<code>Tips</code>应用，最后打开提示应用，界面就变成了安装<code>Trollstore</code>的界面，点击安装就可以了。</p>
+<p>推荐还是使用Mac系统来操作，Windows上可能会有些问题。</p>
+<h2 id="0x03-安装Trollstore应用"><a href="#0x03-安装Trollstore应用" class="headerlink" title="0x03 安装Trollstore应用"></a>0x03 安装Trollstore应用</h2><p><code>侧载</code>是指不通过AppStore来安装应用的方式，一般是使用企业证书或开发者证书对ipa文件进行签名，然后进行安装。</p>
+<h3 id="使用Sideloadly安装Misaka"><a href="#使用Sideloadly安装Misaka" class="headerlink" title="使用Sideloadly安装Misaka"></a>使用Sideloadly安装Misaka</h3><p>在电脑端下载并安装<a href="https://sideloadly.io/#download" target="_blank" rel="noopener">Sideloadly</a>，并将最新版本的<a href="https://github.com/straight-tamago/misaka/releases/latest" target="_blank" rel="noopener">Misaka</a>ipa文件下载到本地。</p>
+<p><img src="https://sideloadly.io/screenshots/sideloadlylogs.png" alt="sideloadly安装ipa示例"></p>
+<p>拖入Misaka的ipa文件，输入苹果帐号，然后点击<code>Start</code>，第一次会提示输入帐号密码，完成后Misaka就安装到设备上了。图标如下：</p>
+<p><img src="/images/misaka.png" alt></p>
+<p>侧载类应用除了sideloadly，还有前面提到的<code>AltStore</code>，以及爱思助手之类的。它们都有一个共同的缺点，就是每7天需要续签一次，基本只能用作开发调试场景。</p>
+<h3 id="使用Misaka注入提示应用"><a href="#使用Misaka注入提示应用" class="headerlink" title="使用Misaka注入提示应用"></a>使用Misaka注入提示应用</h3><p>Misaka是一款免越狱就可以对iOS设备进行定制的应用，同时也提供了安装<code>Trollstore</code>的能力。</p>
+<p>下面是官方文档推荐的注入方法：</p>
+<p><img src="/images/install-trollstore1.jpg" alt></p>
+<p>在实际操作过程中遇到了以下两个问题：</p>
+<ul>
+<li>在上面的第三步操作后提示<code>Done</code>，但是打开<code>提示</code>应用Crash</li>
+<li>多操作几次后容易出现<code>Error, please restart your device and try again [A2]</code>报错，网上找到一个方案是安装<code>3.4.1</code>版本的Misaka</li>
+</ul>
+<p>这个步骤是整个安装过程中最花费时间的，重试了很多次，重启了很多次设备，最终采用的是以下方法搞定的：</p>
+<ol>
+<li>在<a href="https://github.com/opa334/TrollStore/releases" target="_blank" rel="noopener">这里</a>下载最新版本的<code>PersistenceHelper_Embedded</code>，并拷贝到设备中</li>
+<li>点击Misaka底部的<code>FileManager</code>页面，打开到路径<code>/var/containers/Bundle/Application/com.apple.tips/Tips.app</code></li>
+<li>找到<code>Tips</code>文件，点击它，然后点击<code>File Overwrite</code>选项，导入<code>PersistenceHelper_Embedded</code>文件覆盖</li>
+<li>重启设备</li>
+</ol>
+<h3 id="打开提示应用，安装Trollstore"><a href="#打开提示应用，安装Trollstore" class="headerlink" title="打开提示应用，安装Trollstore"></a>打开提示应用，安装Trollstore</h3><p>打开<code>提示</code>应用，点击<code>Install Trollstore</code>进行安装，安装完成后，桌面上就会看到Trollstore的图标：</p>
+<p><img src="/images/trollstore.jpg" alt></p>
+<blockquote>
+<p>如果遇到打开<code>提示</code>应用Crash或是设备自动重启等问题，请卸载提示应用再重新安装，并再执行一次上面的步骤。</p>
+</blockquote>
+<h2 id="0x04-安装UTM应用"><a href="#0x04-安装UTM应用" class="headerlink" title="0x04 安装UTM应用"></a>0x04 安装UTM应用</h2><p><a href="https://docs.getutm.app/installation/ios/#summary" target="_blank" rel="noopener">这里</a>展示了UTM的多个版本：</p>
+<ul>
+<li>UTM: 标准版，使用JIT方式，性能一般</li>
+<li>UTM HV: 开启<code>Hypervisor</code>的版本，支持硬件虚拟化，性能较高（需要是M1 iPad）</li>
+<li>UTM SE: 性能较差</li>
+</ul>
+<p>由于手上的这款是M1芯片，因此选择了<code>UTM HV</code>版本。</p>
+<ol>
+<li>将<code>UTM HV</code>版本的ipa文件拷贝到设备中</li>
+<li>打开Trollstore，选择右上角<code>+</code>号，选择<code>Install IPA File</code>，然后选择刚才拷贝的ipa文件</li>
+<li>在弹出的窗口中点击<code>Install</code>，很快就会安装完成</li>
+</ol>
+<h2 id="0x05-安装Ubuntu-22-04-arm64桌面版"><a href="#0x05-安装Ubuntu-22-04-arm64桌面版" class="headerlink" title="0x05 安装Ubuntu 22.04 arm64桌面版"></a>0x05 安装Ubuntu 22.04 arm64桌面版</h2><p>现在Linux系统的arm生态已经很健全了，基本上常见的应用都有提供对应的arm版本。这里选择了Ubuntu系统，除了生态考虑，还有性能因素，毕竟iPad才8G内存，如果系统本身占用了太多资源的话，留给应用的资源就很有限了。</p>
+<ol>
+<li>将<a href="https://cdimage.ubuntu.com/jammy/daily-live/current/jammy-desktop-arm64.iso" target="_blank" rel="noopener">镜像ISO</a>文件下载到设备中</li>
+<li>打开UTM，点击<code>创建一个新虚拟机</code>，选择<code>虚拟化</code>（这种模式会开启硬件虚拟机）</li>
+</ol>
+<p><img src="/images/utm-1.png" alt></p>
+<ol start="3">
+<li>然后选择Linux，添加刚才拷贝进来的iso镜像文件，后面是一些CPU、内存等硬件相关的参数配置</li>
+<li>保存后启动虚拟机，开始进行安装，Ubuntu也支持Live方式使用，可以先体验一下</li>
+<li>安装完成后进入系统，可以做一些个性化界面优化(访问虚拟机需要外接<code>键盘</code>和<code>鼠标</code>才能操作)</li>
+</ol>
+<p><img src="/images/utm-ubuntu.png" alt></p>
+<p>至此，一个便携式Linux系统已经安装完成，系统操作还是非常流畅的，可以安装上vscode、git、docker等常用工具，轻量级开发也基本没啥问题。</p>
+<p>连接上外接显示器，系统操作起来会更加舒服。</p>
+<h2 id="0x06-总结"><a href="#0x06-总结" class="headerlink" title="0x06 总结"></a>0x06 总结</h2><p>iPad上通过免越狱实现硬件虚拟化，极大提升了虚拟机系统操作的流畅性，真正将桌面版系统运行起来。在此基础上，iPad才能真正变成一个开发工具。</p>
+<h2 id="0x07-参考链接"><a href="#0x07-参考链接" class="headerlink" title="0x07 参考链接"></a>0x07 参考链接</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/627103800" target="_blank" rel="noopener">TrollStore巨魔商店永久安装APP，永不过期</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/574182220" target="_blank" rel="noopener">【IOS】TrollStore 工具——应用免签&amp;&amp;微信双开</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/669206994" target="_blank" rel="noopener">Trollstore2发布了，保姆安装教程~</a></li>
+<li><a href="https://www.ipapark.com/6688.html" target="_blank" rel="noopener">TrollStore2 巨魔商店2 使用教程</a></li>
+<li><a href="https://sspai.com/post/62092" target="_blank" rel="noopener">用 UTM 虚拟机在 iPad 上运行 Windows 和 Linux，拓展生产力新可能</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      drunkdream
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2024/01/05/ipad-install-linux/" title="iPad上使用UTM安装Linux arm64系统">https://www.drunkdream.com/2024/01/05/ipad-install-linux/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ipad/" rel="tag"># ipad</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/07/08/kturtle/" rel="next" title="KTurtle编程使用入门">
+                <i class="fa fa-chevron-left"></i> KTurtle编程使用入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2024/02/07/linux-binfmts/" rel="prev" title="Linux中的binfmt-misc原理分析">
+                Linux中的binfmt-misc原理分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=1e64ff5cae2be"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+      <div id="gitalk-container"></div>
+      <script src="https://unpkg.com/gitalk@1.5.0/dist/gitalk.min.js"></script>
+      <script type="text/javascript">
+          var gitalk = new Gitalk({
+              clientID: 'Iv1.bbffb0360439c133',
+              clientSecret: '6c02cd39741abd9ceae5cf5a8fdf5cbc0d5d4eda',
+              id: window.location.pathname,
+              repo: 'drunkdream.github.io',
+              owner: 'drunkdream',
+              admin: 'drunkdream',
+              proxy: '/github/login/oauth/access_token'
+          })
+          gitalk.render('gitalk-container')
+      </script>
+      <style>
+          .gt-container a {
+              border: none;
+          }
+          .gt-container .gt-header-controls-tip {
+              font-size: 12px;
+              position: relative;
+              top: -10px;
+          }
+      </style>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/logo.gif" alt="drunkdream">
+          <p class="site-author-name" itemprop="name">drunkdream</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-背景"><span class="nav-number">1.</span> <span class="nav-text">0x00 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-基本原理"><span class="nav-number">2.</span> <span class="nav-text">0x01 基本原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-准备工作"><span class="nav-number">3.</span> <span class="nav-text">0x02 准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-安装Trollstore应用"><span class="nav-number">4.</span> <span class="nav-text">0x03 安装Trollstore应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Sideloadly安装Misaka"><span class="nav-number">4.1.</span> <span class="nav-text">使用Sideloadly安装Misaka</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Misaka注入提示应用"><span class="nav-number">4.2.</span> <span class="nav-text">使用Misaka注入提示应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#打开提示应用，安装Trollstore"><span class="nav-number">4.3.</span> <span class="nav-text">打开提示应用，安装Trollstore</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-安装UTM应用"><span class="nav-number">5.</span> <span class="nav-text">0x04 安装UTM应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-安装Ubuntu-22-04-arm64桌面版"><span class="nav-number">6.</span> <span class="nav-text">0x05 安装Ubuntu 22.04 arm64桌面版</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-总结"><span class="nav-number">7.</span> <span class="nav-text">0x06 总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-参考链接"><span class="nav-number">8.</span> <span class="nav-text">0x07 参考链接</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">drunkdream</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (search_path.endsWith("json")) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

@@ -1,0 +1,1550 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="container,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="0x00 前言容器是指一种系统级的虚拟化技术，想比于KVM等内核级的虚拟化技术，具有更加轻量的特点。随着Docker技术以及k8s容器编排引擎的流行，容器在云原生时代扮演着绝对重要的角色。但事实上，容器技术自从Unix时代就已经出现，并且存在着多种容器方案，不同的容器方案之间既有相同点，也有不同点。 0x01 最早的容器化技术——chroot最早的容器是1979年由UNIX实现的Chroot Ja">
+<meta name="keywords" content="container">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux容器——那些你不知道的事">
+<meta property="og:url" content="https://www.drunkdream.com/2021/09/22/linux-container/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言容器是指一种系统级的虚拟化技术，想比于KVM等内核级的虚拟化技术，具有更加轻量的特点。随着Docker技术以及k8s容器编排引擎的流行，容器在云原生时代扮演着绝对重要的角色。但事实上，容器技术自从Unix时代就已经出现，并且存在着多种容器方案，不同的容器方案之间既有相同点，也有不同点。 0x01 最早的容器化技术——chroot最早的容器是1979年由UNIX实现的Chroot Ja">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://www.drunkdream.com/images/chroot.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/linux-namespace.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/container-state.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/containerd-arch.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/containerd.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/gvisor.png">
+<meta property="og:updated_time" content="2024-05-16T15:42:44.537Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux容器——那些你不知道的事">
+<meta name="twitter:description" content="0x00 前言容器是指一种系统级的虚拟化技术，想比于KVM等内核级的虚拟化技术，具有更加轻量的特点。随着Docker技术以及k8s容器编排引擎的流行，容器在云原生时代扮演着绝对重要的角色。但事实上，容器技术自从Unix时代就已经出现，并且存在着多种容器方案，不同的容器方案之间既有相同点，也有不同点。 0x01 最早的容器化技术——chroot最早的容器是1979年由UNIX实现的Chroot Ja">
+<meta name="twitter:image" content="https://www.drunkdream.com/images/chroot.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.drunkdream.com/2021/09/22/linux-container/">
+
+
+
+
+
+  <title>Linux容器——那些你不知道的事 | 醉梦轩</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6b044934808dac49251aa0a35cf37875";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">醉梦轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">醉中无日月，梦里有乾坤</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2021/09/22/linux-container/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="drunkdream">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/logo.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Linux容器——那些你不知道的事</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-22T23:42:44+00:00">
+                2021-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  19
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>容器是指一种系统级的虚拟化技术，想比于KVM等内核级的虚拟化技术，具有更加轻量的特点。随着Docker技术以及k8s容器编排引擎的流行，容器在云原生时代扮演着绝对重要的角色。但事实上，容器技术自从Unix时代就已经出现，并且存在着多种容器方案，不同的容器方案之间既有相同点，也有不同点。</p>
+<h2 id="0x01-最早的容器化技术——chroot"><a href="#0x01-最早的容器化技术——chroot" class="headerlink" title="0x01 最早的容器化技术——chroot"></a>0x01 最早的容器化技术——chroot</h2><p>最早的容器是1979年由UNIX实现的Chroot Jail。通过chroot技术，实现了独立的系统目录结构，从而支持运行指定的操作系统。</p>
+<p><img src="/images/chroot.png" alt></p>
+<pre><code class="bash">$ wget https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cdimage/ubuntu-base/releases/20.04.3/release/ubuntu-base-20.04.3-base-amd64.tar.gz
+$ tar zxvf ubuntu-base-20.04.3-base-amd64.tar.gz
+$ sudo mount -o bind /proc proc
+$ sudo mount -o bind /dev dev
+$ sudo mount -o bind /etc/resolv.conf etc/resolv.conf
+$ sudo chroot .
+# cat /etc/lsb-release
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=20.04
+DISTRIB_CODENAME=focal
+DISTRIB_DESCRIPTION=&quot;Ubuntu 20.04.3 LTS&quot;
+</code></pre>
+<p>此时，就进入了<code>Ubuntu 2004</code>的环境，不过这是一个只进行了文件系统隔离的容器，没有做进程、网络、资源等隔离，安全性较差，对于本地使用倒是足够了。</p>
+<p>相对于Docker，这种方式在容器内的操作会保存到文件系统，因此退出以后再次进入还会保留之前的状态。可以使用这种方式来管理多个非临时容器环境（例如本地的多个测试环境）。</p>
+<h3 id="获取系统镜像压缩包"><a href="#获取系统镜像压缩包" class="headerlink" title="获取系统镜像压缩包"></a>获取系统镜像压缩包</h3><p>除了直接使用操作系统提供的压缩包，还可以通过docker获取，这种方式会更简单通用。</p>
+<pre><code class="bash">$ sudo docker run -it ubuntu:20.04 bash
+root@762063502a65:/# apt update
+root@762063502a65:/# apt install curl
+$ sudo docker container export 762063502a65 -o ubuntu20.04.tar
+$ tar xvf ubuntu20.04.tar
+</code></pre>
+<p>这里可以先对镜像做一些操作，然后再导出成压缩包。</p>
+<h3 id="proot"><a href="#proot" class="headerlink" title="proot"></a>proot</h3><p><a href="https://proot-me.github.io/https://proot-me.github.io/" target="_blank" rel="noopener">proot</a>是一款用户空间的<code>chroot</code>、<code>mount</code>、<code>binfmt_miscbinfmt_misc</code>实现。它可以在非root场景下代替<code>chroot</code>，因此在Android等不方便root的设备上应用比较广泛。</p>
+<p>proot利用<code>ptrace</code>去拦截子进程中的系统调用，从而达到替换系统调用结果的目的。但这种方式也会产生一定的性能损耗。</p>
+<pre><code class="bash">$ proot -r ./ubuntu-20.04.3 -b /proc:/proc cat /etc/lsb-release
+proot info: default working directory is now &quot;/&quot;
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=20.04
+DISTRIB_CODENAME=focal
+DISTRIB_DESCRIPTION=&quot;Ubuntu 20.04.3 LTS&quot;
+</code></pre>
+<h2 id="0x02-Linux资源隔离方案——Namespace"><a href="#0x02-Linux资源隔离方案——Namespace" class="headerlink" title="0x02 Linux资源隔离方案——Namespace"></a>0x02 Linux资源隔离方案——Namespace</h2><p>chroot容器只是实现了容器最基本的功能，支持了文件系统的隔离，但是其它资源，像进程、用户、网络这些都是与宿主机共享的。</p>
+<p>为了支持资源隔离，Linux提供了<code>Namespace（命名空间）</code>解决方案。PID, IPC, Network等系统资源不再是全局性的，而是属于某个特定的Namespace。不同命名空间下的进程只能访问当前命名空间内的资源，无法访问其它命名空间里的资源，从而做到了资源隔离。</p>
+<p><img src="/images/linux-namespace.png" alt></p>
+<p>可以使用<code>unshare</code>命令创建新的命名空间，基本原理是在创建子进程的时候加入了对应的命名空间标记位，源代码地址为：<a href="https://github.com/util-linux/util-linux/blob/master/sys-utils/unshare.chttps://github.com/util-linux/util-linux/blob/master/sys-utils/unshare.c" target="_blank" rel="noopener">https://github.com/util-linux/util-linux/blob/master/sys-utils/unshare.c</a>。下面是该命令的使用帮助：</p>
+<pre><code class="bash">$ unshare --help
+
+Usage:
+ unshare [options] [&lt;program&gt; [&lt;argument&gt;...]]
+
+Run a program with some namespaces unshared from the parent.
+
+Options:
+ -m, --mount[=&lt;file&gt;]      unshare mounts namespace
+ -u, --uts[=&lt;file&gt;]        unshare UTS namespace (hostname etc)
+ -i, --ipc[=&lt;file&gt;]        unshare System V IPC namespace
+ -n, --net[=&lt;file&gt;]        unshare network namespace
+ -p, --pid[=&lt;file&gt;]        unshare pid namespace
+ -U, --user[=&lt;file&gt;]       unshare user namespace
+ -C, --cgroup[=&lt;file&gt;]     unshare cgroup namespace
+ -T, --time[=&lt;file&gt;]       unshare time namespace
+
+ -f, --fork                fork before launching &lt;program&gt;
+ --map-user=&lt;uid&gt;|&lt;name&gt;   map current user to uid (implies --user)
+ --map-group=&lt;gid&gt;|&lt;name&gt;  map current group to gid (implies --user)
+ -r, --map-root-user       map current user to root (implies --user)
+ -c, --map-current-user    map current user to itself (implies --user)
+ --map-auto                map users and groups automatically (implies --user)
+ --map-users=&lt;outeruid&gt;,&lt;inneruid&gt;,&lt;count&gt;
+                           map count users from outeruid to inneruid (implies --user)
+ --map-groups=&lt;outergid&gt;,&lt;innergid&gt;,&lt;count&gt;
+                           map count groups from outergid to innergid (implies --user)
+
+ --kill-child[=&lt;signame&gt;]  when dying, kill the forked child (implies --fork)
+                             defaults to SIGKILL
+ --mount-proc[=&lt;dir&gt;]      mount proc filesystem first (implies --mount)
+ --propagation slave|shared|private|unchanged
+                           modify mount propagation in mount namespace
+ --setgroups allow|deny    control the setgroups syscall in user namespaces
+ --keep-caps               retain capabilities granted in user namespaces
+
+ -R, --root=&lt;dir&gt;          run the command with root directory set to &lt;dir&gt;
+ -w, --wd=&lt;dir&gt;            change working directory to &lt;dir&gt;
+ -S, --setuid &lt;uid&gt;        set uid in entered namespace
+ -G, --setgid &lt;gid&gt;        set gid in entered namespace
+ --monotonic &lt;offset&gt;      set clock monotonic offset (seconds) in time namespaces
+ --boottime &lt;offset&gt;       set clock boottime offset (seconds) in time namespaces
+
+ -h, --help                display this help
+ -V, --version             display version
+
+For more details see unshare(1).
+</code></pre>
+<p>最新版本的使用文档可以参考：<a href="https://man7.org/linux/man-pages/man1/unshare.1.html" target="_blank" rel="noopener">https://man7.org/linux/man-pages/man1/unshare.1.html</a>。</p>
+<h3 id="PID命名空间"><a href="#PID命名空间" class="headerlink" title="PID命名空间"></a>PID命名空间</h3><pre><code class="bash">$ sudo unshare --fork --pid --mount-proc bash
+# ps aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.0   3952  3020 pts/0    S    22:47   0:00 bash
+root         2  0.0  0.0   5644  2636 pts/0    R+   22:47   0:00 ps aux
+</code></pre>
+<p>可以看到，在新的shell中，已经无法看到父命名空间中的进程了。如果不加<code>--fork</code>参数，看到的进程列表会是当前系统中的全部进程。这是因为新的PID命名空间只在子进程中生效。</p>
+<h3 id="用户命名空间"><a href="#用户命名空间" class="headerlink" title="用户命名空间"></a>用户命名空间</h3><pre><code class="bash">$ ps aux | grep bash
+root      303493  0.0  0.0   3952  3032 pts/3    S+   07:53   0:00 bash
+</code></pre>
+<p>在全局进程列表中可以看到，命名空间中的进程实际上也是以root权限执行的，存在一定的安全风险。</p>
+<pre><code class="bash">$ unshare --fork --pid --mount-proc --user bash
+$ whoami
+nobody
+</code></pre>
+<p>使用<code>--user</code>参数可以创建用户命名空间，并以普通用户权限进入命名空间中。但我们实际操作中更希望容器里面的用户是<code>root</code>权限，此时可以使用<code>--map-root-user</code>参数。</p>
+<pre><code class="bash">$ unshare --fork --pid --mount-proc --user --map-root-user bash
+# id
+uid=0(root) gid=0(root) groups=0(root),65534(nogroup)
+# reboot
+Failed to connect to bus: No data available
+Failed to open initctl fifo: Permission denied
+Failed to talk to init daemon.
+</code></pre>
+<p>使用<code>--map-root-user</code>参数可以将全局的普通用户映射为容器中的<code>root</code>用户，但并不是真正的全局root用户，因此无法访问那些只有全局root用户才能访问的资源。</p>
+<h3 id="Mount命名空间"><a href="#Mount命名空间" class="headerlink" title="Mount命名空间"></a>Mount命名空间</h3><p>前面的例子使用的都是宿主机上的操作系统，如果想使用不同的操作系统，可以通过<code>Mount Namespace</code>来实现。</p>
+<p>假设现在<code>ubuntu-20.04</code>目录中已经有一个完整的Ubuntu系统了。</p>
+<pre><code class="bash">$ sudo unshare -R ubuntu-20.04 bash
+root@drunkdream-LB0:/# cat /etc/os-release 
+NAME=&quot;Ubuntu&quot;
+VERSION=&quot;20.04.4 LTS (Focal Fossa)&quot;
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME=&quot;Ubuntu 20.04.4 LTS&quot;
+VERSION_ID=&quot;20.04&quot;
+HOME_URL=&quot;https://www.ubuntu.com/&quot;
+SUPPORT_URL=&quot;https://help.ubuntu.com/&quot;
+BUG_REPORT_URL=&quot;https://bugs.launchpad.net/ubuntu/&quot;
+PRIVACY_POLICY_URL=&quot;https://www.ubuntu.com/legal/terms-and-policies/privacy-policy&quot;
+VERSION_CODENAME=focal
+UBUNTU_CODENAME=focal
+</code></pre>
+<p>通过<code>-R dir</code> / <code>--root=dir</code>参数可以指定系统根目录。低版本的unshare可能不支持这个参数，可以使用<code>sudo unshare sh -c &#39;chroot ubuntu-20.04 &amp;&amp; bash&#39;</code>命令代替。</p>
+<h3 id="网络命名空间"><a href="#网络命名空间" class="headerlink" title="网络命名空间"></a>网络命名空间</h3><p>使用<code>ip netns</code>命令可以进行网络命名空间的管理。</p>
+<ul>
+<li><p>创建命名空间</p>
+<pre><code class="bash">$ sudo ip netns add netns1
+</code></pre>
+</li>
+<li><p>获取命名空间列表</p>
+<pre><code class="bash">$ sudo ip netns ls        
+netns1
+$ ls -l /var/run/netns/netns1
+-r--r--r-- 1 root root 0 May 21 15:30 /var/run/netns/netns1
+$ sudo ./unshare -R ubuntu-20.04 --net=/var/run/netns/netns1 bash
+</code></pre>
+<p>网络命名空间会存储在<code>/var/run/netns</code>目录下。</p>
+</li>
+<li><p>在网路命名空间中执行命令</p>
+<pre><code class="bash">$ sudo ip netns exec netns1 ip a
+1: lo: &lt;LOOPBACK&gt; mtu 65536 qdisc noop state DOWN group default qlen 1000
+  link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</code></pre>
+</li>
+<li><p>启用网络设备</p>
+</li>
+</ul>
+<pre><code class="bash">$ sudo ip netns exec netns1 ip link set lo up
+$ sudo ip netns exec netns1 ip a
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+</code></pre>
+<ul>
+<li>创建veth-pair</li>
+</ul>
+<blockquote>
+<p>veth-pair是一对虚拟设备接口，和<code>tap/tun</code>设备不同的是，它都是成对出现的，一端连着协议栈，一端彼此相连着。</p>
+</blockquote>
+<pre><code class="bash">$ sudo ip link add veth1 type veth peer name veth2
+$ sudo ip link set veth2 netns netns1
+$ sudo ip netns exec netns1 ip link set veth2 up
+$ sudo ip netns exec netns1 ip addr add 192.168.10.2/24 dev veth2
+$ sudo ip link set veth1 up
+$ sudo ip addr add 192.168.10.1/24 dev veth1
+</code></pre>
+<ul>
+<li>配置路由转发</li>
+</ul>
+<pre><code class="bash">$ sudo ip netns exec netns1 ip route add default via 192.168.10.1 dev veth2
+$ sudo iptables -A FORWARD -o veth1 -j ACCEPT
+$ sudo iptables -A FORWARD -i veth1 -j ACCEPT
+$ sudo iptables -t nat -A POSTROUTING -s 192.168.10.0/24 -o eth0 -j MASQUERADE
+</code></pre>
+<blockquote>
+<p><code>eth0</code>需要替换成本机的实际网络接口</p>
+</blockquote>
+<p>此时，容器内就可以访问外网了。</p>
+<ul>
+<li>与unshare相结合</li>
+</ul>
+<p>unshare也提供了<code>--net=/var/run/netns/netns1</code>参数来创建网络命名空间，但是实际测试下来发现有些问题。所以比较保险的方案还是将<code>sudo ip netns exec netns1</code>与<code>unshare</code>结合起来使用。</p>
+<pre><code class="bash">$ sudo ip netns exec netns1 unshare -R ubuntu-20.04 ip a
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+29: veth2@if30: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether fe:2c:29:36:5c:9a brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 192.168.10.2/24 scope global veth2
+       valid_lft forever preferred_lft forever
+    inet6 fe80::fc2c:29ff:fe36:5c9a/64 scope link 
+       valid_lft forever preferred_lft forever
+</code></pre>
+<h2 id="0x03-打造一个相对完整的容器"><a href="#0x03-打造一个相对完整的容器" class="headerlink" title="0x03 打造一个相对完整的容器"></a>0x03 打造一个相对完整的容器</h2><p>从上面的介绍来看，如果不需要用到网络虚拟化，是可以使用普通用户权限的。</p>
+<h3 id="使用普通用户权限创建不支持网络命名空间的容器"><a href="#使用普通用户权限创建不支持网络命名空间的容器" class="headerlink" title="使用普通用户权限创建不支持网络命名空间的容器"></a>使用普通用户权限创建不支持网络命名空间的容器</h3><ul>
+<li><p>新版本unshare</p>
+<pre><code class="bash">$ unshare --fork --pid --mount-proc --mount --uts --ipc -R . --map-root-user bash
+bash-4.2# id
+uid=0(root) gid=0(root) groups=0(root),65534(nogroup)
+</code></pre>
+</li>
+<li><p>旧版本unshare</p>
+<pre><code class="bash">$ unshare --fork --pid --mount-proc --mount --uts --ipc --user --map-root-user sh -c &#39;mount -o bind /proc proc &amp;&amp; chroot .&#39;
+bash-4.2# id
+uid=0(root) gid=0(root) groups=0(root),65534(nogroup)
+</code></pre>
+</li>
+</ul>
+<h3 id="使用root权限创建支持网络命名空间的容器"><a href="#使用root权限创建支持网络命名空间的容器" class="headerlink" title="使用root权限创建支持网络命名空间的容器"></a>使用root权限创建支持网络命名空间的容器</h3><pre><code class="bash">$ sudo ip netns exec netns1 unshare --fork --pid --mount-proc --mount --uts --ipc -R . --map-root-user bash
+</code></pre>
+<blockquote>
+<p>旧版本unshare方式不再赘述</p>
+</blockquote>
+<p>在Ubuntu里使用<code>apt</code>时如果遇到下面这个错误：</p>
+<pre><code class="bash">root@drunkdream-LB0:/# apt update
+E: setgroups 65534 failed - setgroups (1: Operation not permitted)
+E: setegid 65534 failed - setegid (22: Invalid argument)
+E: seteuid 100 failed - seteuid (22: Invalid argument)
+E: setgroups 0 failed - setgroups (1: Operation not permitted)
+Reading package lists... Done
+W: chown to _apt:root of directory /var/lib/apt/lists/partial failed - SetupAPTPartialDirectory (22: Invalid argument)
+W: chown to _apt:root of directory /var/lib/apt/lists/auxfiles failed - SetupAPTPartialDirectory (22: Invalid argument)
+E: setgroups 65534 failed - setgroups (1: Operation not permitted)
+E: setegid 65534 failed - setegid (22: Invalid argument)
+E: seteuid 100 failed - seteuid (22: Invalid argument)
+E: setgroups 0 failed - setgroups (1: Operation not permitted)
+E: Method gave invalid 400 URI Failure message: Failed to setgroups - setgroups (1: Operation not permitted)
+E: Method gave invalid 400 URI Failure message: Failed to setgroups - setgroups (1: Operation not permitted)
+E: Method http has died unexpectedly!
+E: Sub-process http returned an error code (112)
+</code></pre>
+<p>可以通过在进入容器后使用以下命令解决：</p>
+<pre><code class="bash"># apt-config dump | grep Sandbox::User
+APT::Sandbox::User &quot;_apt&quot;;
+# cat &lt;&lt;EOF &gt; /etc/apt/apt.conf.d/sandbox-disable
+APT::Sandbox::User &quot;root&quot;;
+EOF
+# apt-config dump | grep Sandbox::User
+APT::Sandbox::User &quot;root&quot;;
+</code></pre>
+<h2 id="0x04-Linux容器技术——LXC"><a href="#0x04-Linux容器技术——LXC" class="headerlink" title="0x04 Linux容器技术——LXC"></a>0x04 Linux容器技术——LXC</h2><p>lxc是一种系统级容器，在使用体验上与传统的虚拟机差异不是很大。<br>lxc模板文件位于<code>/usr/share/lxc/templates</code>路径下，包含了绝大多数的Linux发行版。</p>
+<pre><code class="bash">$ ls /usr/share/lxc/templates
+lxc-alpine     lxc-centos    lxc-fedora         lxc-oci           lxc-plamo      lxc-sparclinux    lxc-voidlinux
+lxc-altlinux   lxc-cirros    lxc-fedora-legacy  lxc-openmandriva  lxc-pld        lxc-sshd
+lxc-archlinux  lxc-debian    lxc-gentoo         lxc-opensuse      lxc-sabayon    lxc-ubuntu
+lxc-busybox    lxc-download  lxc-local          lxc-oracle        lxc-slackware  lxc-ubuntu-cloud
+</code></pre>
+<h3 id="创建lxc容器"><a href="#创建lxc容器" class="headerlink" title="创建lxc容器"></a>创建lxc容器</h3><pre><code class="bash">$ sudo lxc-create -t ubuntu -n ubuntu-xenial
+</code></pre>
+<h3 id="修改lx容器网络类型"><a href="#修改lx容器网络类型" class="headerlink" title="修改lx容器网络类型"></a>修改lx容器网络类型</h3><p>默认的lxc容器网络是<code>empty</code>类型，只有<code>lo</code>网卡，不能访问外网。可以通过修改<code>/var/lib/lxc/ubuntu-xenial/config</code>文件中的<code>lxc.net.0.type = empty</code>为<code>lxc.net.0.type = none</code>，来使用主机网络。</p>
+<h3 id="启动lxc容器"><a href="#启动lxc容器" class="headerlink" title="启动lxc容器"></a>启动lxc容器</h3><pre><code class="bash">$ sudo lxc-start ubuntu-xenial
+</code></pre>
+<h3 id="进入lxc容器"><a href="#进入lxc容器" class="headerlink" title="进入lxc容器"></a>进入lxc容器</h3><pre><code class="bash">$ sudo lxc-attach ubuntu-xenial bash
+root@ubuntu-xenial:/# cat /etc/lsb-release 
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=16.04
+DISTRIB_CODENAME=xenial
+DISTRIB_DESCRIPTION=&quot;Ubuntu 16.04.7 LTS&quot;
+root@ubuntu-xenial:/# ps aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.0  37236  5288 ?        Ss   23:51   0:00 /sbin/init
+root        36  0.0  0.0  35276  5440 ?        Ss   23:51   0:00 /lib/systemd/systemd-journald
+root        85  0.0  0.0  30720  2880 ?        Ss   23:51   0:00 /usr/sbin/cron -f
+syslog      87  0.0  0.0 256396  3196 ?        Ssl  23:51   0:00 /usr/sbin/rsyslogd -n
+root       124  0.0  0.0  17492  2180 console  Ss+  23:51   0:00 /sbin/agetty --noclear --keep-baud console 115200 38400 9600 
+root       125  0.0  0.0  17492  2244 pts/2    Ss+  23:51   0:00 /sbin/agetty --noclear --keep-baud pts/2 115200 38400 9600 vt
+root       126  0.0  0.0  17492  2172 pts/3    Ss+  23:51   0:00 /sbin/agetty --noclear --keep-baud pts/3 115200 38400 9600 vt
+root       127  0.0  0.0  17492  2176 pts/1    Ss+  23:51   0:00 /sbin/agetty --noclear --keep-baud pts/1 115200 38400 9600 vt
+root       128  0.0  0.0  17492  2236 pts/0    Ss+  23:51   0:00 /sbin/agetty --noclear --keep-baud pts/0 115200 38400 9600 vt
+root       129  0.0  0.0  65516  5412 ?        Ss   23:51   0:00 /usr/sbin/sshd -D
+root       137  0.0  0.0  18256  3256 ?        Ss   23:53   0:00 bash
+root       149  0.0  0.0  34428  2796 ?        R+   23:54   0:00 ps aux
+</code></pre>
+<p>可以看出，想比于docker，lxc容器更接近于完整的Linux系统。</p>
+<h3 id="停止lxc容器"><a href="#停止lxc容器" class="headerlink" title="停止lxc容器"></a>停止lxc容器</h3><pre><code class="bash">$ sudo lxc-stop ubuntu-xenial
+</code></pre>
+<h3 id="删除lxc容器"><a href="#删除lxc容器" class="headerlink" title="删除lxc容器"></a>删除lxc容器</h3><pre><code class="bash">$ sudo lxc-destroy ubuntu-xenial
+</code></pre>
+<h2 id="0x05-容器技术的集大成者——Docker"><a href="#0x05-容器技术的集大成者——Docker" class="headerlink" title="0x05 容器技术的集大成者——Docker"></a>0x05 容器技术的集大成者——Docker</h2><p>Docker是一种应用级容器，倡导每个容器只包含一个主进程。同时，它提供了打包容器镜像的支持，从而大大降低了容器分发的成本，使得基于容器镜像的应用部署逐渐成为主流。可以说，Docker最大的贡献就是创造性地发明了容器镜像技术，并通过推动OCI（Open Container Initiative）标准，统一了镜像规范和运行时规范。</p>
+<p>常见的Docker操作命令可以参考：<a href="https://www.drunkdream.com/2019/04/04/docker-command/">https://www.drunkdream.com/2019/04/04/docker-command/</a>。</p>
+<p>OCI 对容器 runtime 的标准主要是指定容器的运行状态，和 runtime 需要提供的命令。下面是容器状态转换图：</p>
+<p><img src="/images/container-state.png" alt></p>
+<p><code>RunC</code>是Docker提供的一个OCI运行时实现， 是从Docker的libcontainer中迁移而来，实现了容器启停、资源隔离等功能，可以作为容器运行时标准的参考实现。</p>
+<p>除了<code>RunC</code>，还有<code>Kata</code>、<code>gVisor</code>等OCI实现。</p>
+<p><code>containerd</code>是一个上层的容器运行时，与<code>RunC</code>等底层容器运行时相比，它还包含了镜像管理等能力。</p>
+<p><img src="/images/containerd-arch.png" alt></p>
+<p>K8S也从1.23版本开始弃用Docker，改用containerd作为容器运行时。下图是改用containerd之后的基本架构。</p>
+<p><img src="/images/containerd.png" alt></p>
+<h2 id="0x06-容器技术的未来"><a href="#0x06-容器技术的未来" class="headerlink" title="0x06 容器技术的未来"></a>0x06 容器技术的未来</h2><p><code>RunC</code>作为传统的容器运行时技术，由于与宿主机共享内核，一直存在着隔离性差的缺点。因此，以提升隔离性为目标的<code>Kata</code>、<code>gVisor</code>等新的容器运行时技术被开发出来。</p>
+<h3 id="Kata"><a href="#Kata" class="headerlink" title="Kata"></a>Kata</h3><p>Kata Containers开源项目于2017年底正式启动，其目标是将虚拟机（VM）的安全优势与容器的高速及可管理性相结合，为用户带来出色的容器解决方案。Kata的目标是开发<code>面向云原生的虚拟化</code>技术，也就是通过创建轻量级的虚拟机以提供像容器一样快同时又像虚拟机一样安全的容器。</p>
+<h3 id="gVisor"><a href="#gVisor" class="headerlink" title="gVisor"></a>gVisor</h3><p>gVisor是Google开发的一款轻量级容器运行时，提供了更高的隔离性。与其它运行时使用虚拟机提升隔离性不同，它实现了一个<code>用户层内核</code>，通过拦截系统调用提供了强隔离边界。因此，gVisor更加轻量，资源占用更少。但对于少量应用程序可能存在兼容性问题。</p>
+<p><img src="/images/gvisor.png" alt></p>
+<h2 id="0x07-参考文献"><a href="#0x07-参考文献" class="headerlink" title="0x07 参考文献"></a>0x07 参考文献</h2><ul>
+<li><a href="https://josephmuia.ca/2018-05-16-net-namespaces-veth-nat/" target="_blank" rel="noopener">https://josephmuia.ca/2018-05-16-net-namespaces-veth-nat/</a></li>
+<li><a href="https://www.l6bj.com/post/cloudnative/docker/02-namespace/" target="_blank" rel="noopener">https://www.l6bj.com/post/cloudnative/docker/02-namespace/</a></li>
+<li><a href="https://www.waynerv.com/posts/container-fundamentals-filesystem-isolation-and-sharing/" target="_blank" rel="noopener">https://www.waynerv.com/posts/container-fundamentals-filesystem-isolation-and-sharing/</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/372698959" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/372698959</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/370869886" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/370869886</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/369510683" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/369510683</a></li>
+<li><a href="https://www.modb.pro/db/248305" target="_blank" rel="noopener">https://www.modb.pro/db/248305</a></li>
+<li><a href="https://www.cnblogs.com/bakari/p/10613710.html" target="_blank" rel="noopener">https://www.cnblogs.com/bakari/p/10613710.html</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/441238885" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/441238885</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      drunkdream
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2021/09/22/linux-container/" title="Linux容器——那些你不知道的事">https://www.drunkdream.com/2021/09/22/linux-container/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/container/" rel="tag"># container</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/08/30/mipad5-install-linux/" rel="next" title="小米平板5安装Linux系统">
+                <i class="fa fa-chevron-left"></i> 小米平板5安装Linux系统
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/05/05/icmp-tunnel-through-nat/" rel="prev" title="如何实现支持NAT的ICMP隧道">
+                如何实现支持NAT的ICMP隧道 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=1e64ff5cae2be"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+      <div id="gitalk-container"></div>
+      <script src="https://unpkg.com/gitalk@1.5.0/dist/gitalk.min.js"></script>
+      <script type="text/javascript">
+          var gitalk = new Gitalk({
+              clientID: 'Iv1.bbffb0360439c133',
+              clientSecret: '6c02cd39741abd9ceae5cf5a8fdf5cbc0d5d4eda',
+              id: window.location.pathname,
+              repo: 'drunkdream.github.io',
+              owner: 'drunkdream',
+              admin: 'drunkdream',
+              proxy: '/github/login/oauth/access_token'
+          })
+          gitalk.render('gitalk-container')
+      </script>
+      <style>
+          .gt-container a {
+              border: none;
+          }
+          .gt-container .gt-header-controls-tip {
+              font-size: 12px;
+              position: relative;
+              top: -10px;
+          }
+      </style>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/logo.gif" alt="drunkdream">
+          <p class="site-author-name" itemprop="name">drunkdream</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-最早的容器化技术——chroot"><span class="nav-number">2.</span> <span class="nav-text">0x01 最早的容器化技术——chroot</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#获取系统镜像压缩包"><span class="nav-number">2.1.</span> <span class="nav-text">获取系统镜像压缩包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proot"><span class="nav-number">2.2.</span> <span class="nav-text">proot</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-Linux资源隔离方案——Namespace"><span class="nav-number">3.</span> <span class="nav-text">0x02 Linux资源隔离方案——Namespace</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PID命名空间"><span class="nav-number">3.1.</span> <span class="nav-text">PID命名空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用户命名空间"><span class="nav-number">3.2.</span> <span class="nav-text">用户命名空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mount命名空间"><span class="nav-number">3.3.</span> <span class="nav-text">Mount命名空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络命名空间"><span class="nav-number">3.4.</span> <span class="nav-text">网络命名空间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-打造一个相对完整的容器"><span class="nav-number">4.</span> <span class="nav-text">0x03 打造一个相对完整的容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用普通用户权限创建不支持网络命名空间的容器"><span class="nav-number">4.1.</span> <span class="nav-text">使用普通用户权限创建不支持网络命名空间的容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用root权限创建支持网络命名空间的容器"><span class="nav-number">4.2.</span> <span class="nav-text">使用root权限创建支持网络命名空间的容器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-Linux容器技术——LXC"><span class="nav-number">5.</span> <span class="nav-text">0x04 Linux容器技术——LXC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建lxc容器"><span class="nav-number">5.1.</span> <span class="nav-text">创建lxc容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改lx容器网络类型"><span class="nav-number">5.2.</span> <span class="nav-text">修改lx容器网络类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动lxc容器"><span class="nav-number">5.3.</span> <span class="nav-text">启动lxc容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进入lxc容器"><span class="nav-number">5.4.</span> <span class="nav-text">进入lxc容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#停止lxc容器"><span class="nav-number">5.5.</span> <span class="nav-text">停止lxc容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除lxc容器"><span class="nav-number">5.6.</span> <span class="nav-text">删除lxc容器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-容器技术的集大成者——Docker"><span class="nav-number">6.</span> <span class="nav-text">0x05 容器技术的集大成者——Docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-容器技术的未来"><span class="nav-number">7.</span> <span class="nav-text">0x06 容器技术的未来</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Kata"><span class="nav-number">7.1.</span> <span class="nav-text">Kata</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gVisor"><span class="nav-number">7.2.</span> <span class="nav-text">gVisor</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-参考文献"><span class="nav-number">8.</span> <span class="nav-text">0x07 参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">drunkdream</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (search_path.endsWith("json")) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

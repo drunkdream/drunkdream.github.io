@@ -1,0 +1,1302 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="nat,icmp,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="0x00 背景最近遇到一个客户环境比较特殊，无法使用TCP或UDP访问外网，但是可以ping通外网。于是想到通过ICMP协议建立与外界的通信链路。在尝试了几个开源工具都宣告失败后，准备自己撸一个ICMP隧道。当然，这个隧道工具需要支持穿过NAT访问网络。 0x01 NAT对ICMP的限制通常来说，NAT对TCP和UDP支持都比较好，但对ICMP一般限制会比较多。例如，常见的限制条件有：  内部机器">
+<meta name="keywords" content="nat,icmp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何实现支持NAT的ICMP隧道">
+<meta property="og:url" content="https://www.drunkdream.com/2022/05/05/icmp-tunnel-through-nat/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 背景最近遇到一个客户环境比较特殊，无法使用TCP或UDP访问外网，但是可以ping通外网。于是想到通过ICMP协议建立与外界的通信链路。在尝试了几个开源工具都宣告失败后，准备自己撸一个ICMP隧道。当然，这个隧道工具需要支持穿过NAT访问网络。 0x01 NAT对ICMP的限制通常来说，NAT对TCP和UDP支持都比较好，但对ICMP一般限制会比较多。例如，常见的限制条件有：  内部机器">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-05-16T15:42:44.536Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何实现支持NAT的ICMP隧道">
+<meta name="twitter:description" content="0x00 背景最近遇到一个客户环境比较特殊，无法使用TCP或UDP访问外网，但是可以ping通外网。于是想到通过ICMP协议建立与外界的通信链路。在尝试了几个开源工具都宣告失败后，准备自己撸一个ICMP隧道。当然，这个隧道工具需要支持穿过NAT访问网络。 0x01 NAT对ICMP的限制通常来说，NAT对TCP和UDP支持都比较好，但对ICMP一般限制会比较多。例如，常见的限制条件有：  内部机器">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.drunkdream.com/2022/05/05/icmp-tunnel-through-nat/">
+
+
+
+
+
+  <title>如何实现支持NAT的ICMP隧道 | 醉梦轩</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6b044934808dac49251aa0a35cf37875";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">醉梦轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">醉中无日月，梦里有乾坤</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2022/05/05/icmp-tunnel-through-nat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="drunkdream">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/logo.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何实现支持NAT的ICMP隧道</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-05T16:14:39+00:00">
+                2022-05-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Protocol/" itemprop="url" rel="index">
+                    <span itemprop="name">Protocol</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  2.7k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-背景"><a href="#0x00-背景" class="headerlink" title="0x00 背景"></a>0x00 背景</h2><p>最近遇到一个客户环境比较特殊，无法使用TCP或UDP访问外网，但是可以ping通外网。于是想到通过ICMP协议建立与外界的通信链路。在尝试了几个开源工具都宣告失败后，准备自己撸一个ICMP隧道。当然，这个隧道工具需要支持穿过NAT访问网络。</p>
+<h2 id="0x01-NAT对ICMP的限制"><a href="#0x01-NAT对ICMP的限制" class="headerlink" title="0x01 NAT对ICMP的限制"></a>0x01 NAT对ICMP的限制</h2><p>通常来说，NAT对TCP和UDP支持都比较好，但对ICMP一般限制会比较多。例如，常见的限制条件有：</p>
+<ul>
+<li>内部机器只能发送PING包；外部机器只能返回PONG包，而且ICMP的<code>id</code>和<code>seq</code>字段必须与PING包保持一致</li>
+<li>每个PING包只能有一个对应的PONG包，映射关系维持时间较短，最多在几十秒的量级，超时之后即便接收到了PONG包也不会转发给内部机器</li>
+</ul>
+<p>在部分对安全性要求更高的场景下，还会有以下一些限制：</p>
+<ul>
+<li>PING包与PONG包长度必须一致</li>
+<li>更短的超时时间（秒级）</li>
+</ul>
+<p>因此，ICMP隧道没法实现完美的双向通信，需要使用类似不断<code>PULL</code>的逻辑去保证数据返回通道的畅通。</p>
+<h2 id="0x02-实现ICMP隧道的一些关键点"><a href="#0x02-实现ICMP隧道的一些关键点" class="headerlink" title="0x02 实现ICMP隧道的一些关键点"></a>0x02 实现ICMP隧道的一些关键点</h2><h3 id="连接管理"><a href="#连接管理" class="headerlink" title="连接管理"></a>连接管理</h3><p>ICMP协议与UDP协议类似，是不保证可靠传输的，需要上层逻辑进行<code>连接</code>的管理。这里连接管理的主要目的有：</p>
+<ul>
+<li>数据包重组，保证接收顺序与发送顺序一致</li>
+<li>数据包确认，丢包重传，保证可靠传输</li>
+<li>保活检测，及时发现连接中断</li>
+</ul>
+<p>因此，可以看出，需要设计一套类似于TCP的协议与算法，考虑到ICMP无法全双工的问题，这个算法应当尽量的简单、高效。</p>
+<h3 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h3><p>根据上面的分析，ICMP协议在通信过程中含有较多非数据面的通信，而ICMP隧道中一般会包含多条数据流，因此最好能够支持多路复用，从而提升通信效率和降低报错的风险。</p>
+<p>这里的多路复用可以考虑在更高的层面支持。</p>
+<h3 id="保活机制"><a href="#保活机制" class="headerlink" title="保活机制"></a>保活机制</h3><p>常见的保活机制一般是双向发送PING包，然后在超时时间内看对端能否返回PONG包。由于ICMP隧道不支持全双工，只能由客户端发送PING包，服务端返回PONG包（上层定义的PING/PONG，非ICMP层的PING/PONG）。</p>
+<p>同时，由于NAT会检查ICMP PING和PONG的id与seq字段的一致性，这里保活时发送的PING包还可以起到<code>穿透NAT</code>的作用。只要客户端发送了足够多的PING包，服务端在返回数据时就有足够多的(<code>id</code>, <code>seq</code>)可用。否则，可能会出现服务端要发送数据给客户端时，却因为没有(<code>id</code>, <code>seq</code>)导致不能及时将数据返回回来，从而导致不必要的时延。</p>
+<h3 id="延时确认"><a href="#延时确认" class="headerlink" title="延时确认"></a>延时确认</h3><p>如果接收到数据包就立即通过<code>PING</code>包或<code>PONG</code>包进行ACK确认，会导致后面在需要发送数据时还会产生<code>WRITE</code>包。如果这两个包时间非常接近，则前面发送的包其实是没有必要的。可以通过延时确认机制，保证在这种情况下不会产生多余的数据包。其实现原理基本与TCP的延时确认机制是一致的。</p>
+<h3 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h3><p>在网络较差的环境中，过快地发送数据包可能会导致无法及时对数据包进行确认，从而达到超时时间进行重传，又可能进一步降低了网络的可用性。因此，需要需要控制处于发送中状态的数据包数量。对于网络较好的情况，可以提升这个值，网络不好的情况就需要降低这个值。</p>
+<p>由于PING包会影响接收数据的效率，因此也需要控制发送PING包的速度，保证服务端有足够的(<code>id</code>, <code>seq</code>)可用，却又不会产生超过网络承受能力的流量。</p>
+<h2 id="0x03-协议设计"><a href="#0x03-协议设计" class="headerlink" title="0x03 协议设计"></a>0x03 协议设计</h2><h3 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h3><p>传输层协议主要是为了解决<code>连接管理</code>相关的问题，需要保证连接的可靠性。为了减少传输层占用的空间，考虑使用二进制协议，使用网络字节序，基本设计如下：</p>
+<pre><code>|             Magic Flag            |
+| --------------- 4 --------------- |
+|   Total length  |    Checksum     |
+| ------ 2 ------ | ------ 2 ------ |
+|       Seq       |       Ack       |
+| ------ 2 ------ | ------ 2 ------ |
+| ------------- Event ------------- |
+| --------------- 4 --------------- |
+| - Client Port - | - Server Port - |
+| ------ 2 ------ | ------ 2 ------ |
+|              Padding              |
+</code></pre><ul>
+<li>开头是一个4字节的固定<code>魔术标记</code>，用于协议识别</li>
+<li>2字节的数据包总大小和2字节的校验码（校验算法与TCP/IP一致）</li>
+<li>2字节的包序号和2字节的确认包序号</li>
+<li>4字节的事件ID</li>
+<li>2字节的客户端端口号和2字节的服务端端口号</li>
+<li>最后面是填充数据</li>
+</ul>
+<p>与TCP使用字节数作为序号和确认号不同，这里是以包为单位，因为传输是以包为单位的，无法再进行拆分。</p>
+<p>包总大小使用2字节，是因为单个IP数据包受<code>MTU</code>影响，一般最大大小是<code>1500</code>，不会出现大于<code>63335</code>的情况。为了保证请求包和返回包的大小相等，组包时会按照设置的最大包大小进行<code>补0</code>操作，解包时会按照包大小字段去掉后面填充的\x00字节。</p>
+<p>事件ID主要起管理连接的作用，主要有：<code>CONNECT</code>、<code>OKAY</code>、<code>FAIL</code>、<code>WRITE</code>、<code>CLOSE</code>、<code>PING</code>、<code>PONG</code>等类型事件，内部会有状态机对连接进行管理。除了<code>PING</code>和<code>PONG</code>序号字段为0，其它包都是从1开始递增的；也就是说，只有这两种包不需要确认。</p>
+<p>客户端端口号和服务端端口号主要是为了支持多路复用，因为ICMP没有端口的概念，可以使用这两个字段来代替端口。</p>
+<p>主要流程如下：</p>
+<ol>
+<li>服务端指定监听端口号开始监听接收到的ICMP包；对于接收到的ICMP包，检查是否以<code>Magic Flag</code>开头，如果不是则直接忽略；并进行其它字段的有效性检查，包括服务端端口号是否与监听的端口号一致</li>
+<li>客户端生成随机2字节整型数字作为本地端口号，指定服务端端口号，<code>Seq</code>字段设为0，组成<code>CONNECT</code>包发送到服务端</li>
+<li>服务端接收到<code>CONNECT</code>包后，判断客户端端口是否已经建立连接，如果没有则返回<code>OKAY</code>包，并创建对应的数据结构；否则返回<code>FAIL</code>包</li>
+<li>客户端后接收到<code>OKAY</code>包后，连接建立;并开始定时发送<code>PING</code>包，间隔时间最大为5秒，如果接收到服务端发送过来的<code>WRITE</code>包或<code>PONG</code>包，也会立即发送<code>PING</code>包</li>
+<li>客户端和服务端在需要发送上层数据时都会组成<code>WRITE</code>包发送过去，如果上层发送的数据量较大，则需要进行分包后发送，保证最终的每个IP包的大小&lt;=1500字节</li>
+<li>在收到对方发送过来的数据包时，最多会延时100ms进行确认；如果这段时间内有数据要发送，则ACK会跟随待发送数据一起发送出去，否则会使用<code>PING</code>包或<code>PONG</code>进行ACK确认</li>
+<li>当服务端有大量数据需要发送时，会由于缺少足够的(<code>id</code>、<code>seq</code>)，导致无法及时将数据返回回来。为了提升这种情况的发送效率，收到服务端数据时，会立即进行ACK确认（根据数据包大小是否达到最大来判断）；同时，需要根据接收数据的频率控制发送<code>PING</code>包的频率，保证服务端有足够多的(<code>id</code>、<code>seq</code>)可用</li>
+<li>为保证服务端有数据要发送时能及时返回回来，需要保证服务端在任意时刻都至少有一个未超时的(<code>id</code>、<code>seq</code>)；因此，即便是在双方都没有数据需要发送的时候，客户端也会保证每隔5秒发送一次<code>PING</code>包，服务端则会在收到<code>PING</code>包后等待最多5秒返回<code>PONG</code>包</li>
+<li>如果客户端连续30秒都没有收到对方发送过来的数据包，则认为连接已断开；服务端也是类似的逻辑</li>
+</ol>
+<p>可以看出，这里基本实现了类似TCP的逻辑，只是实现上简化了很多；并针对ICMP穿越NAT的特点做了适配。</p>
+<h3 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h3><p>应用层协议的目标是为了多条数据流可以复用同一个传输层连接，在设计上更多考虑可扩展性。因此，选用<code>msgpack</code>格式作为序列化格式。这种格式使用上与json类似，但又是二进制格式的，还支持buffer类型，因此非常适合作为序列化格式。</p>
+<p>为了在处理数据时能正常进行分包，需要在数据包前面加上4字节的序列化后的<code>msgpack</code>字节序大小。由于传输层会自动进行分包逻辑，因此上层可以不用关心这一实现细节，允许发送任意长度的数据包。</p>
+<p>应用层主要是创建隧道并写数据，以及关闭隧道等操作。因此，主要也是包含这三种类型的操作。</p>
+<ol>
+<li>首先使用<code>create</code>类型的事件创建一条流，并指定要连接的目标地址，服务端连接成功则返回一个随机生成的4字节整型流ID，否则返回-1</li>
+<li>流创建成功后，双方在需要写数据时会使用<code>write</code>类型的事件，指定流ID写数据；服务端将收到的客户端数据转发给目标服务，而客户端是将服务端返回的数据转发给隧道创建者</li>
+<li>隧道创建者或目标服务关闭时都会触发关闭隧道的操作，该操作会通过<code>close</code>事件指定流ID发送给对端，从而关闭流并删除流ID</li>
+</ol>
+<h2 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2><p>详细实现代码可以看：<a href="https://github.com/drunkdream/turbo-tunnel/blob/master/turbo_tunnel/icmp.py" target="_blank" rel="noopener">https://github.com/drunkdream/turbo-tunnel/blob/master/turbo_tunnel/icmp.py</a>。目前的实现基本可用，但在传输大量数据的场景还需要再进行进一步的优化。</p>
+<p>通过将协议分为传输层和应用层，降低了复杂性，并提升了代码的可读性和可维护性。在这个过程中，也加深了对TCP可靠连接的理解。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      drunkdream
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2022/05/05/icmp-tunnel-through-nat/" title="如何实现支持NAT的ICMP隧道">https://www.drunkdream.com/2022/05/05/icmp-tunnel-through-nat/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nat/" rel="tag"># nat</a>
+          
+            <a href="/tags/icmp/" rel="tag"># icmp</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/09/22/linux-container/" rel="next" title="Linux容器——那些你不知道的事">
+                <i class="fa fa-chevron-left"></i> Linux容器——那些你不知道的事
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/05/22/kali-wifi-cracking/" rel="prev" title="使用Kali系统进行无线网络破解">
+                使用Kali系统进行无线网络破解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=1e64ff5cae2be"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+      <div id="gitalk-container"></div>
+      <script src="https://unpkg.com/gitalk@1.5.0/dist/gitalk.min.js"></script>
+      <script type="text/javascript">
+          var gitalk = new Gitalk({
+              clientID: 'Iv1.bbffb0360439c133',
+              clientSecret: '6c02cd39741abd9ceae5cf5a8fdf5cbc0d5d4eda',
+              id: window.location.pathname,
+              repo: 'drunkdream.github.io',
+              owner: 'drunkdream',
+              admin: 'drunkdream',
+              proxy: '/github/login/oauth/access_token'
+          })
+          gitalk.render('gitalk-container')
+      </script>
+      <style>
+          .gt-container a {
+              border: none;
+          }
+          .gt-container .gt-header-controls-tip {
+              font-size: 12px;
+              position: relative;
+              top: -10px;
+          }
+      </style>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/logo.gif" alt="drunkdream">
+          <p class="site-author-name" itemprop="name">drunkdream</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-背景"><span class="nav-number">1.</span> <span class="nav-text">0x00 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-NAT对ICMP的限制"><span class="nav-number">2.</span> <span class="nav-text">0x01 NAT对ICMP的限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-实现ICMP隧道的一些关键点"><span class="nav-number">3.</span> <span class="nav-text">0x02 实现ICMP隧道的一些关键点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#连接管理"><span class="nav-number">3.1.</span> <span class="nav-text">连接管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多路复用"><span class="nav-number">3.2.</span> <span class="nav-text">多路复用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保活机制"><span class="nav-number">3.3.</span> <span class="nav-text">保活机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#延时确认"><span class="nav-number">3.4.</span> <span class="nav-text">延时确认</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流量控制"><span class="nav-number">3.5.</span> <span class="nav-text">流量控制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-协议设计"><span class="nav-number">4.</span> <span class="nav-text">0x03 协议设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#传输层"><span class="nav-number">4.1.</span> <span class="nav-text">传输层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用层"><span class="nav-number">4.2.</span> <span class="nav-text">应用层</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-总结"><span class="nav-number">5.</span> <span class="nav-text">0x04 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">drunkdream</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (search_path.endsWith("json")) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

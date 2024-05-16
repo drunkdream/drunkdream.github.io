@@ -1,0 +1,1605 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,class,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="0x00 前言在Python中，类也是作为一种对象存在的，因此可以在运行时动态创建类，这也是Python灵活性的一种体现。 本文介绍了如何使用type动态创建类，以及相关的一些使用方法与技巧。 0x01 类的本质何为类？类是对现实生活中一类具有共同特征的事物的抽象，它描述了所创建的对象共同的属性和方法。在常见的编译型语言（如C++）中，类在编译的时候就已经确定了，运行时是无法动态创建的。那么Pyt">
+<meta name="keywords" content="python,class">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python中动态创建类的方法">
+<meta property="og:url" content="https://www.drunkdream.com/2018/07/26/python-dynamic-create-class/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言在Python中，类也是作为一种对象存在的，因此可以在运行时动态创建类，这也是Python灵活性的一种体现。 本文介绍了如何使用type动态创建类，以及相关的一些使用方法与技巧。 0x01 类的本质何为类？类是对现实生活中一类具有共同特征的事物的抽象，它描述了所创建的对象共同的属性和方法。在常见的编译型语言（如C++）中，类在编译的时候就已经确定了，运行时是无法动态创建的。那么Pyt">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-05-16T15:42:44.538Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python中动态创建类的方法">
+<meta name="twitter:description" content="0x00 前言在Python中，类也是作为一种对象存在的，因此可以在运行时动态创建类，这也是Python灵活性的一种体现。 本文介绍了如何使用type动态创建类，以及相关的一些使用方法与技巧。 0x01 类的本质何为类？类是对现实生活中一类具有共同特征的事物的抽象，它描述了所创建的对象共同的属性和方法。在常见的编译型语言（如C++）中，类在编译的时候就已经确定了，运行时是无法动态创建的。那么Pyt">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.drunkdream.com/2018/07/26/python-dynamic-create-class/">
+
+
+
+
+
+  <title>Python中动态创建类的方法 | 醉梦轩</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6b044934808dac49251aa0a35cf37875";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">醉梦轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">醉中无日月，梦里有乾坤</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2018/07/26/python-dynamic-create-class/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="drunkdream">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/logo.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python中动态创建类的方法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-26T10:55:02+00:00">
+                2018-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  2.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>在Python中，类也是作为一种对象存在的，因此可以在运行时动态创建类，这也是Python灵活性的一种体现。</p>
+<p>本文介绍了如何使用<code>type</code>动态创建类，以及相关的一些使用方法与技巧。</p>
+<h1 id="0x01-类的本质"><a href="#0x01-类的本质" class="headerlink" title="0x01 类的本质"></a>0x01 类的本质</h1><p>何为类？类是对现实生活中一类具有共同特征的事物的抽象，它描述了所创建的对象共同的属性和方法。在常见的编译型语言（如<code>C++</code>）中，类在编译的时候就已经确定了，运行时是无法动态创建的。那么Python是如何做到的呢？</p>
+<p>来看下面这段代码：</p>
+<pre><code class="python">class A(object):
+    pass
+
+print(A)
+print(A.__class__)
+
+</code></pre>
+<p>在Python2中执行结果如下：</p>
+<pre><code>&lt;class &#39;__main__.A&#39;&gt;
+&lt;type &#39;type&#39;&gt;
+</code></pre><p>在Python3中执行结果如下：</p>
+<pre><code>&lt;class &#39;__main__.A&#39;&gt;
+&lt;class &#39;type&#39;&gt;
+</code></pre><p>可以看出，类<code>A</code>的类型是<code>type</code>，也就是说:<code>type</code>实例化后是<code>类</code>，<code>类</code>实例化后是<code>对象</code>。</p>
+<h1 id="0x02-使用type动态创建类"><a href="#0x02-使用type动态创建类" class="headerlink" title="0x02 使用type动态创建类"></a>0x02 使用<code>type</code>动态创建类</h1><p><code>type</code>的参数定义如下：</p>
+<blockquote>
+<p>type(name, bases, dict)</p>
+</blockquote>
+<blockquote>
+<p><code>name</code>: 生成的类名<br><code>bases</code>: 生成的类基类列表，类型为tuple<br><code>dict</code>: 生成的类中包含的属性或方法</p>
+</blockquote>
+<p>例如：可以使用以下方法创建一个类<code>A</code></p>
+<pre><code class="python">cls = type(&#39;A&#39;, (object,), {&#39;__doc__&#39;: &#39;class created by type&#39;})
+
+print(cls)
+print(cls.__doc__)
+</code></pre>
+<p>输出结果如下：</p>
+<pre><code>&lt;class &#39;__main__.A&#39;&gt;
+class created by type
+</code></pre><p>可以看出，这样创建的类与静态定义的类基本没有什么差别，使用上还更灵活。</p>
+<p>这种方法的使用场景之一是：</p>
+<blockquote>
+<p>有些地方需要传入一个类作为参数，但是类中会用到某些受外界影响的变量；虽然使用全局变量可以解决这个问题，但是比较丑陋。此时，就可以使用这种方法动态创建一个类来使用。</p>
+</blockquote>
+<p>以下是一个使用的示例：</p>
+<pre><code class="python">
+import socket
+try:
+    import SocketServer
+except ImportError:
+    # python3
+    import socketserver as SocketServer
+
+class PortForwardingRequestHandler(SocketServer.BaseRequestHandler):
+    &#39;&#39;&#39;处理端口转发请求
+    &#39;&#39;&#39;
+
+    def handle(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect(self.server) # self.server是在动态创建类时传入的
+        # 连接目标服务器，并转发数据
+        # 以下代码省略...
+
+def gen_cls(server):
+    &#39;&#39;&#39;动态创建子类
+    &#39;&#39;&#39;
+    return type(&#39;%s_%s&#39; % (ProxyRequestHandler.__name__, server), (PortForwardingRequestHandler, object), {&#39;server&#39;: server})
+
+
+server = SocketServer.ThreadingTCPServer((&#39;127.0.0.1&#39;, 8080), gen_cls((&#39;www.qq.com&#39;, 80)))
+server.serve_forever()
+</code></pre>
+<p>在上面的例子中，由于目标服务器地址是由用户传入的，而<code>PortForwardingRequestHandler</code>类的实例化是在<code>ThreadingTCPServer</code>里实现的，我们没法控制。因此，使用动态创建类的方法可以很好地解决这个问题。</p>
+<h1 id="0x03-使用元类（metaclass）"><a href="#0x03-使用元类（metaclass）" class="headerlink" title="0x03 使用元类（metaclass）"></a>0x03 使用元类（<code>metaclass</code>）</h1><p>类是实例的模版，而元类是类的模版。通过元类可以创建出类，类的默认元类是<code>type</code>，所有元类必须是<code>type</code>的子类。</p>
+<p>下面是元类的一个例子：</p>
+<pre><code class="python">import struct
+
+class MetaClass(type):
+    def __init__(cls, name, bases, attrd):
+        super(MetaClass, cls).__init__(name, bases, attrd)
+
+    def __mul__(self, num):
+        return type(&#39;%s_Array_%d&#39; % (self.__name__, num), (ArrayTypeBase,), {&#39;obj_type&#39;: self, &#39;array_size&#39;: num, &#39;size&#39;: self.size * num})
+
+class IntTypeBase(object):
+    &#39;&#39;&#39;类型基类
+    &#39;&#39;&#39;
+    __metaclass__ = MetaClass
+    size = 0
+    format = &#39;&#39;  # strcut格式
+
+    def __init__(self, val=0):
+        if isinstance(val, str): val = int(val)
+        if not isinstance(val, int):
+            raise TypeError(&#39;类型错误：%s&#39; % type(val))
+        self._net_order = True  # 默认存储的为网络序数据
+        self.value = val
+        self._num = 1
+
+    def __str__(self):
+        return &#39;%d(%s)&#39; % (self._val, self.__class__.__name__)
+
+    def __cmp__(self, val):
+        if isinstance(val, IntTypeBase):
+            return cmp(self.value, val.value)
+        elif isinstance(val, (int, long)):
+            return cmp(self.value, val)
+        elif isinstance(val, type(None)):
+            return cmp(int(self.value), None)
+        else:
+            raise TypeError(&#39;类型错误：%s&#39; % type(val))
+
+    def __int__(self):
+        return int(self.value)
+
+    def __hex__(self):
+        return hex(self.value)
+
+    def __index__(self):
+        return self.value
+
+    def __add__(self, val):
+        return int(self.value + val)
+
+    def __radd__(self, val):
+        return int(val + self.value)
+
+    def __sub__(self, val):
+        return self.value - val
+
+    def __rsub__(self, val):
+        return val - self.value
+
+    def __mul__(self, val):
+        return self.value * val
+
+    def __div__(self, val):
+        return self.value / val
+
+    def __mod__(self, val):
+        return self.value % val
+
+    def __rshift__(self, val):
+        return self.value &gt;&gt; val
+
+    def __and__(self, val):
+        return self.value &amp; val
+
+    @property
+    def net_order(self):
+        return self._net_order
+
+    @net_order.setter
+    def net_order(self, _net_order):
+        self._net_order = _net_order
+
+    @property
+    def value(self):
+        return self._val
+
+    @value.setter
+    def value(self, val):
+        if not isinstance(val, int):
+            raise TypeError(&#39;类型错误：%s&#39; % type(val))
+        if val &lt; 0: raise ValueError(val)
+        max_val = 256 ** (self.size) - 1
+        if val &gt; max_val: raise ValueError(&#39;%d超过最大大小%d&#39; % (val, max_val))
+        self._val = val
+
+    def unpack(self, buff, net_order=True):
+        &#39;&#39;&#39;从buffer中提取出数据
+        &#39;&#39;&#39;
+        if len(buff) &lt; self.size: raise ValueError(repr(buff))
+        buff = buff[:self.size]
+        fmt = self.format
+        if not net_order: fmt = &#39;&lt;&#39; + fmt[1]
+        self._val = struct.unpack(fmt, buff)[0]
+        return self._val
+
+    def pack(self, net_order=True):
+        &#39;&#39;&#39;返回内存数据
+        &#39;&#39;&#39;
+        fmt = self.format
+        if not net_order: fmt = &#39;&lt;&#39; + fmt[1]
+        return struct.pack(fmt, self._val)
+
+    @staticmethod
+    def cls_from_size(size):
+        &#39;&#39;&#39;从整型大小返回对应的类
+        &#39;&#39;&#39;
+        if size == 1:
+            return c_uint8
+        elif size == 2:
+            return c_uint16
+        elif size == 4:
+            return c_uint32
+        elif size == 8:
+            return c_uint64
+        else:
+            raise RuntimeError(&#39;不支持的整型数据长度：%d&#39; % size)
+
+    @classmethod
+    def unpack_from(cls, str, net_order=True):
+        obj = cls()
+        obj.unpack(str, net_order)
+        return int(obj)
+
+class ArrayTypeBase(object):
+    &#39;&#39;&#39;数组类型基类
+    &#39;&#39;&#39;
+    def __init__(self, val=&#39;&#39;):
+        init_val = 0
+        if isinstance(val, int): 
+            init_val = val
+        else:
+            val = str(val)
+        self._obj_array = [self.obj_type(init_val) for _ in range(self.array_size)]  # 初始化
+        self.value = val
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return repr(self.value)
+
+    def __getitem__(self, idx):
+        return self._obj_array[idx].value
+
+    def __setitem__(self, idx, val):
+        self._obj_array[idx].value = val
+
+    def __getslice__(self, i, j):
+        result = [obj.value for obj in self._obj_array[i:j]]
+        if self.obj_type == c_ubyte:
+            result = [chr(val) for val in result]
+            result = &#39;&#39;.join(result)
+        return result
+
+    def __add__(self, oval):
+        if not isinstance(oval, str):
+            raise NotImplementedError(&#39;%s还不支持%s类型&#39; % (self.__class__.__name__, type(oval)))
+        return self.value + oval
+
+    def __radd__(self, oval):
+        return oval + self.value
+
+    def __iter__(self):
+        &#39;&#39;&#39;迭代器
+        &#39;&#39;&#39;
+        for i in range(self.length):
+            yield self[i]
+
+    @property
+    def value(self):
+        result = [obj.value for obj in self._obj_array]
+        if self.obj_type == c_ubyte:
+            result = [chr(val) for val in result]
+            result = &#39;&#39;.join(result)
+        return result
+
+    @value.setter
+    def value(self, val):
+        if isinstance(val, list):
+            raise NotImplementedError(&#39;ArrayType还不支持list&#39;)
+        elif isinstance(val, str):
+            self.unpack(val)
+
+    def unpack(self, buff, net_order=True):
+        &#39;&#39;&#39;
+        &#39;&#39;&#39;
+        if len(buff) == 0: return
+        if len(buff) &lt; self.size: raise ValueError(&#39;unpack数据长度错误：%d %d&#39; % (len(buff), self.size))
+        for i in range(self.array_size):
+            self._obj_array[i].unpack(buff[i * self.obj_type.size:], net_order)
+
+    def pack(self, net_order=True):
+        &#39;&#39;&#39;
+        &#39;&#39;&#39;
+        result = &#39;&#39;
+        for i in range(self.array_size):
+            result += self._obj_array[i].pack()
+        return result
+
+class c_uint8(IntTypeBase):
+    &#39;&#39;&#39;unsigned char
+    &#39;&#39;&#39;
+    size = 1
+    format = &#39;!B&#39;
+
+class c_uint16(IntTypeBase):
+    &#39;&#39;&#39;unsigned short
+    &#39;&#39;&#39;
+    size = 2
+    format = &#39;!H&#39;
+
+class c_uint32(IntTypeBase):
+    &#39;&#39;&#39;unsigned int32
+    &#39;&#39;&#39;
+    size = 4
+    format = &#39;!I&#39;
+
+class c_uint64(IntTypeBase):
+    &#39;&#39;&#39;unsigned int64
+    &#39;&#39;&#39;
+    size = 8
+    format = &#39;!Q&#39;
+
+
+cls = c_ubyte * 5
+print(cls)
+val = cls(65)
+print(val)
+</code></pre>
+<p>以上代码在Python2.7中输出结果如下：</p>
+<pre><code>
+&lt;class &#39;__main__.c_ubyte_Array_5&#39;&gt;
+AAAAA
+
+</code></pre><p>在Python3中，<code>metaclass</code>的定义方法做了修改，变成了：</p>
+<pre><code class="python">
+class IntTypeBase(object, metaclass=MetaClass):
+    pass
+
+</code></pre>
+<p>为了兼容性。可以使用<code>six</code>库中的方法：</p>
+<pre><code class="python">
+import six
+
+@six.add_metaclass(MetaClass)
+class IntTypeBase(object):
+    pass
+
+</code></pre>
+<p>使用元类的优点是可以使用更加优雅的方式创建类，如上面的<code>c_ubyte * 5</code>，提升了代码可读性和技巧性。</p>
+<h1 id="0x04-重写-new-方法"><a href="#0x04-重写-new-方法" class="headerlink" title="0x04 重写__new__方法"></a>0x04 重写<code>__new__</code>方法</h1><p>每个继承自<code>object</code>的类都有<code>__new__</code>方法，这是个在类实例化时优先调用的方法，时机早于<code>__init__</code>。它返回的类型决定了最终创建出来的对象的类型。</p>
+<p>请看以下代码：</p>
+<pre><code class="python">
+class A(object):
+    def __new__(self, *args, **kwargs):
+        return B()
+
+class B(object):
+    pass
+
+a = A()
+print(a)
+
+</code></pre>
+<p>输出结果如下：</p>
+<pre><code>&lt;__main__.B object at 0x023576D0&gt;
+</code></pre><p>可以看到，明明实例化的是<code>A</code>，但是返回的对象类型却是<code>B</code>，这里主要就是<code>__new__</code>在起作用。</p>
+<p>下面的例子展示了在<code>__new__</code>中动态创建类的过程：</p>
+<pre><code class="python">
+class B(object):
+    def __init__(self, var):
+        self._var = var
+
+    def test(self):
+        print(self._var)
+
+class A(object):
+    def __new__(self, *args, **kwargs):
+        if len(args) == 1 and isinstance(args[0], type):
+            return type(&#39;%s_%s&#39; % (self.__name__, args[0].__name__), (self, args[0]), {})
+        else:
+            return object.__new__(self, *args, **kwargs)
+
+    def output(self):
+        print(&#39;output from new class %s&#39; % self.__class__.__name__)
+
+obj = A(B)(&#39;Hello World&#39;)
+obj.test()
+obj.output()
+
+</code></pre>
+<p>结果输出如下：</p>
+<pre><code>Hello World
+output from new class A_B
+</code></pre><p>这个例子实现了动态创建两个类的子类，比较适合存在很多类需要排列组合生成N多子类的场景，可以避免要写一堆子类代码的痛苦。</p>
+<h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>动态创建类必须要使用<code>type</code>实现，但是，根据不同的使用场景，可以选择不同的使用方法。</p>
+<p>这样做对静态分析工具其实是不友好的，因为在运行过程中类型发生了变化。而且，这也会降低代码的可读性，一般情况下也不推荐用户使用这样存在一定技巧性的代码。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      drunkdream
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2018/07/26/python-dynamic-create-class/" title="Python中动态创建类的方法">https://www.drunkdream.com/2018/07/26/python-dynamic-create-class/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/class/" rel="tag"># class</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/18/python-javascript-generator/" rel="next" title="Python和JavaScript中的生成器与协程">
+                <i class="fa fa-chevron-left"></i> Python和JavaScript中的生成器与协程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/21/pyinstaller/" rel="prev" title="使用PyInstaller打包可执行文件">
+                使用PyInstaller打包可执行文件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=1e64ff5cae2be"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+      <div id="gitalk-container"></div>
+      <script src="https://unpkg.com/gitalk@1.5.0/dist/gitalk.min.js"></script>
+      <script type="text/javascript">
+          var gitalk = new Gitalk({
+              clientID: 'Iv1.bbffb0360439c133',
+              clientSecret: '6c02cd39741abd9ceae5cf5a8fdf5cbc0d5d4eda',
+              id: window.location.pathname,
+              repo: 'drunkdream.github.io',
+              owner: 'drunkdream',
+              admin: 'drunkdream',
+              proxy: '/github/login/oauth/access_token'
+          })
+          gitalk.render('gitalk-container')
+      </script>
+      <style>
+          .gt-container a {
+              border: none;
+          }
+          .gt-container .gt-header-controls-tip {
+              font-size: 12px;
+              position: relative;
+              top: -10px;
+          }
+      </style>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/logo.gif" alt="drunkdream">
+          <p class="site-author-name" itemprop="name">drunkdream</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-类的本质"><span class="nav-number">2.</span> <span class="nav-text">0x01 类的本质</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-使用type动态创建类"><span class="nav-number">3.</span> <span class="nav-text">0x02 使用type动态创建类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-使用元类（metaclass）"><span class="nav-number">4.</span> <span class="nav-text">0x03 使用元类（metaclass）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-重写-new-方法"><span class="nav-number">5.</span> <span class="nav-text">0x04 重写__new__方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-总结"><span class="nav-number">5.1.</span> <span class="nav-text">0x05 总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">drunkdream</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (search_path.endsWith("json")) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

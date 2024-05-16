@@ -1,0 +1,66 @@
+
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+<script language="JavaScript">
+
+function get_ips(callbacks){
+    var servers = {iceServers: [{url: "turn:numb.viagenie.ca", credential: "webrtcdemo", username: "louis@mozilla.com"}, {url: "stun:stun.ekiga.net"}]};//{url: "stun:stun.l.google.com:19302"}
+    
+    //minimal requirements for data connection
+    var mediaConstraints = {
+        optional: [
+        {DtlsSrtpKeyAgreement: true}, 
+        {RtpDataChannels: true}
+        ]
+    };
+    
+    //construct a new RTCPeerConnection
+    //compatibility for firefox and chrome
+    var RTCPeerConnection = window.RTCPeerConnection
+        || window.mozRTCPeerConnection
+        || window.webkitRTCPeerConnection;
+    var pc = new RTCPeerConnection(servers, mediaConstraints);
+    //listen for candidate events
+    var pri_ips = [];
+    var pub_ips = [];
+    pc.onicecandidate = function(ice){
+
+        //skip non-candidate events
+        if(ice.candidate){
+            var items = ice.candidate.candidate.split(" ");
+            if(items.length == 12 || items.length == 14){
+                if(pri_ips.indexOf(items[4]) < 0){
+                    pri_ips.push(items[4]);
+                    callbacks[0](items[4]);
+                }
+            }else if(items.length == 16){
+                for(var i=0;i<pub_ips.length;i++){
+                    if(pub_ips[i][0] == items[9] && pub_ips[i][1] == items[4]){
+                        return;
+                    }
+                }
+                pub_ips.push([items[9], items[4]]);
+                callbacks[1](items[9], items[4]);
+            }
+            //console.log(items + items.length);//
+        }
+    };
+
+    //create a bogus data channel
+    pc.createDataChannel("");
+
+    //create an offer sdp
+    pc.createOffer(function(result){
+
+        //trigger the stun server request
+        pc.setLocalDescription(result, function(){}, function(){});
+        //console.log(result);
+    }, function(){});
+}
+
+get_ips([function(ip){console.log(ip)}, function(pri_ip, pub_ip){console.log(pri_ip + " " + pub_ip)}]);
+</script>
+</head>
+<body>
+</body>
+</html>

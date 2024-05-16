@@ -1,0 +1,1406 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="emulator,Android,kernel,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="0x00 前言前几天在使用Android模拟器的时候，发现无法连接PPTP类型的VPN服务器，报如下的错误：  I/mtpd    (30035): Creating PPPoX socketF/mtpd    (30035): Socket() Address family not supported by protocol  对应的代码如下： static int create_pppox()">
+<meta name="keywords" content="emulator,Android,kernel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译可用的Android模拟器ranchu内核">
+<meta property="og:url" content="https://www.drunkdream.com/2017/12/06/build-android-emulator-kernel/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言前几天在使用Android模拟器的时候，发现无法连接PPTP类型的VPN服务器，报如下的错误：  I/mtpd    (30035): Creating PPPoX socketF/mtpd    (30035): Socket() Address family not supported by protocol  对应的代码如下： static int create_pppox()">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://www.drunkdream.com/images/gre.png">
+<meta property="og:updated_time" content="2024-05-16T15:42:44.534Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="编译可用的Android模拟器ranchu内核">
+<meta name="twitter:description" content="0x00 前言前几天在使用Android模拟器的时候，发现无法连接PPTP类型的VPN服务器，报如下的错误：  I/mtpd    (30035): Creating PPPoX socketF/mtpd    (30035): Socket() Address family not supported by protocol  对应的代码如下： static int create_pppox()">
+<meta name="twitter:image" content="https://www.drunkdream.com/images/gre.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.drunkdream.com/2017/12/06/build-android-emulator-kernel/">
+
+
+
+
+
+  <title>编译可用的Android模拟器ranchu内核 | 醉梦轩</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6b044934808dac49251aa0a35cf37875";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">醉梦轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">醉中无日月，梦里有乾坤</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2017/12/06/build-android-emulator-kernel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="drunkdream">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/logo.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">编译可用的Android模拟器ranchu内核</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-06T12:06:11+00:00">
+                2017-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  1.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>前几天在使用Android模拟器的时候，发现无法连接PPTP类型的VPN服务器，报如下的错误：</p>
+<blockquote>
+<p>I/mtpd    (30035): Creating PPPoX socket<br>F/mtpd    (30035): Socket() Address family not supported by protocol</p>
+</blockquote>
+<p>对应的代码如下：</p>
+<pre><code>static int create_pppox()
+{
+    int pppox = socket(AF_PPPOX, SOCK_DGRAM, PX_PROTO_OPNS);
+    log_print(INFO, &quot;Creating PPPoX socket&quot;);
+
+    if (pppox == -1) {
+        log_print(FATAL, &quot;Socket() %s&quot;, strerror(errno));
+        exit(SYSTEM_ERROR);
+    } else {
+        struct sockaddr_pppopns address = {
+            .sa_family = AF_PPPOX,
+            .sa_protocol = PX_PROTO_OPNS,
+            .tcp_socket = the_socket,
+            .local = local,
+            .remote = remote,
+        };
+        if (connect(pppox, (struct sockaddr *)&amp;address, sizeof(address))) {
+            log_print(FATAL, &quot;Connect() %s&quot;, strerror(errno));
+            exit(SYSTEM_ERROR);
+        }
+    }
+    return pppox;
+}
+</code></pre><p>错误是在第7行报出来的，也就是说：在创建<strong>AF_PPPOX</strong>类型的socket时失败了。</p>
+<p>网上说是因为kernel不支持的原因，需要重新编译kernel。</p>
+<h2 id="0x01-编译3-10的内核"><a href="#0x01-编译3-10的内核" class="headerlink" title="0x01 编译3.10的内核"></a>0x01 编译3.10的内核</h2><p>查看模拟器中使用的内核版本：</p>
+<blockquote>
+<p>Linux version 3.10.0+ (<a href="mailto:jinqian@jinqian.mtv.corp.google.com" target="_blank" rel="noopener">jinqian@jinqian.mtv.corp.google.com</a>) (gcc version 4.9 20150123 (prerelease) (GCC) ) #448 SMP PREEMPT Mon Feb 29 13:49:38 PST 2016</p>
+</blockquote>
+<p>将网上搜到的编译方法汇总如下（我只编译x86版本，不需要交叉编译）：</p>
+<pre><code>git clone https://android.googlesource.com/kernel/goldfish.git
+
+cd goldfish
+
+git branch -a
+</code></pre><p>返回如下结果：</p>
+<pre><code>remotes/origin/HEAD -&gt; origin/master
+remotes/origin/android-3.10
+remotes/origin/android-3.18
+remotes/origin/android-goldfish-2.6.29
+remotes/origin/android-goldfish-3.10
+remotes/origin/android-goldfish-3.10-k-dev
+remotes/origin/android-goldfish-3.10-l-mr1-dev
+remotes/origin/android-goldfish-3.10-m-dev
+remotes/origin/android-goldfish-3.10-n-dev
+remotes/origin/android-goldfish-3.18
+remotes/origin/android-goldfish-3.18-dev
+remotes/origin/android-goldfish-3.4
+remotes/origin/android-goldfish-3.4-l-mr1-dev
+remotes/origin/android-goldfish-4.4-dev
+remotes/origin/heads/for/android-goldfish-3.18-dev
+remotes/origin/linux-goldfish-3.0-wip
+remotes/origin/master
+</code></pre><p>选择android-goldfish-3.10分支</p>
+<pre><code>git checkout android-goldfish-3.10
+</code></pre><p>android源码库的路径<em>prebuilts/qemu-kernel/build-kernel.sh</em>是一个内核编译脚本。执行如下命令可以直接编译内核：</p>
+<pre><code>prebuilts/qemu-kernel/build-kernel.sh --arch=x86 --config=i386_ranchu --out=/tmp/
+</code></pre><p>如果报以下错误, 请在命令行后面加上： <strong>–cross=/usr/bin/</strong></p>
+<blockquote>
+<p>It looks like x86_64-linux-android-gcc is not in your path ! Aborting.</p>
+</blockquote>
+<p>也可以改成android源码中提供的gcc路径前缀</p>
+<p>编译完成后会在/tmp目录下生成kernel-qemu文件，将其替换掉模拟器镜像文件目录中的kernel-ranchu文件，重启模拟器即可；或是在启动模拟器的命令行中添加<strong>-kernel /tmp/kernel-qemu</strong>，启动也可以。</p>
+<h2 id="0x02-解决编译的内核无法启动模拟器问题"><a href="#0x02-解决编译的内核无法启动模拟器问题" class="headerlink" title="0x02 解决编译的内核无法启动模拟器问题"></a>0x02 解决编译的内核无法启动模拟器问题</h2><p>使用编译的内核启动模拟器后，发现会一直黑屏，无法进入系统。<br>加入<strong>-show-kernel</strong>参数后看到启动时一直报：</p>
+<blockquote>
+<p>init: untracked pid 16860 killed by signal 9</p>
+</blockquote>
+<p>查看logcat看到如下crash信息：</p>
+<pre><code>I/DEBUG   ( 1312): pid: 1389, tid: 1389, name: surfaceflinger  &gt;&gt;&gt; /system/bin/surfaceflinger &lt;&lt;&lt;
+I/DEBUG   ( 1312): signal 6 (SIGABRT), code -6 (SI_TKILL), fault addr --------
+I/DEBUG   ( 1312):     eax 00000000  ebx 0000056d  ecx 0000056d  edx 00000006
+I/DEBUG   ( 1312):     esi b3056c48  edi 00000002
+I/DEBUG   ( 1312):     xcs 00000073  xds 0000007b  xes 0000007b  xfs 00000000  xss 0000007b
+I/DEBUG   ( 1312):     eip b2f75686  ebp 0000056d  esp bff6d410  flags 00000286
+I/DEBUG   ( 1312): 
+I/DEBUG   ( 1312): backtrace:
+I/DEBUG   ( 1312):     #00 pc 00074686  /system/lib/libc.so (tgkill+22)
+I/DEBUG   ( 1312):     #01 pc 0002217b  /system/lib/libc.so (pthread_kill+155)
+I/DEBUG   ( 1312):     #02 pc 000239f4  /system/lib/libc.so (raise+36)
+I/DEBUG   ( 1312):     #03 pc 0001bdf4  /system/lib/libc.so (abort+84)
+I/DEBUG   ( 1312):     #04 pc 000314e5  /system/lib/libsurfaceflinger.so
+I/DEBUG   ( 1312):     #05 pc 000201d7  /system/lib/libsurfaceflinger.so (android::SurfaceFlinger::init()+199)
+I/DEBUG   ( 1312):     #06 pc 00000b51  /system/bin/surfaceflinger
+I/DEBUG   ( 1312):     #07 pc 00012f94  /system/lib/libc.so (__libc_init+100)
+I/DEBUG   ( 1312):     #08 pc 00000cd6  /system/bin/surfaceflinger
+</code></pre><p>原来是surfaceflinger一直crash，导致看不到启动动画。</p>
+<p>网上搜了一气，也没有找到原因。切换到3.10的其它几个分支也不行，最好的情况的是在关闭opengl的情况下进入系统了，但是界面显示明显和正常情况不一样。</p>
+<p>在山穷水尽之时，看到了<a href="http://blog.csdn.net/ayu_ag/article/details/51741679" target="_blank" rel="noopener">http://blog.csdn.net/ayu_ag/article/details/51741679</a>这篇文章，里面提供了根据提交记录查找编译时的版本号的方法。使用和sdk编译时使用的版本，应该不会有问题吧！</p>
+<p>现在的模拟器使用的都是ranchu内核，android源码是在7.0的时候才开始提供的，路径是：prebuilts/qemu-kernel/x86/ranchu/kernel-qemu</p>
+<p>提交记录中也没有看到有用的信息。</p>
+<p>后来把 <a href="https://android.googlesource.com/platform/prebuilts/qemu-kernel" target="_blank" rel="noopener">https://android.googlesource.com/platform/prebuilts/qemu-kernel</a> 项目拉下来，在<strong>git log</strong>中找到了如下信息：</p>
+<pre><code>commit e6e975ca2f2e57dced55759ab40b2851c144a67d
+Author: Jin Qian &lt;jinqian@google.com&gt;
+Date:   Mon Oct 31 14:28:45 2016 -0700
+
+    Upgrade emulator kernels
+
+    kernel-n-dev-android-goldfish-3.18-arm - build: 3421005
+    kernel-n-dev-android-goldfish-3.10-mips64 - build: 3420631
+    kernel-n-dev-android-goldfish-3.10-arm - build: 3420641
+    kernel-n-dev-android-goldfish-3.18-arm64 - build: 3421004
+    kernel-n-dev-android-goldfish-3.10-mips - build: 3420642
+    kernel-n-dev-android-goldfish-3.10-arm64 - build: 3420640
+    kernel-n-dev-android-goldfish-3.10-x86_64-qemu1 - build: 3420638
+    kernel-n-dev-android-goldfish-3.4-x86 - build: 3407988
+    kernel-n-dev-android-goldfish-3.10-x86_64 - build: 3420647
+    kernel-n-dev-android-goldfish-3.18-mips - build: 3421003
+    kernel-n-dev-android-goldfish-3.18-x86_64 - build: 3421007
+    kernel-n-dev-android-goldfish-3.4-mips - build: 3407999
+    kernel-n-dev-android-goldfish-3.4-arm - build: 3408013
+    kernel-n-dev-android-goldfish-3.10-x86 - build: 3420649
+    kernel-n-dev-android-goldfish-3.18-x86 - build: 3421006
+    kernel-n-dev-android-goldfish-3.18-mips64 - build: 3421008
+
+    Upgrade 3.4 kernel images to 1cc37bf
+    1cc37bf MIPS: Attach goldfish machine reset and power-off routines
+
+    Upgrade 3.10 kernel images to fd6659e
+    fd6659e Merge branch &#39;android-3.10&#39; into android-goldfish-3.10
+    13f4ded BACKPORT: LogiHID: hid-lg4ff: tech G29 wheel patches
+    288f516 android: binder: use copy_from_user_preempt_disabled
+    ...
+    0e7ad12 BACKPORT: ALSA: usb-audio: Fix double-free in error paths after snd_usb_add_audio_stream() call
+    5982d2e BACKPORT: ALSA: usb-audio: Minor code cleanup in create_fixed_stream_quirk()
+    b581331 pstore: drop pmsg bounce buffer
+
+    Upgrade 3.18 kernel images to 82a0dee
+    82a0dee Merge branch &#39;android-3.18&#39; into android-goldfish-3.18
+    74b2c7a android: binder: support for file-descriptor arrays.
+    53b1701 android: binder: support for scatter-gather.
+    ...
+    cd6ae1f Revert &quot;UPSTREAM: ARM: 8494/1: mm: Enable PXN when running non-LPAE kernel on LPAE processor The VMSA field of MMFR0 (bottom 4 bits) is incremented for each added feature.  PXN is supported if the value is &gt;= 4 and LPAE is supported if it is &gt;= 5.&quot;
+    7447458 UPSTREAM: perf: Fix race in swevent hash
+    5753ff2 ANDROID: dm: Fix symbol exports for dm target callbacks
+
+    Change-Id: I5a635595233199939145487df580c6f519c24335
+</code></pre><p>里面的“fd6659e”就是我们需要的版本号</p>
+<pre><code>git checkout fd6659e
+</code></pre><p>再执行编译，就可以正常运行模拟器了。</p>
+<h2 id="0x03-如何编译内核模块"><a href="#0x03-如何编译内核模块" class="headerlink" title="0x03 如何编译内核模块"></a>0x03 如何编译内核模块</h2><p>在正常编译出内核前，我还尝试了编译ko模块来绕过编译完整内核的问题。这里一并记录一下。</p>
+<p>build-kernel.sh脚本事实上会先根据arch/x86/configs/i386_ranchu_defconfig文件生成.config文件。</p>
+<p>要编译出ko，需要在i386_ranchu_defconfig中加入以下行：</p>
+<pre><code>CONFIG_MODULES=y
+CONFIG_MODULE_UNLOAD=y
+CONFIG_MODULES_USE_ELF_REL=y
+CONFIG_IP6_NF_IPTABLES=y
+CONFIG_IPV6=y
+</code></pre><p>然后将需要编译成模块的配置改为<strong>m</strong>，如：</p>
+<p>CONFIG_PPP=m<br>CONFIG_PPP_BSDCOMP=m<br>CONFIG_PPP_DEFLATE=m<br>CONFIG_PPP_MPPE=m<br>CONFIG_PPPOLAC=m<br>CONFIG_PPPOPNS=m</p>
+<p>执行命令：</p>
+<pre><code>make i386_ranchu_defconfig
+export ARCH=x86
+make -j16
+</code></pre><p>编译出来的内核文件路径是：<strong>arch/x86/boot/bzImage</strong></p>
+<p>而且，期望的ko文件也编译出来了。</p>
+<pre><code>drivers/net/slip/slhc.ko
+drivers/net/ppp/ppp_mppe.ko
+drivers/net/ppp/bsd_comp.ko
+drivers/net/ppp/ppp_generic.ko
+drivers/net/ppp/pppolac.ko
+drivers/net/ppp/pppox.ko
+drivers/net/ppp/pppopns.ko
+drivers/net/ppp/ppp_deflate.ko
+</code></pre><p>但是在测试的时候，发现ko中依赖到了net/core/net_namespace.c中的一个函数，而这个函数是通过CONFIG_NET_NS开关控制的。sdk提供的kernel里应该关闭了这个开关，因此，这些ko事实上是不能加载进去的。</p>
+<p>而且，从6.0开始，sdk提供的kernel已经不再支持动态加载ko，估计是担心有安全风险。</p>
+<h2 id="0x04-如何支持PPTP"><a href="#0x04-如何支持PPTP" class="headerlink" title="0x04 如何支持PPTP"></a>0x04 如何支持PPTP</h2><p>使用默认参数编译出来的内核，已经是支持ppp的了。但是测试发现，依然不能连上VPN服务器。原因是PPTP中使用GRE协议作为数据通道协议，该协议与TCP、UDP是同一层的，而模拟器实现的NAT只支持TCP和UDP协议，想要支持的话，必须要修改模拟器源码。</p>
+<p><img src="/images/gre.png" alt></p>
+<p>由于模拟器不像普通NAT网络里会有多台机器，而且一般来说，同时只会有一个进程在发起VPN连接，所以，可以不进行数据包的转换，直接透传。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      drunkdream
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2017/12/06/build-android-emulator-kernel/" title="编译可用的Android模拟器ranchu内核">https://www.drunkdream.com/2017/12/06/build-android-emulator-kernel/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/emulator/" rel="tag"># emulator</a>
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/kernel/" rel="tag"># kernel</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/26/ubuntu-install-vnc-server/" rel="next" title="Ubuntu安装VNC Server">
+                <i class="fa fa-chevron-left"></i> Ubuntu安装VNC Server
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/16/install-openvpn-server/" rel="prev" title="Ubuntu部署OpenVPN服务">
+                Ubuntu部署OpenVPN服务 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=1e64ff5cae2be"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+      <div id="gitalk-container"></div>
+      <script src="https://unpkg.com/gitalk@1.5.0/dist/gitalk.min.js"></script>
+      <script type="text/javascript">
+          var gitalk = new Gitalk({
+              clientID: 'Iv1.bbffb0360439c133',
+              clientSecret: '6c02cd39741abd9ceae5cf5a8fdf5cbc0d5d4eda',
+              id: window.location.pathname,
+              repo: 'drunkdream.github.io',
+              owner: 'drunkdream',
+              admin: 'drunkdream',
+              proxy: '/github/login/oauth/access_token'
+          })
+          gitalk.render('gitalk-container')
+      </script>
+      <style>
+          .gt-container a {
+              border: none;
+          }
+          .gt-container .gt-header-controls-tip {
+              font-size: 12px;
+              position: relative;
+              top: -10px;
+          }
+      </style>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/logo.gif" alt="drunkdream">
+          <p class="site-author-name" itemprop="name">drunkdream</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-编译3-10的内核"><span class="nav-number">2.</span> <span class="nav-text">0x01 编译3.10的内核</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-解决编译的内核无法启动模拟器问题"><span class="nav-number">3.</span> <span class="nav-text">0x02 解决编译的内核无法启动模拟器问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-如何编译内核模块"><span class="nav-number">4.</span> <span class="nav-text">0x03 如何编译内核模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-如何支持PPTP"><span class="nav-number">5.</span> <span class="nav-text">0x04 如何支持PPTP</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">drunkdream</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (search_path.endsWith("json")) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>

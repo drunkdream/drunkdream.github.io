@@ -1,0 +1,1534 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="docker,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1">
+
+
+
+
+
+
+<meta name="description" content="0x00 前言Docker作为现在常用的服务部署方式，日常工作中免不了要做些build、push之类的操作。为了避免每次都要查文档，这里将一些常用的命令和技巧做一些总结。 以下以Ubuntu 16.04 x64系统作为演示环境。 0x01 环境准备安装docker$ apt install docker $ docker --version Docker version 18.06.1-ce, b">
+<meta name="keywords" content="docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker命令使用经验总结">
+<meta property="og:url" content="https://www.drunkdream.com/2019/04/04/docker-command/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言Docker作为现在常用的服务部署方式，日常工作中免不了要做些build、push之类的操作。为了避免每次都要查文档，这里将一些常用的命令和技巧做一些总结。 以下以Ubuntu 16.04 x64系统作为演示环境。 0x01 环境准备安装docker$ apt install docker $ docker --version Docker version 18.06.1-ce, b">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-05-16T15:42:44.535Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker命令使用经验总结">
+<meta name="twitter:description" content="0x00 前言Docker作为现在常用的服务部署方式，日常工作中免不了要做些build、push之类的操作。为了避免每次都要查文档，这里将一些常用的命令和技巧做一些总结。 以下以Ubuntu 16.04 x64系统作为演示环境。 0x01 环境准备安装docker$ apt install docker $ docker --version Docker version 18.06.1-ce, b">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://www.drunkdream.com/2019/04/04/docker-command/">
+
+
+
+
+
+  <title>Docker命令使用经验总结 | 醉梦轩</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6b044934808dac49251aa0a35cf37875";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">醉梦轩</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">醉中无日月，梦里有乾坤</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2019/04/04/docker-command/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="drunkdream">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/logo.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Docker命令使用经验总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-04T15:19:55+00:00">
+                2019-04-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计</span>
+                
+                <span title="字数统计">
+                  2.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  13
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Docker作为现在常用的服务部署方式，日常工作中免不了要做些<code>build</code>、<code>push</code>之类的操作。为了避免每次都要查文档，这里将一些常用的命令和技巧做一些总结。</p>
+<p>以下以<code>Ubuntu 16.04 x64</code>系统作为演示环境。</p>
+<h2 id="0x01-环境准备"><a href="#0x01-环境准备" class="headerlink" title="0x01 环境准备"></a>0x01 环境准备</h2><h3 id="安装docker"><a href="#安装docker" class="headerlink" title="安装docker"></a>安装docker</h3><pre><code class="bash">$ apt install docker
+$ docker --version
+Docker version 18.06.1-ce, build e68fc7a
+</code></pre>
+<h3 id="重启docker服务"><a href="#重启docker服务" class="headerlink" title="重启docker服务"></a>重启docker服务</h3><pre><code class="bash">$ systemctl daemon-reload
+$ systemctl restart docker
+</code></pre>
+<h3 id="设置docker代理"><a href="#设置docker代理" class="headerlink" title="设置docker代理"></a>设置docker代理</h3><p>此代理主要用于docker访问镜像仓库</p>
+<p>创建配置文件：<code>/etc/systemd/system/docker.service.d/http-proxy.conf</code>，写入以下内容：</p>
+<pre><code class="conf">[Service]
+Environment=&quot;HTTP_PROXY=http://web-proxy.com:8080&quot; &quot;HTTPS_PROXY=http://web-proxy.com:8080&quot; &quot;NO_PROXY=internal.com&quot;
+</code></pre>
+<p>重启docker服务，配置生效</p>
+<h2 id="0x02-编写Dockerfile"><a href="#0x02-编写Dockerfile" class="headerlink" title="0x02 编写Dockerfile"></a>0x02 编写<code>Dockerfile</code></h2><p>要编译docker镜像，需要先编写<code>Dockerfile</code>文件。以下是一个<code>Dockerfile</code>的例子：</p>
+<pre><code class="docker">FROM python:2.7
+# 基于python2.7镜像
+
+RUN apt update &amp;&amp; apt install python-pip -y \
+    &amp;&amp; rm -rf /var/lib/apt/lists/* \
+    &amp;&amp; pip install uwsgi \
+    &amp;&amp; pip install tornado \
+    &amp;&amp; mkdir /data
+# 编译时执行的命令，需要尽量写成一条命令
+
+WORKDIR /data
+# 设置工作目录
+
+COPY adb /usr/bin/
+# 拷贝文件
+COPY api/ /data/api/
+# 拷贝目录
+
+VOLUME [&quot;/data1&quot;,&quot;/data2&quot;]
+# 挂载目录
+
+ENV TZ=&quot;Asia/Shanghai&quot;
+# 设置时区
+
+EXPOSE 80/tcp 8080/tcp
+# 暴露服务端口
+
+ENTRYPOINT sh /data/start.sh
+# 指定入口命令，如果这个命令退出，docker容器也会一起退出
+</code></pre>
+<p>可以看出，格式还是相对比较简单的，照着例子，基本都能写出来。</p>
+<h2 id="ADD与COPY指令的区别"><a href="#ADD与COPY指令的区别" class="headerlink" title="ADD与COPY指令的区别"></a>ADD与COPY指令的区别</h2><p>两者都可以用于向镜像中添加文件/目录，主要区别是：<code>COPY</code>只能添加本地文件/目录，<code>ADD</code>可以添加url指向的文件；并且，<code>ADD</code>如果指定的源地址是一个本地的<code>tar</code>文件，还会自动解压到目标目录中。</p>
+<h3 id="ENTRYPOINT和CMD指令的区别"><a href="#ENTRYPOINT和CMD指令的区别" class="headerlink" title="ENTRYPOINT和CMD指令的区别"></a>ENTRYPOINT和CMD指令的区别</h3><p>两者都可以设置<code>docker run</code>的入口命令行，如果指定了多个，只有最后一个生效，两者主要区别是：如果<code>Dockerfile</code>中同时存在<code>ENTRYPOINT</code>和<code>CMD</code>，只有<code>ENTRYPOINT</code>会执行；<code>ENTRYPOINT</code>配置的命令行允许被<code>--entrypoint</code>参数覆盖，而<code>CMD</code>配置的命令行允许被启动参数覆盖。</p>
+<p>因此，优先级顺序是：</p>
+<p>–entrypoint &gt; ENTRYPOINT &gt; 启动参数 &gt; CMD</p>
+<h3 id="HEALTHCHECK"><a href="#HEALTHCHECK" class="headerlink" title="HEALTHCHECK"></a>HEALTHCHECK</h3><p>这是<code>docker 1.12</code>新增的指令，可以用于检查容器的健康状态。</p>
+<pre><code class="docker">HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
+  CMD curl -fs http://localhost/ || exit 1
+</code></pre>
+<p>上面的指令是用来检测web服务是否正常方法，如果重试5次都失败后，容器状态会变成<code>unhealthy</code>，可以使用<code>docker inspect</code>命令查看容器状态。</p>
+<h3 id="ONBUILD"><a href="#ONBUILD" class="headerlink" title="ONBUILD"></a>ONBUILD</h3><p>这条指令允许在使用当前镜像作为基础镜像去构建的时候触发，也就是说，在构建当前镜像时并不会触发这条指令。</p>
+<pre><code class="docker">ONBUILD COPY ./package.json /app
+ONBUILD RUN [ &quot;npm&quot;, &quot;install&quot; ]
+</code></pre>
+<h2 id="0x03-编译镜像"><a href="#0x03-编译镜像" class="headerlink" title="0x03 编译镜像"></a>0x03 编译镜像</h2><pre><code class="bash">$ docker build -t demo . 
+</code></pre>
+<p>表示使用当前目录的Dockerfile构建镜像<code>demo</code>。</p>
+<h3 id="指定代理"><a href="#指定代理" class="headerlink" title="指定代理"></a>指定代理</h3><p>如果要指定编译时的HTTP代理，可以使用<code>--build-arg</code>参数：</p>
+<pre><code class="bash">$ docker build -t demo . --build-arg http_proxy=http://web-proxy.com:8080
+</code></pre>
+<h3 id="指定dns服务器"><a href="#指定dns服务器" class="headerlink" title="指定dns服务器"></a>指定dns服务器</h3><p>如果要指定编译时的dns服务器，可以修改docker的配置文件：<code>/etc/docker/daemon.json</code>，增加以下配置，并重启docker服务。</p>
+<pre><code class="json">&quot;dns&quot;: [&quot;10.0.0.1&quot;]
+</code></pre>
+<h3 id="设置默认镜像源"><a href="#设置默认镜像源" class="headerlink" title="设置默认镜像源"></a>设置默认镜像源</h3><p>在配置文件：<code>/etc/docker/daemon.json</code>中增加以下配置项，并重启docker服务。</p>
+<pre><code class="json">&quot;registry-mirrors&quot;: [&quot;https://mirror.ccs.tencentyun.com&quot;]
+</code></pre>
+<p>上面的镜像源是在腾讯云内部使用的镜像源地址。</p>
+<h3 id="指定Dockerfile路径"><a href="#指定Dockerfile路径" class="headerlink" title="指定Dockerfile路径"></a>指定Dockerfile路径</h3><p>如果<code>Dockerfile</code>文件不在当前目录下，可以在<code>docker build</code>命令中使用<code>-f /path/to/Dockerfile</code>参数来制定<code>Dockerfile</code>文件的路径。</p>
+<h3 id="查看镜像的层信息"><a href="#查看镜像的层信息" class="headerlink" title="查看镜像的层信息"></a>查看镜像的层信息</h3><pre><code class="bash">$ docker history demo
+IMAGE               CREATED              CREATED BY                                      SIZE                COMMENT
+9088b64a2ef3        15 seconds ago       /bin/sh -c #(nop)  ENTRYPOINT [&quot;/bin/sh&quot; &quot;-c…   0B                  
+6949219d8872        16 seconds ago       /bin/sh -c #(nop)  EXPOSE 80/tcp 8080/tcp       0B                  
+80ff6b9185da        16 seconds ago       /bin/sh -c #(nop)  ENV TZ=Asia/Shanghai         0B                  
+d069fdc8190a        58 seconds ago       /bin/sh -c #(nop) COPY file:f005afea09a30b4d…   10B                 
+a09c0e999ca0        About a minute ago   /bin/sh -c #(nop) WORKDIR /data                 0B                  
+28ed536148c6        About a minute ago   |0 /bin/sh -c apt update &amp;&amp; apt install pyth…   35.4MB              
+d8690ef56706        2 years ago          /bin/sh -c #(nop)  CMD [&quot;python2&quot;]              0B                  
+&lt;missing&gt;           2 years ago          /bin/sh -c pip install --no-cache-dir virtua…   6.37MB              
+&lt;missing&gt;           2 years ago          /bin/sh -c set -ex;   wget -O get-pip.py &#39;ht…   5.26MB              
+&lt;missing&gt;           2 years ago          /bin/sh -c #(nop)  ENV PYTHON_PIP_VERSION=9.…   0B                  
+&lt;missing&gt;           2 years ago          /bin/sh -c set -ex  &amp;&amp; buildDeps=&#39;   dpkg-de…   45.6MB              
+&lt;missing&gt;           2 years ago          /bin/sh -c #(nop)  ENV PYTHON_VERSION=2.7.14    0B                  
+&lt;missing&gt;           2 years ago          /bin/sh -c #(nop)  ENV GPG_KEY=C01E1CAD5EA2C…   0B                  
+&lt;missing&gt;           2 years ago          /bin/sh -c apt-get update &amp;&amp; apt-get install…   8.67MB              
+&lt;missing&gt;           2 years ago          /bin/sh -c #(nop)  ENV LANG=C.UTF-8             0B                  
+&lt;missing&gt;           2 years ago          /bin/sh -c #(nop)  ENV PATH=/usr/local/bin:/…   0B                  
+&lt;missing&gt;           2 years ago          /bin/sh -c set -ex;  apt-get update;  apt-ge…   324MB               
+&lt;missing&gt;           2 years ago          /bin/sh -c apt-get update &amp;&amp; apt-get install…   123MB               
+&lt;missing&gt;           2 years ago          /bin/sh -c set -ex;  if ! command -v gpg &gt; /…   0B                  
+&lt;missing&gt;           2 years ago          /bin/sh -c apt-get update &amp;&amp; apt-get install…   44.6MB              
+&lt;missing&gt;           2 years ago          /bin/sh -c #(nop)  CMD [&quot;bash&quot;]                 0B                  
+&lt;missing&gt;           2 years ago          /bin/sh -c #(nop) ADD file:f1509ab9c2cd38107…   123MB               
+</code></pre>
+<p>使用<code>--no-trunc</code>参数可以显示完整信息</p>
+<h2 id="0x04-运行容器"><a href="#0x04-运行容器" class="headerlink" title="0x04 运行容器"></a>0x04 运行容器</h2><pre><code class="bash">$ docker run -it demo bash
+</code></pre>
+<p>使用<code>-d</code>参数可以在后台启动容器。</p>
+<h3 id="指定运行时的dns服务器"><a href="#指定运行时的dns服务器" class="headerlink" title="指定运行时的dns服务器"></a>指定运行时的dns服务器</h3><pre><code class="bash">$ docker run -i --dns=10.0.0.1 demo
+</code></pre>
+<h3 id="指定运行时的环境变量"><a href="#指定运行时的环境变量" class="headerlink" title="指定运行时的环境变量"></a>指定运行时的环境变量</h3><pre><code class="bash">$ docker run -i --env http_proxy=http://web-proxy.com:8080 demo
+</code></pre>
+<h3 id="挂载主机目录"><a href="#挂载主机目录" class="headerlink" title="挂载主机目录"></a>挂载主机目录</h3><pre><code class="bash">$ docker run -i -v /home/ubuntu/data:/data demo
+</code></pre>
+<p>这样可以把主机上的<code>/home/ubuntu/data</code>目录挂载到容器里的<code>/data</code>下。</p>
+<h3 id="映射端口"><a href="#映射端口" class="headerlink" title="映射端口"></a>映射端口</h3><p>默认情况下无法从外部访问容器内的服务，但是可以通过在启动容器时加上<code>-p port1:port2</code>参数，将容器内的端口<code>port2</code>映射到本机的<code>port1</code>端口。</p>
+<h3 id="覆盖ENTRYPOINT"><a href="#覆盖ENTRYPOINT" class="headerlink" title="覆盖ENTRYPOINT"></a>覆盖ENTRYPOINT</h3><p>使用<code>--entrypoint</code>参数可以覆盖<code>Dockerfile</code>中配置的<code>ENTRYPOINT</code>命令行，但是需要注意的是：如果需要传参的话需要写成<code>--entrypoint mongod mongo:latest --replSet rs0</code>这样的形式，也就是命令和参数是分开的。</p>
+<h3 id="进入容器shell"><a href="#进入容器shell" class="headerlink" title="进入容器shell"></a>进入容器shell</h3><pre><code class="bash">$ docker ps
+CONTAINER ID  IMAGE  COMMAND                       CREATED          STATUS           PORTS              NAMES
+e6ae7638a58d  demo   &quot;/bin/sh -c &#39;/data/start.sh&#39;&quot; 8 seconds ago    Up 7 seconds    80/tcp, 8080/tcp   loving_neumann
+
+$ docker exec -i -t e6ae7638a58d sh
+# id
+uid=0(root) gid=0(root) groups=0(root)
+</code></pre>
+<p>如果默认进去的不是<code>root</code>权限，可以增加<code>-u root</code>参数。</p>
+<h3 id="清理磁盘空间"><a href="#清理磁盘空间" class="headerlink" title="清理磁盘空间"></a>清理磁盘空间</h3><pre><code class="bash">$ docker system prune -a -f
+</code></pre>
+<h2 id="0x05-登录docker仓库"><a href="#0x05-登录docker仓库" class="headerlink" title="0x05 登录docker仓库"></a>0x05 登录docker仓库</h2><h3 id="登录官方仓库"><a href="#登录官方仓库" class="headerlink" title="登录官方仓库"></a>登录官方仓库</h3><pre><code class="bash">$ docker login
+Login with your Docker ID to push and pull images from Docker Hub. If you don&#39;t have a Docker ID, head over to https://hub.docker.com to create one.
+Username: drunkdream
+Password: 
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+</code></pre>
+<h3 id="登录非官方仓库"><a href="#登录非官方仓库" class="headerlink" title="登录非官方仓库"></a>登录非官方仓库</h3><pre><code class="bash">$ docker login hub.tencentyun.com
+Username: drunkdream
+Password: 
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+</code></pre>
+<p>如果仓库使用的不是HTTPS的443端口，需要在主机名后面加上<code>:port</code>。</p>
+<p>如果提示以下错误：</p>
+<pre><code>Error response from daemon: Get https://hub.private.com:8080/v2/: http: server gave HTTP response to HTTPS client
+</code></pre><p>说明Server不支持HTTPS协议，需要在配置文件：<code>/etc/docker/daemon.json</code>中增加以下配置：</p>
+<pre><code>&quot;insecure-registries&quot;: [&quot;hub.private.com:8080&quot;]
+</code></pre><p>重启docker服务，再登录就可以了</p>
+<h3 id="登录协议"><a href="#登录协议" class="headerlink" title="登录协议"></a>登录协议</h3><p>抓包可得以下结果：</p>
+<pre><code class="http">GET /v2/ HTTP/1.1
+Host: hub.private.com:8080
+User-Agent: docker/18.06.1-ce go/go1.10.4 git-commit/e68fc7a kernel/4.10.0-28-generic os/linux arch/amd64 UpstreamClient(Docker-Client/18.06.1-ce \(linux\))
+Authorization: Basic YWRtaW46YWRtaW4=
+Accept-Encoding: gzip
+Connection: close
+
+HTTP/1.1 200 OK
+Content-Length: 2
+Content-Type: application/json; charset=utf-8
+Date: Mon, 25 Feb 2019 04:09:50 GMT
+Docker-Distribution-Api-Version: registry/2.0
+X-Content-Type-Options: nosniff
+Connection: close
+
+{}
+</code></pre>
+<p>说明： docker是使用了HTTP协议的<code>Authorization</code>头进行了身份认证，很容易获取明文密码。因此，为了安全，一定要使用HTTPS协议。</p>
+<h2 id="0x06-push新镜像到仓库"><a href="#0x06-push新镜像到仓库" class="headerlink" title="0x06 push新镜像到仓库"></a>0x06 push新镜像到仓库</h2><h3 id="查询镜像"><a href="#查询镜像" class="headerlink" title="查询镜像"></a>查询镜像</h3><pre><code class="bash">$ docker search python
+NAME                             DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED
+python                           Python is an interpreted, interactive, objec…   5022                [OK]                
+django                           Django is a free web application framework, …   941                 [OK]                
+pypy                             PyPy is a fast, compliant alternative implem…   234                 [OK]                
+kaggle/python                    Docker image for Python scripts run on Kaggle   138                                     [OK]
+arm32v7/python                   Python is an interpreted, interactive, objec…   48                                      
+joyzoursky/python-chromedriver   Python with Chromedriver, for running automa…   43                                      [OK]
+nikolaik/python-nodejs           Python with Node.js                             40                                      [OK]
+centos/python-35-centos7         Platform for building and running Python 3.5…   38                                      
+circleci/python                  Python is an interpreted, interactive, objec…   37                                      
+centos/python-36-centos7         Platform for building and running Python 3.6…   28                                      
+hylang                           Hy is a Lisp dialect that translates express…   27                  [OK]                
+arm64v8/python                   Python is an interpreted, interactive, objec…   21                                      
+centos/python-27-centos7         Platform for building and running Python 2.7…   17                                      
+publicisworldwide/python-conda   Basic Python environments with Conda.           6                                       [OK]
+bitnami/python                   Bitnami Python Docker Image                     6                                       [OK]
+dockershelf/python               Repository for docker images of Python. Test…   5                                       [OK]
+i386/python                      Python is an interpreted, interactive, objec…   3                                       
+centos/python-34-centos7         Platform for building and running Python 3.4…   2                                       
+komand/python-plugin             DEPRECATED: Komand Python SDK                   2                                       [OK]
+ppc64le/python                   Python is an interpreted, interactive, objec…   2                                       
+amd64/python                     Python is an interpreted, interactive, objec…   1                                       
+ccitest/python                   CircleCI test images for Python                 0                                       [OK]
+s390x/python                     Python is an interpreted, interactive, objec…   0                                       
+openshift/python-33-centos7      DEPRECATED: A Centos7 based Python v3.3 imag…   0                                       
+saagie/python                    Repo for python jobs                            0                                       
+</code></pre>
+<p>如果想获取python镜像的tag列表，可以使用以下命令：</p>
+<pre><code class="bash">$ wget -q https://registry.hub.docker.com/v1/repositories/python/tags -O -  | sed -e &#39;s/[][]//g&#39; -e &#39;s/&quot;//g&#39; -e &#39;s/ //g&#39; | tr &#39;}&#39; &#39;\n&#39;  | awk -F: &#39;{print $3}&#39;
+</code></pre>
+<h3 id="拉取镜像到本地"><a href="#拉取镜像到本地" class="headerlink" title="拉取镜像到本地"></a>拉取镜像到本地</h3><pre><code class="bash">$ docker pull python
+Using default tag: latest
+latest: Pulling from library/python
+741437d97401: Pull complete 
+34d8874714d7: Pull complete 
+0a108aa26679: Pull complete 
+7f0334c36886: Pull complete 
+65c95cb8b3be: Pull complete 
+9107d7193263: Pull complete 
+dd6f212ec984: Pull complete 
+43288b101abf: Pull complete 
+89dd65885f16: Pull complete 
+Digest: sha256:a570ef00b7348c85b546c0e67955fa3be233c27bc2379d0f87fc8e4ff25aa006
+Status: Downloaded newer image for python:latest
+</code></pre>
+<h3 id="打标签"><a href="#打标签" class="headerlink" title="打标签"></a>打标签</h3><pre><code class="bash">$ docker tag python:latest hub.tencentyun.com/drunkdream/python:latest
+</code></pre>
+<p>如果要push到非官方仓库，需要在打tag时加上仓库的地址。</p>
+<h3 id="push镜像到仓库"><a href="#push镜像到仓库" class="headerlink" title="push镜像到仓库"></a>push镜像到仓库</h3><pre><code class="bash">$ docker push hub.tencentyun.com/drunkdream/python:latest
+The push refers to repository [hub.tencentyun.com/drunkdream/python:latest]
+b2f7bd391363: Pushed 
+08a5b66845ac: Pushed 
+88a85bcf8170: Pushed 
+65860ac81ef4: Pushed 
+a22a5ac18042: Pushed 
+6257fa9f9597: Pushed 
+578414b395b9: Pushed 
+abc3250a6c7f: Pushed 
+13d5529fd232: Pushed 
+latest: digest: sha256:35a3001b1defafa4611f764a9c6d07c2146aefc17be2c24ee0200fd37b19b1c7 size: 2218
+</code></pre>
+<h2 id="0x07-镜像导出与导入"><a href="#0x07-镜像导出与导入" class="headerlink" title="0x07 镜像导出与导入"></a>0x07 镜像导出与导入</h2><h3 id="镜像导出"><a href="#镜像导出" class="headerlink" title="镜像导出"></a>镜像导出</h3><pre><code class="bash">$ docker save -o demo.tar demo:latest
+</code></pre>
+<h3 id="镜像导入"><a href="#镜像导入" class="headerlink" title="镜像导入"></a>镜像导入</h3><pre><code class="bash">$ docker load -i demo.tar
+</code></pre>
+<h2 id="0x08-Compose"><a href="#0x08-Compose" class="headerlink" title="0x08 Compose"></a>0x08 Compose</h2><p><code>Compose</code>项目是Docker官方的开源项目，实现了对Docker容器集群的快速编排。从功能上看，跟OpenStack中的Heat十分类似。</p>
+<p>其代码在<a href="https://github.com/docker/compose" target="_blank" rel="noopener">https://github.com/docker/compose</a>上开源。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><pre><code class="bash">$ pip install docker-compose
+</code></pre>
+<h3 id="编写docker-compose-yml"><a href="#编写docker-compose-yml" class="headerlink" title="编写docker-compose.yml"></a>编写docker-compose.yml</h3><p>这个文件描述了容器之间的关系。</p>
+<pre><code class="yaml">version: &#39;3&#39;
+services:
+
+  webapp:
+    build: . 
+    # Dockerfile所在目录
+    dockerfile: Dockerfile
+    # Dockerfile 文件名
+    command: echo &quot;hello world&quot;
+    # 覆盖容器启动后的默认命令
+    depends_on:
+      - db
+      - redis
+    # 服务依赖
+    dns:
+      - 8.8.8.8
+      - 114.114.114.114
+    # 配置DNS
+    env_file: .env
+    # 指定环境变量文件
+    environment:
+      - DEBUG=1
+    # 设置环境变量
+    expose:
+      - &quot;8080&quot;
+    # 暴露端口，只在服务间被访问
+    extra_hosts:
+      - &quot;www.drunkdream.com:1.1.1.1&quot;
+    # 添加额外hosts
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost&quot;]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    # 健康检查
+    image: ubuntu
+    # 指定镜像
+    ports:
+      - &quot;80&quot;
+      - &quot;8080:80&quot;
+      - &quot;127.0.0.1:8001:8001&quot;
+    # 映射端口，格式为：HOST:CONTAINER
+    volumes:
+      - &quot;/localhost/postgres.sock:/var/run/postgres/postgres.sock&quot;
+      - &quot;/localhost/data:/var/lib/postgresql/data&quot;
+    # 磁盘映射
+    networks:
+      - front-tier
+      - back-tier
+    # 配置网络
+
+networks:
+  front-tier:
+    driver: bridge
+  back-tier:
+    driver: bridge
+</code></pre>
+<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><pre><code class="bash">$ docker-compose up
+</code></pre>
+<p>启动所有服务，使用<code>-d</code>参数可以在后台启动服务，<code>-f</code>参数可以指定docker-compose.yml。</p>
+<pre><code class="bash">$ docker-compose down
+</code></pre>
+<p>停止和删除容器、网络</p>
+<pre><code class="bash">$ docker-compose logs
+</code></pre>
+<p>查看日志</p>
+<pre><code class="bash">$ docker-compose build
+</code></pre>
+<p>构建所有容器</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      drunkdream
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2019/04/04/docker-command/" title="Docker命令使用经验总结">https://www.drunkdream.com/2019/04/04/docker-command/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/21/delete-wsl/" rel="next" title="Win10上误删Linux子系统的解决方法">
+                <i class="fa fa-chevron-left"></i> Win10上误删Linux子系统的解决方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/17/win10-python3-virtualenv/" rel="prev" title="创建Python3虚拟环境失败问题跟进">
+                创建Python3虚拟环境失败问题跟进 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=1e64ff5cae2be"></script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+      <div id="gitalk-container"></div>
+      <script src="https://unpkg.com/gitalk@1.5.0/dist/gitalk.min.js"></script>
+      <script type="text/javascript">
+          var gitalk = new Gitalk({
+              clientID: 'Iv1.bbffb0360439c133',
+              clientSecret: '6c02cd39741abd9ceae5cf5a8fdf5cbc0d5d4eda',
+              id: window.location.pathname,
+              repo: 'drunkdream.github.io',
+              owner: 'drunkdream',
+              admin: 'drunkdream',
+              proxy: '/github/login/oauth/access_token'
+          })
+          gitalk.render('gitalk-container')
+      </script>
+      <style>
+          .gt-container a {
+              border: none;
+          }
+          .gt-container .gt-header-controls-tip {
+              font-size: 12px;
+              position: relative;
+              top: -10px;
+          }
+      </style>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/logo.gif" alt="drunkdream">
+          <p class="site-author-name" itemprop="name">drunkdream</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-环境准备"><span class="nav-number">2.</span> <span class="nav-text">0x01 环境准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装docker"><span class="nav-number">2.1.</span> <span class="nav-text">安装docker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重启docker服务"><span class="nav-number">2.2.</span> <span class="nav-text">重启docker服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置docker代理"><span class="nav-number">2.3.</span> <span class="nav-text">设置docker代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-编写Dockerfile"><span class="nav-number">3.</span> <span class="nav-text">0x02 编写Dockerfile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ADD与COPY指令的区别"><span class="nav-number">4.</span> <span class="nav-text">ADD与COPY指令的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ENTRYPOINT和CMD指令的区别"><span class="nav-number">4.1.</span> <span class="nav-text">ENTRYPOINT和CMD指令的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HEALTHCHECK"><span class="nav-number">4.2.</span> <span class="nav-text">HEALTHCHECK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ONBUILD"><span class="nav-number">4.3.</span> <span class="nav-text">ONBUILD</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-编译镜像"><span class="nav-number">5.</span> <span class="nav-text">0x03 编译镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#指定代理"><span class="nav-number">5.1.</span> <span class="nav-text">指定代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指定dns服务器"><span class="nav-number">5.2.</span> <span class="nav-text">指定dns服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置默认镜像源"><span class="nav-number">5.3.</span> <span class="nav-text">设置默认镜像源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指定Dockerfile路径"><span class="nav-number">5.4.</span> <span class="nav-text">指定Dockerfile路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查看镜像的层信息"><span class="nav-number">5.5.</span> <span class="nav-text">查看镜像的层信息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-运行容器"><span class="nav-number">6.</span> <span class="nav-text">0x04 运行容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#指定运行时的dns服务器"><span class="nav-number">6.1.</span> <span class="nav-text">指定运行时的dns服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指定运行时的环境变量"><span class="nav-number">6.2.</span> <span class="nav-text">指定运行时的环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#挂载主机目录"><span class="nav-number">6.3.</span> <span class="nav-text">挂载主机目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#映射端口"><span class="nav-number">6.4.</span> <span class="nav-text">映射端口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#覆盖ENTRYPOINT"><span class="nav-number">6.5.</span> <span class="nav-text">覆盖ENTRYPOINT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进入容器shell"><span class="nav-number">6.6.</span> <span class="nav-text">进入容器shell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#清理磁盘空间"><span class="nav-number">6.7.</span> <span class="nav-text">清理磁盘空间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-登录docker仓库"><span class="nav-number">7.</span> <span class="nav-text">0x05 登录docker仓库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#登录官方仓库"><span class="nav-number">7.1.</span> <span class="nav-text">登录官方仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#登录非官方仓库"><span class="nav-number">7.2.</span> <span class="nav-text">登录非官方仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#登录协议"><span class="nav-number">7.3.</span> <span class="nav-text">登录协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-push新镜像到仓库"><span class="nav-number">8.</span> <span class="nav-text">0x06 push新镜像到仓库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查询镜像"><span class="nav-number">8.1.</span> <span class="nav-text">查询镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#拉取镜像到本地"><span class="nav-number">8.2.</span> <span class="nav-text">拉取镜像到本地</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#打标签"><span class="nav-number">8.3.</span> <span class="nav-text">打标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#push镜像到仓库"><span class="nav-number">8.4.</span> <span class="nav-text">push镜像到仓库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-镜像导出与导入"><span class="nav-number">9.</span> <span class="nav-text">0x07 镜像导出与导入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#镜像导出"><span class="nav-number">9.1.</span> <span class="nav-text">镜像导出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#镜像导入"><span class="nav-number">9.2.</span> <span class="nav-text">镜像导入</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x08-Compose"><span class="nav-number">10.</span> <span class="nav-text">0x08 Compose</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">10.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编写docker-compose-yml"><span class="nav-number">10.2.</span> <span class="nav-text">编写docker-compose.yml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常用命令"><span class="nav-number">10.3.</span> <span class="nav-text">常用命令</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">drunkdream</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (search_path.endsWith("json")) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/lib/prettify/skins/solarized-dark.css" type="text/css">
+<script src="/lib/prettify/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('pre').addClass('prettyprint linenums').attr('style', 'overflow:auto;');
+      prettyPrint();
+  });
+</script>
+<!-- 代码块复制功能 -->
+<script type="text/javascript" src="/js/src/clipboard.js"></script>
+<script type="text/javascript" src="/js/src/clipboard-use.js"></script>
+</body>
+</html>
