@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/purple/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.drunkdream.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"rights","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"xcode","dark":"github-dark-dimmed"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="0x00 前言本文介绍了如何使用Scratch开发一款实时的时钟程序，通过这个例子，可以让学员加深对时钟运行规律的理解，同时学习到死循环、事件驱动等编程相关的知识点。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scratch教程---开发一个时钟">
+<meta property="og:url" content="https://www.drunkdream.com/2024/03/06/scratch-clock/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言本文介绍了如何使用Scratch开发一款实时的时钟程序，通过这个例子，可以让学员加深对时钟运行规律的理解，同时学习到死循环、事件驱动等编程相关的知识点。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.drunkdream.com/images/clock.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/hour-hand.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/minute-hand.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/second-hand.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/scratch-clock-1.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/scratch-clock-2.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/scratch-clock-3.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/scratch-clock-4.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/scratch-clock-5.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/scratch-clock-6.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/scratch-clock-7.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/scratch-clock-8.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/scratch-clock-9.png">
+<meta property="article:published_time" content="2024-03-06T14:29:42.000Z">
+<meta property="article:modified_time" content="2026-02-23T06:02:24.957Z">
+<meta property="article:author" content="drunkdream">
+<meta property="article:tag" content="clock">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.drunkdream.com/images/clock.png">
+
+
+<link rel="canonical" href="https://www.drunkdream.com/2024/03/06/scratch-clock/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.drunkdream.com/2024/03/06/scratch-clock/","path":"2024/03/06/scratch-clock/","title":"Scratch教程---开发一个时钟"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Scratch教程---开发一个时钟 | 醉梦轩</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">醉梦轩</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉中无日月，梦里有乾坤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.1.</span> <span class="nav-text">0x01 准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E6%B7%BB%E5%8A%A0%E8%83%8C%E6%99%AF%E5%92%8C%E8%A7%92%E8%89%B2"><span class="nav-number">1.2.</span> <span class="nav-text">0x02 添加背景和角色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E6%B7%BB%E5%8A%A0%E6%8C%87%E9%92%88%E8%BD%AC%E5%8A%A8%E9%80%BB%E8%BE%91"><span class="nav-number">1.3.</span> <span class="nav-text">0x03 添加指针转动逻辑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E5%AE%9E%E7%8E%B0%E6%97%B6%E9%92%9F%E5%90%8C%E6%AD%A5"><span class="nav-number">1.4.</span> <span class="nav-text">0x04 实现时钟同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-%E6%80%BB%E7%BB%93"><span class="nav-number">1.5.</span> <span class="nav-text">0x05 总结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="drunkdream"
+      src="/images/logo.gif">
+  <p class="site-author-name" itemprop="name">drunkdream</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">69</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2024/03/06/scratch-clock/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.gif">
+      <meta itemprop="name" content="drunkdream">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Scratch教程---开发一个时钟 | 醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Scratch教程---开发一个时钟
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-03-06 22:29:42" itemprop="dateCreated datePublished" datetime="2024-03-06T22:29:42+08:00">2024-03-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-23 14:02:24" itemprop="dateModified" datetime="2026-02-23T14:02:24+08:00">2026-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Scratch/" itemprop="url" rel="index"><span itemprop="name">Scratch</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>本文介绍了如何使用Scratch开发一款实时的时钟程序，通过这个例子，可以让学员加深对时钟运行规律的理解，同时学习到死循环、事件驱动等编程相关的知识点。</p>
+<span id="more"></span>
+
+<h2 id="0x01-准备工作"><a href="#0x01-准备工作" class="headerlink" title="0x01 准备工作"></a>0x01 准备工作</h2><p>需要提前准备好时钟的资源文件：</p>
+<ul>
+<li>表盘: <img src="/images/clock.png" width="50%" alt="表盘" /></li>
+<li>时针: <img src="/images/hour-hand.png" style="height: 100px;" alt="时针" /></li>
+<li>分针: <img src="/images/minute-hand.png" style="height: 100px;" alt="分针" /></li>
+<li>秒针: <img src="/images/second-hand.png" style="height: 100px;" alt="秒针" /></li>
+</ul>
+<p>将资源文件保存到本地。</p>
+<p>使用浏览器打开Scratch的国内镜像站：<code>https://scratch.drunkdream.cn/</code>。</p>
+<h2 id="0x02-添加背景和角色"><a href="#0x02-添加背景和角色" class="headerlink" title="0x02 添加背景和角色"></a>0x02 添加背景和角色</h2><ol>
+<li>删除默认角色</li>
+<li>上传表盘图片作为程序背景</li>
+<li>分别上传时针、分针和秒针图片，创建出三个角色</li>
+</ol>
+<p>操作完如下图所示：</p>
+<img src="/images/scratch-clock-1.png" width="50%">
+
+<ol start="4">
+<li>调整时针、分针和秒针的转动支点</li>
+</ol>
+<p>由于每个角色默认的转动支点是中点，但实际上指针的转动支点是在靠近尾部的位置。可以将角色切换到<code>造型</code>页面，按<code>Ctrl + C</code>全选角色，并按照下图所示拖动角色，使得旋转支点移动到时针尾部位置。</p>
+<img src="/images/scratch-clock-2.png" width="10%">
+
+<p>使用同样方法移动分针和秒针的支点。</p>
+<ol start="5">
+<li>时针、分针和秒针设置合适的比例，并移动到表盘的合适位置，使得旋转支点位于表盘中点</li>
+</ol>
+<p>设置完如下图所示：</p>
+<img src="/images/scratch-clock-3.png" width="50%">
+
+<h2 id="0x03-添加指针转动逻辑"><a href="#0x03-添加指针转动逻辑" class="headerlink" title="0x03 添加指针转动逻辑"></a>0x03 添加指针转动逻辑</h2><p>秒针是每秒转动一格，一圈是60格，因此秒针每秒转动<code>360 / 60 = 6</code>度。这可以通过<code>死循环 + 右转6度 + 等待1秒</code>三个组件来实现。</p>
+<p>为秒针角色添加如下代码：</p>
+<img src="/images/scratch-clock-4.png" width="30%">
+
+<p>分针每小时转动一圈，因此每秒转动<code>360 / 3600 = 0.1</code>度。</p>
+<p>为分针角色添加如下代码：</p>
+<img src="/images/scratch-clock-5.png" width="30%">
+
+<p>时针每12小时转动一圈，因此每12秒转动0.1度。</p>
+<p>为时针角色添加如下代码：</p>
+<img src="/images/scratch-clock-6.png" width="30%">
+
+<p>至此，一个最简单的时钟就完成了，各针的转动速度都是符合预期的。</p>
+<h2 id="0x04-实现时钟同步"><a href="#0x04-实现时钟同步" class="headerlink" title="0x04 实现时钟同步"></a>0x04 实现时钟同步</h2><p>目前时钟时间没有与真实时间同步，需要添加一个同步逻辑。</p>
+<p>Scratch支持获取当前时间的时、分、秒，只要才程序开始的时候获取到对应的值，并转动到指定位置即可。</p>
+<p>先将时针、分针和秒针转动到0点位置，然后秒针转动<code>秒针数 x 6</code>度；分针转动<code>分针数 x 6</code>度；时针先转动<code>小时数 x 30</code>度（360 &#x2F; 12），然后再转动<code>分针数 x 0.5</code>度（360 &#x2F; 12 &#x2F; 60）。</p>
+<p>完整的代码如下：</p>
+<ul>
+<li>时针</li>
+</ul>
+<img src="/images/scratch-clock-7.png" width="60%">
+
+<ul>
+<li>分针</li>
+</ul>
+<img src="/images/scratch-clock-8.png" width="40%">
+
+<ul>
+<li>秒针</li>
+</ul>
+<img src="/images/scratch-clock-9.png" width="40%">
+
+<h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>这个例子的代码整体不算很复杂，主要是需要了解时针、分针和秒针的运行规律，并转换为对应的计算公式。</p>
+<p>完整的代码可以在<a href="/images/clock.sb3">这里</a>下载。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>drunkdream
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2024/03/06/scratch-clock/" title="Scratch教程---开发一个时钟">https://www.drunkdream.com/2024/03/06/scratch-clock/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/clock/" rel="tag"># clock</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/02/07/linux-binfmts/" rel="prev" title="Linux中的binfmt-misc原理分析">
+                  <i class="fa fa-angle-left"></i> Linux中的binfmt-misc原理分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/05/16/windows-dup-socket/" rel="next" title="Windows中如何在父子进程间传递SOCKET句柄">
+                  Windows中如何在父子进程间传递SOCKET句柄 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2017 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">drunkdream</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"drunkdream","repo":"drunkdream.github.io","client_id":"b6aad8c93b6aadccfcc8","client_secret":"88b3043a118f3e6db76f75bdb9257228db104949","admin_user":"drunkdream","distraction_free_mode":true,"proxy":"/github/login/oauth/access_token","language":"zh-CN","body":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"57e9bdfee23b9fa277a4ce0fbffebe5e","path":"/2024/03/06/scratch-clock/"}</script>
+<script src="/js/third-party/comments/gitalk.js" defer></script>
+
+</body>
+</html>

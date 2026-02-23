@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/purple/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.drunkdream.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"rights","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"xcode","dark":"github-dark-dimmed"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="0x00 前言有很多Python语言的协程库，如：tornado、asyncio等。这些库在使用时需要使用特定的语法，如：async&#x2F;await，对于非协程的代码需要改写才能以协程方式运行。 gevent是一个特殊的协程库，它可以将非协程代码以协程方式运行，从而起到提升性能的作用。本文尝试分析一下它的实现原理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gevent初探">
+<meta property="og:url" content="https://www.drunkdream.com/2020/02/18/gevent/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言有很多Python语言的协程库，如：tornado、asyncio等。这些库在使用时需要使用特定的语法，如：async&#x2F;await，对于非协程的代码需要改写才能以协程方式运行。 gevent是一个特殊的协程库，它可以将非协程代码以协程方式运行，从而起到提升性能的作用。本文尝试分析一下它的实现原理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-02-18T15:48:03.000Z">
+<meta property="article:modified_time" content="2026-02-23T06:02:24.953Z">
+<meta property="article:author" content="drunkdream">
+<meta property="article:tag" content="coroutine">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.drunkdream.com/2020/02/18/gevent/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.drunkdream.com/2020/02/18/gevent/","path":"2020/02/18/gevent/","title":"gevent初探"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>gevent初探 | 醉梦轩</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">醉梦轩</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉中无日月，梦里有乾坤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E4%BD%BF%E7%94%A8%E6%A1%88%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">0x01 使用案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">0x02 原理分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-threading%E6%A8%A1%E5%9D%97patch%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">0x03 threading模块patch分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">0x04 总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="drunkdream"
+      src="/images/logo.gif">
+  <p class="site-author-name" itemprop="name">drunkdream</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">69</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2020/02/18/gevent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.gif">
+      <meta itemprop="name" content="drunkdream">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="gevent初探 | 醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          gevent初探
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-18 23:48:03" itemprop="dateCreated datePublished" datetime="2020-02-18T23:48:03+08:00">2020-02-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-23 14:02:24" itemprop="dateModified" datetime="2026-02-23T14:02:24+08:00">2026-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>有很多Python语言的协程库，如：tornado、asyncio等。这些库在使用时需要使用特定的语法，如：async&#x2F;await，对于非协程的代码需要改写才能以协程方式运行。</p>
+<p>gevent是一个特殊的协程库，它可以将非协程代码以协程方式运行，从而起到提升性能的作用。本文尝试分析一下它的实现原理。</p>
+<span id="more"></span>
+
+<h2 id="0x01-使用案例"><a href="#0x01-使用案例" class="headerlink" title="0x01 使用案例"></a>0x01 使用案例</h2><p>先看以下这段代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> ctypes</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">gettid</span>():</span><br><span class="line">    <span class="keyword">if</span> sys.platform == <span class="string">&#x27;linux2&#x27;</span>:</span><br><span class="line">        <span class="keyword">return</span> ctypes.CDLL(<span class="string">&#x27;libc.so.6&#x27;</span>).syscall(<span class="number">186</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> ctypes.windll.kernel32.GetCurrentThreadId()</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">thread_test</span>(<span class="params">index</span>):</span><br><span class="line">    time0 = time.time()</span><br><span class="line">    <span class="keyword">while</span> time.time() - time0 &lt; <span class="number">1</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;I\&#x27;m thread %d: %d %d&#x27;</span> % (index, threading.current_thread().ident, gettid()))</span><br><span class="line">        time.sleep(<span class="number">0.1</span>)</span><br><span class="line"></span><br><span class="line">thread1 = threading.Thread(target=thread_test, args=(<span class="number">1</span>,))</span><br><span class="line">thread1.start()</span><br><span class="line"></span><br><span class="line">thread2 = threading.Thread(target=thread_test, args=(<span class="number">2</span>,))</span><br><span class="line">thread2.start()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Main thread sleep&#x27;</span>)</span><br><span class="line">time.sleep(<span class="number">2</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Main thread exit&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">I&#x27;m thread 1: 140540774946560 32347</span><br><span class="line">I&#x27;m thread 2: 140540766553856 32348</span><br><span class="line">Main thread sleep</span><br><span class="line">I&#x27;m thread 1: 140540774946560 32347</span><br><span class="line">I&#x27;m thread 2: 140540766553856 32348</span><br><span class="line">I&#x27;m thread 1: 140540774946560 32347</span><br><span class="line">I&#x27;m thread 2: 140540766553856 32348</span><br><span class="line">I&#x27;m thread 1: 140540774946560 32347</span><br><span class="line">I&#x27;m thread 2: 140540766553856 32348</span><br><span class="line">I&#x27;m thread 1: 140540774946560 32347</span><br><span class="line">I&#x27;m thread 2: 140540766553856 32348</span><br><span class="line">I&#x27;m thread 1: 140540774946560 32347</span><br><span class="line">I&#x27;m thread 2: 140540766553856 32348</span><br><span class="line">I&#x27;m thread 1: 140540774946560 32347</span><br><span class="line">I&#x27;m thread 2: 140540766553856 32348</span><br><span class="line">I&#x27;m thread 1: 140540774946560 32347</span><br><span class="line">I&#x27;m thread 2: 140540766553856 32348</span><br><span class="line">I&#x27;m thread 1: 140540774946560 32347</span><br><span class="line">I&#x27;m thread 2: 140540766553856 32348</span><br><span class="line">I&#x27;m thread 1: 140540774946560 32347</span><br><span class="line">I&#x27;m thread 2: 140540766553856 32348</span><br><span class="line">Main thread exit</span><br></pre></td></tr></table></figure>
+
+<p>在这段代码前面加上以下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> gevent <span class="keyword">import</span> monkey</span><br><span class="line">monkey.patch_thread()</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">I&#x27;m thread 1: 21069936 31623</span><br><span class="line">I&#x27;m thread 1: 21069936 31623</span><br><span class="line">I&#x27;m thread 1: 21069936 31623</span><br><span class="line">I&#x27;m thread 1: 21069936 31623</span><br><span class="line">I&#x27;m thread 1: 21069936 31623</span><br><span class="line">I&#x27;m thread 1: 21069936 31623</span><br><span class="line">I&#x27;m thread 1: 21069936 31623</span><br><span class="line">I&#x27;m thread 1: 21069936 31623</span><br><span class="line">I&#x27;m thread 1: 21069936 31623</span><br><span class="line">I&#x27;m thread 1: 21069936 31623</span><br><span class="line">I&#x27;m thread 2: 14522208 31623</span><br><span class="line">I&#x27;m thread 2: 14522208 31623</span><br><span class="line">I&#x27;m thread 2: 14522208 31623</span><br><span class="line">I&#x27;m thread 2: 14522208 31623</span><br><span class="line">I&#x27;m thread 2: 14522208 31623</span><br><span class="line">I&#x27;m thread 2: 14522208 31623</span><br><span class="line">I&#x27;m thread 2: 14522208 31623</span><br><span class="line">I&#x27;m thread 2: 14522208 31623</span><br><span class="line">I&#x27;m thread 2: 14522208 31623</span><br><span class="line">I&#x27;m thread 2: 14522208 31623</span><br><span class="line">Main thread sleep</span><br><span class="line">Main thread exit</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，在加入gevent后，输出与之前有些不同，最大的区别是：<code>两个线程具有相同的线程ID</code>。也就是说，这两个线程其实是跑在同一个线程里的。</p>
+<p>还有一点需要注意的地方：<code>Main thread sleep</code>这句输出在前后两次执行是不同的。</p>
+<h2 id="0x02-原理分析"><a href="#0x02-原理分析" class="headerlink" title="0x02 原理分析"></a>0x02 原理分析</h2><p>来看下<code>patch_thread</code>函数的实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">patch_thread</span>(<span class="params">threading=<span class="literal">True</span>, _threading_local=<span class="literal">True</span>, Event=<span class="literal">True</span>, logging=<span class="literal">True</span>,</span></span><br><span class="line"><span class="params">                 existing_locks=<span class="literal">True</span>,</span></span><br><span class="line"><span class="params">                 _warnings=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="keyword">if</span> threading:</span><br><span class="line">        threading_mod = <span class="built_in">__import__</span>(<span class="string">&#x27;threading&#x27;</span>)</span><br><span class="line">        <span class="comment"># Capture the *real* current thread object before</span></span><br><span class="line">        <span class="comment"># we start returning DummyThread objects, for comparison</span></span><br><span class="line">        <span class="comment"># to the main thread.</span></span><br><span class="line">        orig_current_thread = threading_mod.current_thread()</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        threading_mod = <span class="literal">None</span></span><br><span class="line">        gevent_threading_mod = <span class="literal">None</span></span><br><span class="line">        orig_current_thread = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    gevent_thread_mod, thread_mod = _patch_module(<span class="string">&#x27;thread&#x27;</span>,</span><br><span class="line">                                                  _warnings=_warnings, _notify_did_subscribers=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> threading:</span><br><span class="line">        gevent_threading_mod, _ = _patch_module(<span class="string">&#x27;threading&#x27;</span>,</span><br><span class="line">                                                _warnings=_warnings, _notify_did_subscribers=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> Event:</span><br><span class="line">            <span class="keyword">from</span> gevent.event <span class="keyword">import</span> Event</span><br><span class="line">            patch_item(threading_mod, <span class="string">&#x27;Event&#x27;</span>, Event)</span><br><span class="line">            <span class="comment"># Python 2 had `Event` as a function returning</span></span><br><span class="line">            <span class="comment"># the private class `_Event`. Some code may be relying</span></span><br><span class="line">            <span class="comment"># on that.</span></span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">hasattr</span>(threading_mod, <span class="string">&#x27;_Event&#x27;</span>):</span><br><span class="line">                patch_item(threading_mod, <span class="string">&#x27;_Event&#x27;</span>, Event)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> existing_locks:</span><br><span class="line">            _patch_existing_locks(threading_mod)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> logging <span class="keyword">and</span> <span class="string">&#x27;logging&#x27;</span> <span class="keyword">in</span> sys.modules:</span><br><span class="line">            logging = <span class="built_in">__import__</span>(<span class="string">&#x27;logging&#x27;</span>)</span><br><span class="line">            patch_item(logging, <span class="string">&#x27;_lock&#x27;</span>, threading_mod.RLock())</span><br><span class="line">            <span class="keyword">for</span> wr <span class="keyword">in</span> logging._handlerList:</span><br><span class="line">                <span class="comment"># In py26, these are actual handlers, not weakrefs</span></span><br><span class="line">                handler = wr() <span class="keyword">if</span> <span class="built_in">callable</span>(wr) <span class="keyword">else</span> wr</span><br><span class="line">                <span class="keyword">if</span> handler <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> <span class="built_in">hasattr</span>(handler, <span class="string">&#x27;lock&#x27;</span>):</span><br><span class="line">                    <span class="keyword">raise</span> TypeError(<span class="string">&quot;Unknown/unsupported handler %r&quot;</span> % handler)</span><br><span class="line">                handler.lock = threading_mod.RLock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> _threading_local:</span><br><span class="line">        _threading_local = <span class="built_in">__import__</span>(<span class="string">&#x27;_threading_local&#x27;</span>)</span><br><span class="line">        <span class="keyword">from</span> gevent.local <span class="keyword">import</span> local</span><br><span class="line">        patch_item(_threading_local, <span class="string">&#x27;local&#x27;</span>, local)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">make_join_func</span>(<span class="params">thread, thread_greenlet</span>):</span><br><span class="line">        <span class="keyword">from</span> gevent.hub <span class="keyword">import</span> sleep</span><br><span class="line">        <span class="keyword">from</span> time <span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">join</span>(<span class="params">timeout=<span class="literal">None</span></span>):</span><br><span class="line">            end = <span class="literal">None</span></span><br><span class="line">            <span class="keyword">if</span> threading_mod.current_thread() <span class="keyword">is</span> thread:</span><br><span class="line">                <span class="keyword">raise</span> RuntimeError(<span class="string">&quot;Cannot join current thread&quot;</span>)</span><br><span class="line">            <span class="keyword">if</span> thread_greenlet <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> thread_greenlet.dead:</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> thread.is_alive():</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> timeout:</span><br><span class="line">                end = time() + timeout</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> thread.is_alive():</span><br><span class="line">                <span class="keyword">if</span> end <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> time() &gt; end:</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                sleep(<span class="number">0.01</span>)</span><br><span class="line">        <span class="keyword">return</span> join</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> threading:</span><br><span class="line">        <span class="keyword">from</span> gevent.threading <span class="keyword">import</span> main_native_thread</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> thread <span class="keyword">in</span> threading_mod._active.values():</span><br><span class="line">            <span class="keyword">if</span> thread == main_native_thread():</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            thread.join = make_join_func(thread, <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> sys.version_info[:<span class="number">2</span>] &gt;= (<span class="number">3</span>, <span class="number">4</span>):</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Issue 18808 changes the nature of Thread.join() to use</span></span><br><span class="line">        <span class="comment"># locks. This means that a greenlet spawned in the main thread</span></span><br><span class="line">        <span class="comment"># (which is already running) cannot wait for the main thread---it</span></span><br><span class="line">        <span class="comment"># hangs forever. We patch around this if possible. See also</span></span><br><span class="line">        <span class="comment"># gevent.threading.</span></span><br><span class="line">        greenlet = <span class="built_in">__import__</span>(<span class="string">&#x27;greenlet&#x27;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> orig_current_thread == threading_mod.main_thread():</span><br><span class="line">            main_thread = threading_mod.main_thread()</span><br><span class="line">            _greenlet = main_thread._greenlet = greenlet.getcurrent()</span><br><span class="line"></span><br><span class="line">            main_thread.join = make_join_func(main_thread, _greenlet)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># Patch up the ident of the main thread to match. This</span></span><br><span class="line">            <span class="comment"># matters if threading was imported before monkey-patching</span></span><br><span class="line">            <span class="comment"># thread</span></span><br><span class="line">            oldid = main_thread.ident</span><br><span class="line">            main_thread._ident = threading_mod.get_ident()</span><br><span class="line">            <span class="keyword">if</span> oldid <span class="keyword">in</span> threading_mod._active:</span><br><span class="line">                threading_mod._active[main_thread.ident] = threading_mod._active[oldid]</span><br><span class="line">            <span class="keyword">if</span> oldid != main_thread.ident:</span><br><span class="line">                <span class="keyword">del</span> threading_mod._active[oldid]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            _queue_warning(<span class="string">&quot;Monkey-patching not on the main thread; &quot;</span></span><br><span class="line">                           <span class="string">&quot;threading.main_thread().join() will hang from a greenlet&quot;</span>,</span><br><span class="line">                           _warnings)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">from</span> gevent <span class="keyword">import</span> events</span><br><span class="line">    _notify_patch(events.GeventDidPatchModuleEvent(<span class="string">&#x27;thread&#x27;</span>, gevent_thread_mod, thread_mod))</span><br><span class="line">    _notify_patch(events.GeventDidPatchModuleEvent(<span class="string">&#x27;threading&#x27;</span>, gevent_threading_mod, threading_mod))</span><br></pre></td></tr></table></figure>
+
+
+<p>首先，<code>orig_current_thread</code>变量存储了当前的线程对象，然后调用<code>_patch_module</code>函数<code>patch</code>了<code>threading</code>和<code>thread</code>模块。</p>
+<p><code>_patch_module</code>函数相关实现如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">__call_module_hook</span>(<span class="params">gevent_module, name, module, items, _warnings</span>):</span><br><span class="line">    <span class="comment"># This function can raise DoNotPatch on &#x27;will&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">warn</span>(<span class="params">message</span>):</span><br><span class="line">        _queue_warning(message, _warnings)</span><br><span class="line"></span><br><span class="line">    func_name = <span class="string">&#x27;_gevent_&#x27;</span> + name + <span class="string">&#x27;_monkey_patch&#x27;</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        func = <span class="built_in">getattr</span>(gevent_module, func_name)</span><br><span class="line">    <span class="keyword">except</span> AttributeError:</span><br><span class="line">        func = <span class="keyword">lambda</span> *args: <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    func(module, items, warn)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">patch_item</span>(<span class="params">module, attr, newitem</span>):</span><br><span class="line">    olditem = <span class="built_in">getattr</span>(module, attr, _NONE)</span><br><span class="line">    <span class="keyword">if</span> olditem <span class="keyword">is</span> <span class="keyword">not</span> _NONE:</span><br><span class="line">        saved.setdefault(module.__name__, &#123;&#125;).setdefault(attr, olditem)</span><br><span class="line">    <span class="built_in">setattr</span>(module, attr, newitem)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">patch_module</span>(<span class="params">target_module, source_module, items=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">                 _warnings=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">                 _notify_did_subscribers=<span class="literal">True</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    patch_module(target_module, source_module, items=None)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Replace attributes in *target_module* with the attributes of the</span></span><br><span class="line"><span class="string">    same name in *source_module*.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    The *source_module* can provide some attributes to customize the process:</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    * ``__implements__`` is a list of attribute names to copy; if not present,</span></span><br><span class="line"><span class="string">      the *items* keyword argument is mandatory.</span></span><br><span class="line"><span class="string">    * ``_gevent_will_monkey_patch(target_module, items, warn, **kwargs)``</span></span><br><span class="line"><span class="string">    * ``_gevent_did_monkey_patch(target_module, items, warn, **kwargs)``</span></span><br><span class="line"><span class="string">      These two functions in the *source_module* are called *if* they exist,</span></span><br><span class="line"><span class="string">      before and after copying attributes, respectively. The &quot;will&quot; function</span></span><br><span class="line"><span class="string">      may modify *items*. The value of *warn* is a function that should be called</span></span><br><span class="line"><span class="string">      with a single string argument to issue a warning to the user. If the &quot;will&quot;</span></span><br><span class="line"><span class="string">      function raises :exc:`gevent.events.DoNotPatch`, no patching will be done. These functions</span></span><br><span class="line"><span class="string">      are called before any event subscribers or plugins.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    :keyword list items: A list of attribute names to replace. If</span></span><br><span class="line"><span class="string">       not given, this will be taken from the *source_module* ``__implements__``</span></span><br><span class="line"><span class="string">       attribute.</span></span><br><span class="line"><span class="string">    :return: A true value if patching was done, a false value if patching was canceled.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    .. versionadded:: 1.3b1</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">from</span> gevent <span class="keyword">import</span> events</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> items <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        items = <span class="built_in">getattr</span>(source_module, <span class="string">&#x27;__implements__&#x27;</span>, <span class="literal">None</span>)</span><br><span class="line">        <span class="keyword">if</span> items <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">raise</span> AttributeError(<span class="string">&#x27;%r does not have __implements__&#x27;</span> % source_module)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        __call_module_hook(source_module, <span class="string">&#x27;will&#x27;</span>, target_module, items, _warnings)</span><br><span class="line">        _notify_patch(</span><br><span class="line">            events.GeventWillPatchModuleEvent(target_module.__name__, source_module,</span><br><span class="line">                                              target_module, items),</span><br><span class="line">            _warnings)</span><br><span class="line">    <span class="keyword">except</span> events.DoNotPatch:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> attr <span class="keyword">in</span> items:</span><br><span class="line">        patch_item(target_module, attr, <span class="built_in">getattr</span>(source_module, attr))</span><br><span class="line"></span><br><span class="line">    __call_module_hook(source_module, <span class="string">&#x27;did&#x27;</span>, target_module, items, _warnings)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> _notify_did_subscribers:</span><br><span class="line">        <span class="comment"># We allow turning off the broadcast of the &#x27;did&#x27; event for the benefit</span></span><br><span class="line">        <span class="comment"># of our internal functions which need to do additional work (besides copying</span></span><br><span class="line">        <span class="comment"># attributes) before their patch can be considered complete.</span></span><br><span class="line">        _notify_patch(</span><br><span class="line">            events.GeventDidPatchModuleEvent(target_module.__name__, source_module,</span><br><span class="line">                                             target_module)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_patch_module</span>(<span class="params">name, items=<span class="literal">None</span>, _warnings=<span class="literal">None</span>, _notify_did_subscribers=<span class="literal">True</span></span>):</span><br><span class="line"></span><br><span class="line">    gevent_module = <span class="built_in">getattr</span>(<span class="built_in">__import__</span>(<span class="string">&#x27;gevent.&#x27;</span> + name), name)</span><br><span class="line">    module_name = <span class="built_in">getattr</span>(gevent_module, <span class="string">&#x27;__target__&#x27;</span>, name)</span><br><span class="line">    target_module = <span class="built_in">__import__</span>(module_name)</span><br><span class="line"></span><br><span class="line">    patch_module(target_module, gevent_module, items=items,</span><br><span class="line">                 _warnings=_warnings,</span><br><span class="line">                 _notify_did_subscribers=_notify_did_subscribers)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> gevent_module, target_module</span><br></pre></td></tr></table></figure>
+
+<p>这里比较关键的逻辑有两个：</p>
+<ul>
+<li><p>调用<code>__call_module_hook</code>执行目标模块中的<code>_gevent_will_monkey_patch</code>和<code>_gevent_did_monkey_patch</code>方法</p>
+</li>
+<li><p>调用<code>patch_item</code>将原始模块中的指定方法替换为gevent对应模块中的同名方法</p>
+</li>
+</ul>
+<p>可以看出，patch的关键逻辑就是由<code>patch_item</code>实现的，具体要patch的对象是由gevent模块中的<code>__implements__</code>列表指定的。</p>
+<h2 id="0x03-threading模块patch分析"><a href="#0x03-threading模块patch分析" class="headerlink" title="0x03 threading模块patch分析"></a>0x03 threading模块patch分析</h2><p>对于<code>threading</code>模块，对应模块就是<code>gevent.threading</code>，里面实现了<code>_gevent_will_monkey_patch</code>方法，在hook前做一些准备工作。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> threading <span class="keyword">as</span> __threading__</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_gevent_will_monkey_patch</span>(<span class="params">native_module, items, warn</span>): <span class="comment"># pylint:disable=unused-argument</span></span><br><span class="line">    <span class="comment"># Make sure the MainThread can be found by our current greenlet ID,</span></span><br><span class="line">    <span class="comment"># otherwise we get a new DummyThread, which cannot be joined.</span></span><br><span class="line">    <span class="comment"># Fixes tests in test_threading_2 under PyPy.</span></span><br><span class="line">    main_thread = main_native_thread()</span><br><span class="line">    <span class="keyword">if</span> __threading__.current_thread() != main_thread:</span><br><span class="line">        warn(<span class="string">&quot;Monkey-patching outside the main native thread. Some APIs &quot;</span></span><br><span class="line">             <span class="string">&quot;will not be available. Expect a KeyError to be printed at shutdown.&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> _get_ident() <span class="keyword">not</span> <span class="keyword">in</span> __threading__._active:</span><br><span class="line">        main_id = main_thread.ident</span><br><span class="line">        <span class="keyword">del</span> __threading__._active[main_id]</span><br><span class="line">        main_thread._ident = main_thread._Thread__ident = _get_ident()</span><br><span class="line">        __threading__._active[_get_ident()] = main_thread</span><br></pre></td></tr></table></figure>
+
+<p>在<code>gevent.threading</code>模块中要patch的列表是：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">__implements__ = [</span><br><span class="line">    <span class="string">&#x27;local&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;_start_new_thread&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;_allocate_lock&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;Lock&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;_get_ident&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;_sleep&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;_DummyThread&#x27;</span>,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>而在<code>gevent.thread</code>模块中则是：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">__implements__ = [</span><br><span class="line">    <span class="string">&#x27;allocate_lock&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;get_ident&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;exit&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;LockType&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;stack_size&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;start_new_thread&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;_local&#x27;</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>我们来看下<code>threading</code>模块在启动线程过程中做了哪些操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">  +------------------------+</span><br><span class="line">  |                        |</span><br><span class="line">  | threading.Thread.start |</span><br><span class="line">  |                        |</span><br><span class="line">  +-----------+------------+</span><br><span class="line">              |</span><br><span class="line">              |</span><br><span class="line">              v</span><br><span class="line">+-------------+---------------+</span><br><span class="line">|                             |</span><br><span class="line">| threading._start_new_thread |</span><br><span class="line">|                             |</span><br><span class="line">+-------------+---------------+</span><br><span class="line">              |</span><br><span class="line">              |</span><br><span class="line">              |</span><br><span class="line">              v</span><br><span class="line">  +-----------+-------------+</span><br><span class="line">  |                         |</span><br><span class="line">  | thread.start_new_thread |</span><br><span class="line">  |                         |</span><br><span class="line">  +-------------------------+</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>上面的<code>threading._start_new_thread</code>和<code>thread.start_new_thread</code>都是在gevent的<code>__implements__</code>列表中的。也就是说：这两个函数都被gevent hook了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> gevent.thread <span class="keyword">import</span> start_new_thread <span class="keyword">as</span> _start_new_thread</span><br></pre></td></tr></table></figure>
+
+<p>而由于<code>gevent.threading._start_new_thread</code>其实就是<code>gevent.thread.start_new_thread</code>，所以它们其实是同一个函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">start_new_thread</span>(<span class="params">function, args=(<span class="params"></span>), kwargs=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="keyword">if</span> kwargs <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        greenlet = Greenlet.spawn(function, *args, **kwargs)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        greenlet = Greenlet.spawn(function, *args)</span><br><span class="line">    <span class="keyword">return</span> get_ident(greenlet)</span><br></pre></td></tr></table></figure>
+
+<p>从<code>start_new_thread</code>函数可以看出，启动线程逻辑已经被替换成了<code>greenlet</code>的实现，这也是为什么使用了<code>patch_thread</code>后，真实线程id相同的原因。</p>
+<h2 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2><p>gevent使用动态patch的方法，实现了动态将非协程库变成协程库的功能，在极少修改代码的前提下提升了程序的性能。但是，在上面线程的例子中可以看出，patch后程序的行为可能会有一些差异，所以在使用上还是需要小心。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>drunkdream
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2020/02/18/gevent/" title="gevent初探">https://www.drunkdream.com/2020/02/18/gevent/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/coroutine/" rel="tag"># coroutine</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/12/14/js-prototype/" rel="prev" title="Javascript中的原型链分析">
+                  <i class="fa fa-angle-left"></i> Javascript中的原型链分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/03/11/mongodb-command/" rel="next" title="mongodb常用操作命令">
+                  mongodb常用操作命令 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2017 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">drunkdream</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"drunkdream","repo":"drunkdream.github.io","client_id":"b6aad8c93b6aadccfcc8","client_secret":"88b3043a118f3e6db76f75bdb9257228db104949","admin_user":"drunkdream","distraction_free_mode":true,"proxy":"/github/login/oauth/access_token","language":"zh-CN","body":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"158e6acfadfcf92d47830c492439e4cd","path":"/2020/02/18/gevent/"}</script>
+<script src="/js/third-party/comments/gitalk.js" defer></script>
+
+</body>
+</html>

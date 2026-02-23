@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/purple/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.drunkdream.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"rights","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"xcode","dark":"github-dark-dimmed"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Android模拟器6.0版本进入系统时，桌面应用com.android.launcher3会发生随机Crash。  W&#x2F;System.err( 1611): java.lang.IllegalArgumentException:Wrong state class, expecting View State but received classandroid.appwidget.AppW">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android模拟器中替换系统应用的方法">
+<meta property="og:url" content="https://www.drunkdream.com/2017/04/27/android-emulator-replace-system-app/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="Android模拟器6.0版本进入系统时，桌面应用com.android.launcher3会发生随机Crash。  W&#x2F;System.err( 1611): java.lang.IllegalArgumentException:Wrong state class, expecting View State but received classandroid.appwidget.AppW">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-04-27T01:11:13.000Z">
+<meta property="article:modified_time" content="2026-02-23T06:02:24.951Z">
+<meta property="article:author" content="drunkdream">
+<meta property="article:tag" content="emulator">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.drunkdream.com/2017/04/27/android-emulator-replace-system-app/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.drunkdream.com/2017/04/27/android-emulator-replace-system-app/","path":"2017/04/27/android-emulator-replace-system-app/","title":"Android模拟器中替换系统应用的方法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Android模拟器中替换系统应用的方法 | 醉梦轩</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">醉梦轩</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉中无日月，梦里有乾坤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="drunkdream"
+      src="/images/logo.gif">
+  <p class="site-author-name" itemprop="name">drunkdream</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">69</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2017/04/27/android-emulator-replace-system-app/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.gif">
+      <meta itemprop="name" content="drunkdream">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Android模拟器中替换系统应用的方法 | 醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android模拟器中替换系统应用的方法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-04-27 09:11:13" itemprop="dateCreated datePublished" datetime="2017-04-27T09:11:13+08:00">2017-04-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-23 14:02:24" itemprop="dateModified" datetime="2026-02-23T14:02:24+08:00">2026-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Android模拟器6.0版本进入系统时，桌面应用com.android.launcher3会发生随机Crash。</p>
+<blockquote>
+<p>W&#x2F;System.err( 1611): java.lang.IllegalArgumentException:<br>Wrong state class, expecting View State but received class<br>android.appwidget.AppWidgetHostView$ParcelableSparseArray instead.<br>This usually happens when two views of different type have the same id in the same hierarchy.<br>This view’s id is id&#x2F;0x3. Make sure other views do not use the same id.</p>
+</blockquote>
+<blockquote>
+<p>W&#x2F;System.err( 1611): 	at android.view.View.onRestoreInstanceState(View.java:13772)<br>W&#x2F;System.err( 1611): 	at android.widget.TextView.onRestoreInstanceState(TextView.java:3784)<br>W&#x2F;System.err( 1611): 	at android.view.View.dispatchRestoreInstanceState(View.java:13748)<br>W&#x2F;System.err( 1611): 	at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W&#x2F;System.err( 1611): 	at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W&#x2F;System.err( 1611): 	at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W&#x2F;System.err( 1611): 	at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W&#x2F;System.err( 1611): 	at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W&#x2F;System.err( 1611): 	at android.view.ViewGroup.dispatchRestoreInstanceState(ViewGroup.java:2894)<br>W&#x2F;System.err( 1611): 	at android.view.View.restoreHierarchyState(View.java:13726)<br>W&#x2F;System.err( 1611): 	at com.android.internal.policy.impl.PhoneWindow.restoreHierarchyState(PhoneWindow.java:2009)<br>W&#x2F;System.err( 1611): 	at android.app.Activity.onRestoreInstanceState(Activity.java:1074)<br>W&#x2F;System.err( 1611): 	at com.android.launcher3.Launcher.onRestoreInstanceState(Launcher.java:2013)</p>
+</blockquote>
+<p>在<a href="https://github.com/northbright/Notes/blob/master/Android/Launcher/launcher3_runtime_exception_two_views_of_different_type_have_the_same_id.md">网上</a>找到如下解决方法：</p>
+<p>packages&#x2F;apps&#x2F;Launcher3&#x2F;src&#x2F;com&#x2F;android&#x2F;launcher3&#x2F;Launcher.java:</p>
+<pre><code>public void onRestoreInstanceState(Bundle state) {
+    // Wrap the code block will throw runtinme exception in try / catch block
+    // ----------------------------------------------------------------------
+    //super.onRestoreInstanceState(state);
+    //for (int page: mSynchronouslyBoundPages) {
+    //    mWorkspace.restoreInstanceStateForChild(page);
+    //}
+
+    try {
+        super.onRestoreInstanceState(state);
+        for (int page: mSynchronouslyBoundPages) {
+            mWorkspace.restoreInstanceStateForChild(page);
+        }
+    } catch (Exception e) {
+        Log.e(TAG, &quot;Exception in onRestoreInstanceState():&quot;);
+        e.printStackTrace();
+    }
+}
+</code></pre>
+<p>编译后替换掉镜像中的文件：</p>
+<blockquote>
+<p>&#x2F;system&#x2F;priv-app&#x2F;Launcher3&#x2F;Launcher3.apk<br>&#x2F;system&#x2F;priv-app&#x2F;Launcher3&#x2F;oat&#x2F;x86&#x2F;Launcher3.odex</p>
+</blockquote>
+<p>重启后报了另外一个错误：</p>
+<blockquote>
+<p>java.lang.RuntimeException: Unable to get provider com.android.launcher3.LauncherProvider: java.lang.ClassNotFoundException: Didn’t find class “com.android.launcher3.LauncherProvider” on path: DexPathList[[zip file “&#x2F;system&#x2F;priv-app&#x2F;Launcher3&#x2F;Launcher3.apk”],nativeLibraryDirectories&#x3D;[&#x2F;system&#x2F;priv-app&#x2F;Launcher3&#x2F;lib&#x2F;x86, &#x2F;vendor&#x2F;lib, &#x2F;system&#x2F;lib]]<br>at android.app.ActivityThread.installProvider(ActivityThread.java:5156)<br>at android.app.ActivityThread.installContentProviders(ActivityThread.java:4748)<br>at android.app.ActivityThread.handleBindApplication(ActivityThread.java:4688)<br>at android.app.ActivityThread.-wrap1(ActivityThread.java)<br>at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1405)<br>at android.os.Handler.dispatchMessage(Handler.java:102)<br>at android.os.Looper.loop(Looper.java:148)<br>at android.app.ActivityThread.main(ActivityThread.java:5417)<br>at java.lang.reflect.Method.invoke(Native Method)<br>at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)<br>at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)<br>Caused by: java.lang.ClassNotFoundException: Didn’t find class “com.android.launcher3.LauncherProvider” on path: DexPathList[[zip file “&#x2F;system&#x2F;priv-app&#x2F;Launcher3&#x2F;Launcher3.apk”],nativeLibraryDirectories&#x3D;[&#x2F;system&#x2F;priv-app&#x2F;Launcher3&#x2F;lib&#x2F;x86, &#x2F;vendor&#x2F;lib, &#x2F;system&#x2F;lib]]<br>at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:56)<br>at java.lang.ClassLoader.loadClass(ClassLoader.java:511)<br>at java.lang.ClassLoader.loadClass(ClassLoader.java:469)<br>at android.app.ActivityThread.installProvider(ActivityThread.java:5141)<br>… 10 more<br>Suppressed: java.io.IOException: No original dex files found for dex location &#x2F;system&#x2F;priv-app&#x2F;Launcher3&#x2F;Launcher3.apk<br>at dalvik.system.DexFile.openDexFileNative(Native Method)<br>at dalvik.system.DexFile.openDexFile(DexFile.java:295)<br>at dalvik.system.DexFile.<init>(DexFile.java:80)<br>at dalvik.system.DexFile.<init>(DexFile.java:59)<br>at dalvik.system.DexPathList.loadDexFile(DexPathList.java:279)<br>at dalvik.system.DexPathList.makePathElements(DexPathList.java:248)<br>at dalvik.system.DexPathList.<init>(DexPathList.java:120)<br>at dalvik.system.BaseDexClassLoader.<init>(BaseDexClassLoader.java:48)<br>at dalvik.system.PathClassLoader.<init>(PathClassLoader.java:65)<br>at android.app.ApplicationLoaders.getClassLoader(ApplicationLoaders.java:58)<br>at android.app.LoadedApk.getClassLoader(LoadedApk.java:376)<br>at android.app.LoadedApk.makeApplication(LoadedApk.java:568)<br>at android.app.ActivityThread.handleBindApplication(ActivityThread.java:4680)<br>… 8 more</p>
+</blockquote>
+<p>猜测是因为编译时用的art库版本与模拟器中不一致，导致生成的oat文件不匹配。解决方法是把dex文件拷贝到模拟器里，然后使用dex2oat编译下。</p>
+<p>编译出来的dex文件（Launcher3.apk中不包含dex文件）路径是：</p>
+<blockquote>
+<p>out&#x2F;target&#x2F;common&#x2F;obj&#x2F;APPS&#x2F;Launcher3_intermediates&#x2F;classes.dex</p>
+</blockquote>
+<p>使用如下命令可以在&#x2F;data&#x2F;local&#x2F;tmp目录下生成Launcher3.odex文件，&#x2F;data&#x2F;local&#x2F;tmp&#x2F;Launcher3.dex是要输入的dex文件路径。</p>
+<p>5.0中执行的命令</p>
+<pre><code>&gt; dex2oat --runtime-arg -Xms64m --runtime-arg -Xmx512m --dex-file=/data/local/tmp/Launcher3.dex --dex-location=/system/priv-app/Launcher3/Launcher3.apk --oat-file=/data/local/tmp/Launcher3.odex --android-root=/system --instruction-set=x86 --instruction-set-features=default --include-patch-information --runtime-arg -Xnorelocate --no-include-debug-symbols
+</code></pre>
+<p>6.0中执行的命令</p>
+<pre><code>&gt; dex2oat --runtime-arg -Xms64m --runtime-arg -Xmx512m --dex-file=/data/local/tmp/Launcher3.dex --dex-location=/system/priv-app/Launcher3/Launcher3.apk --oat-file=/data/local/tmp/Launcher3.odex --android-root=/system --instruction-set=x86 --instruction-set-variant=x86 --instruction-set-features=default --include-patch-information --runtime-arg -Xnorelocate --no-generate-debug-info --abort-on-hard-verifier-error
+</code></pre>
+<p>另外一种解决方法是：<br>修改</p>
+<blockquote>
+<p>build&#x2F;target&#x2F;board&#x2F;generic_x86&#x2F;BoardConfig.mk  </p>
+</blockquote>
+<p>文件，注释掉：</p>
+<blockquote>
+<p>WITH_DEXPREOPT ?&#x3D; true</p>
+</blockquote>
+<p>这样，编译后的apk中就会包含dex文件，在模拟器第一次开机时会自动进行dexopt操作。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>drunkdream
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2017/04/27/android-emulator-replace-system-app/" title="Android模拟器中替换系统应用的方法">https://www.drunkdream.com/2017/04/27/android-emulator-replace-system-app/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/emulator/" rel="tag"># emulator</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/02/24/ubuntu-install-proxychains/" rel="prev" title="Ubuntu安装Proxychains">
+                  <i class="fa fa-angle-left"></i> Ubuntu安装Proxychains
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/05/02/python-mingw-install-extension/" rel="next" title="Python中使用MinGW编译C++扩展">
+                  Python中使用MinGW编译C++扩展 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2017 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">drunkdream</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"drunkdream","repo":"drunkdream.github.io","client_id":"b6aad8c93b6aadccfcc8","client_secret":"88b3043a118f3e6db76f75bdb9257228db104949","admin_user":"drunkdream","distraction_free_mode":true,"proxy":"/github/login/oauth/access_token","language":"zh-CN","body":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"70f795857899b42488e66f985a718c26","path":"/2017/04/27/android-emulator-replace-system-app/"}</script>
+<script src="/js/third-party/comments/gitalk.js" defer></script>
+
+</body>
+</html>

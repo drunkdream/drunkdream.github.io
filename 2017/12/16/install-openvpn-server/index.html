@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/purple/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.drunkdream.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"rights","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"xcode","dark":"github-dark-dimmed"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="0x00 前言OpenVPN是一款跨平台的开源VPN软件，它利用虚拟网卡，以一种全新的方式实现了SSL VPN的功能，能够适应IP层之上的几乎所有应用。它使用TCP或UDP协议进行通信，相比于其它VPN，具有更好的NAT兼容性。 以下以腾讯云的Ubuntu 16.04.1 TLS 64位系统作为部署环境。如无特别说明，以下所执行的命令都需要root权限。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu部署OpenVPN服务">
+<meta property="og:url" content="https://www.drunkdream.com/2017/12/16/install-openvpn-server/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言OpenVPN是一款跨平台的开源VPN软件，它利用虚拟网卡，以一种全新的方式实现了SSL VPN的功能，能够适应IP层之上的几乎所有应用。它使用TCP或UDP协议进行通信，相比于其它VPN，具有更好的NAT兼容性。 以下以腾讯云的Ubuntu 16.04.1 TLS 64位系统作为部署环境。如无特别说明，以下所执行的命令都需要root权限。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-12-16T07:00:18.000Z">
+<meta property="article:modified_time" content="2026-02-23T06:02:24.954Z">
+<meta property="article:author" content="drunkdream">
+<meta property="article:tag" content="OpenVPN">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.drunkdream.com/2017/12/16/install-openvpn-server/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.drunkdream.com/2017/12/16/install-openvpn-server/","path":"2017/12/16/install-openvpn-server/","title":"Ubuntu部署OpenVPN服务"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Ubuntu部署OpenVPN服务 | 醉梦轩</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">醉梦轩</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉中无日月，梦里有乾坤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E5%88%9B%E5%BB%BA%E8%AF%81%E4%B9%A6"><span class="nav-number">2.</span> <span class="nav-text">0x01 创建证书</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85easy-rsa"><span class="nav-number">2.1.</span> <span class="nav-text">安装easy-rsa</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E8%AF%81%E4%B9%A6%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">修改证书配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%A0%B9%E8%AF%81%E4%B9%A6"><span class="nav-number">2.3.</span> <span class="nav-text">生成根证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AF%81%E4%B9%A6%E5%92%8C%E5%AF%86%E9%92%A5"><span class="nav-number">2.4.</span> <span class="nav-text">生成服务器证书和密钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90Diffie-Hellman%E5%AF%86%E9%92%A5"><span class="nav-number">2.5.</span> <span class="nav-text">生成Diffie-Hellman密钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AF%81%E4%B9%A6%E5%92%8C%E5%AF%86%E9%92%A5"><span class="nav-number">2.6.</span> <span class="nav-text">生成客户端证书和密钥</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E5%AE%89%E8%A3%85OpenVPN%E5%B9%B6%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">0x02 安装OpenVPN并修改配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E5%BC%80%E5%90%AFiptables%E7%9A%84NAT%E5%8A%9F%E8%83%BD"><span class="nav-number">4.</span> <span class="nav-text">0x03 开启iptables的NAT功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%90%AFip%E6%95%B0%E6%8D%AE%E5%8C%85%E8%BD%AC%E5%8F%91"><span class="nav-number">4.1.</span> <span class="nav-text">开启ip数据包转发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AENAT%E8%BD%AC%E5%8F%91%E8%A7%84%E5%88%99"><span class="nav-number">4.2.</span> <span class="nav-text">配置NAT转发规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%90%AF%E9%98%B2%E7%81%AB%E5%A2%99%E7%AD%96%E7%95%A5"><span class="nav-number">4.3.</span> <span class="nav-text">开启防火墙策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E5%BC%80%E5%90%AF%E6%9C%8D%E5%8A%A1"><span class="nav-number">5.</span> <span class="nav-text">0x04 开启服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-%E6%B5%8B%E8%AF%95OpenVPN%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">6.</span> <span class="nav-text">0x05 测试OpenVPN客户端</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="drunkdream"
+      src="/images/logo.gif">
+  <p class="site-author-name" itemprop="name">drunkdream</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">69</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2017/12/16/install-openvpn-server/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.gif">
+      <meta itemprop="name" content="drunkdream">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Ubuntu部署OpenVPN服务 | 醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ubuntu部署OpenVPN服务
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-12-16 15:00:18" itemprop="dateCreated datePublished" datetime="2017-12-16T15:00:18+08:00">2017-12-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-23 14:02:24" itemprop="dateModified" datetime="2026-02-23T14:02:24+08:00">2026-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>OpenVPN是一款跨平台的开源VPN软件，它利用虚拟网卡，以一种全新的方式实现了SSL VPN的功能，能够适应IP层之上的几乎所有应用。它使用TCP或UDP协议进行通信，相比于其它VPN，具有更好的NAT兼容性。</p>
+<p>以下以腾讯云的Ubuntu 16.04.1 TLS 64位系统作为部署环境。<br>如无特别说明，以下所执行的命令都需要root权限。</p>
+<span id="more"></span>
+
+<h2 id="0x01-创建证书"><a href="#0x01-创建证书" class="headerlink" title="0x01 创建证书"></a>0x01 创建证书</h2><p>如果已经有证书，可以忽略本步操作。</p>
+<h3 id="安装easy-rsa"><a href="#安装easy-rsa" class="headerlink" title="安装easy-rsa"></a>安装easy-rsa</h3><blockquote>
+<p>apt-get -y install easy-rsa</p>
+</blockquote>
+<h3 id="修改证书配置"><a href="#修改证书配置" class="headerlink" title="修改证书配置"></a>修改证书配置</h3><blockquote>
+<p>cd &#x2F;usr&#x2F;share&#x2F;easy-rsa</p>
+</blockquote>
+<blockquote>
+<p>vi vars</p>
+</blockquote>
+<p>修改以下变量的默认配置：</p>
+<pre><code>export KEY_COUNTRY=&quot;US&quot;
+export KEY_PROVINCE=&quot;CA&quot;
+export KEY_CITY=&quot;SanFrancisco&quot;
+export KEY_ORG=&quot;Fort-Funston&quot;
+export KEY_EMAIL=&quot;me@myhost.mydomain&quot;
+export KEY_OU=&quot;MyOrganizationalUnit&quot;
+</code></pre>
+<p>如：</p>
+<pre><code>export KEY_COUNTRY=&quot;CN&quot;
+export KEY_PROVINCE=&quot;GD&quot;
+export KEY_CITY=&quot;Shenzhen&quot;
+export KEY_ORG=&quot;drunkdream&quot;
+export KEY_EMAIL=&quot;admin@drunkdream.com&quot;
+export KEY_OU=&quot;drunkdream&quot;
+</code></pre>
+<p>将<code># export KEY_CN=&quot;CommonName&quot;</code>改为：<code>export KEY_CN=&quot;server&quot;</code></p>
+<blockquote>
+<p>source .&#x2F;vars</p>
+<p>.&#x2F;clean-all</p>
+</blockquote>
+<h3 id="生成根证书"><a href="#生成根证书" class="headerlink" title="生成根证书"></a>生成根证书</h3><blockquote>
+<p>.&#x2F;build-ca</p>
+</blockquote>
+<p>如果出现以下错误：</p>
+<blockquote>
+<p>140695501473432:error:0E065068:configuration file routines:STR_COPY:variable has no value:conf_def.c:584:line 198</p>
+</blockquote>
+<blockquote>
+<p>139878249313944:error:0E065068:configuration file routines:STR_COPY:variable has no value:conf_def.c:584:line 220</p>
+</blockquote>
+<p>请注释掉198行和220行的内容：</p>
+<blockquote>
+<p>subjectAltName&#x3D;$ENV::KEY_ALTNAMES</p>
+</blockquote>
+<p>一路回车，完成后，会在keys目录下生成ca.crt和ca.key。</p>
+<h3 id="生成服务器证书和密钥"><a href="#生成服务器证书和密钥" class="headerlink" title="生成服务器证书和密钥"></a>生成服务器证书和密钥</h3><blockquote>
+<p>.&#x2F;build-key-server server</p>
+</blockquote>
+<p>遇到<code>Sign the certificate? [y/n]</code>以及<code>1 out of 1 certificate requests certified, commit? [y/n]</code></p>
+<p>请输入<code>y</code>，并回车；其它情况直接回车即可。</p>
+<p>完成后，会在keys目录下生成server.crt、server.csr、server.key三个文件。</p>
+<h3 id="生成Diffie-Hellman密钥"><a href="#生成Diffie-Hellman密钥" class="headerlink" title="生成Diffie-Hellman密钥"></a>生成Diffie-Hellman密钥</h3><blockquote>
+<p>.&#x2F;build-dh</p>
+</blockquote>
+<p>该步操作耗时较长，请耐心等待。</p>
+<p>完成后，会在keys目录下生成dh2048.pem文件。</p>
+<h3 id="生成客户端证书和密钥"><a href="#生成客户端证书和密钥" class="headerlink" title="生成客户端证书和密钥"></a>生成客户端证书和密钥</h3><blockquote>
+<p>.&#x2F;build-key client</p>
+</blockquote>
+<p>与前面的步骤相同，在<code>Sign the certificate</code>和<code>1 out of 1 certificate requests certified, commit?</code>两处输入<code>y</code>并回车，其它地方直接回车即可。</p>
+<p>完成后，会在keys目录下生成client.crt、client.csr、client.key三个文件。</p>
+<h2 id="0x02-安装OpenVPN并修改配置"><a href="#0x02-安装OpenVPN并修改配置" class="headerlink" title="0x02 安装OpenVPN并修改配置"></a>0x02 安装OpenVPN并修改配置</h2><blockquote>
+<p>apt-get -y install openvpn</p>
+</blockquote>
+<p>OpenVPN的配置文件目录为：&#x2F;etc&#x2F;openvpn。</p>
+<p>将之前生成的ca.crt、server.crt、server.key、dh2048.pem这四个文件拷贝到&#x2F;etc&#x2F;openvpn目录。</p>
+<p>创建&#x2F;etc&#x2F;openvpn&#x2F;server.conf文件，内容如下：</p>
+<pre><code>#################################################
+# Sample OpenVPN 2.0 config file for            #
+# multi-client server.                          #
+#                                               #
+# This file is for the server side              #
+# of a many-clients &lt;-&gt; one-server              #
+# OpenVPN configuration.                        #
+#                                               #
+# OpenVPN also supports                         #
+# single-machine &lt;-&gt; single-machine             #
+# configurations (See the Examples page         #
+# on the web site for more info).               #
+#                                               #
+# This config should work on Windows            #
+# or Linux/BSD systems.  Remember on            #
+# Windows to quote pathnames and use            #
+# double backslashes, e.g.:                     #
+# &quot;C:\\Program Files\\OpenVPN\\config\\foo.key&quot; #
+#                                               #
+# Comments are preceded with &#39;#&#39; or &#39;;&#39;         #
+#################################################
+
+# Which local IP address should OpenVPN
+# listen on? (optional)
+;local a.b.c.d
+
+# Which TCP/UDP port should OpenVPN listen on?
+# If you want to run multiple OpenVPN instances
+# on the same machine, use a different port
+# number for each one.  You will need to
+# open up this port on your firewall.
+port 1194
+
+# TCP or UDP server?
+;proto tcp
+proto udp
+
+# &quot;dev tun&quot; will create a routed IP tunnel,
+# &quot;dev tap&quot; will create an ethernet tunnel.
+# Use &quot;dev tap0&quot; if you are ethernet bridging
+# and have precreated a tap0 virtual interface
+# and bridged it with your ethernet interface.
+# If you want to control access policies
+# over the VPN, you must create firewall
+# rules for the the TUN/TAP interface.
+# On non-Windows systems, you can give
+# an explicit unit number, such as tun0.
+# On Windows, use &quot;dev-node&quot; for this.
+# On most systems, the VPN will not function
+# unless you partially or fully disable
+# the firewall for the TUN/TAP interface.
+;dev tap
+dev tun
+
+# Windows needs the TAP-Win32 adapter name
+# from the Network Connections panel if you
+# have more than one.  On XP SP2 or higher,
+# you may need to selectively disable the
+# Windows firewall for the TAP adapter.
+# Non-Windows systems usually don&#39;t need this.
+;dev-node MyTap
+
+# SSL/TLS root certificate (ca), certificate
+# (cert), and private key (key).  Each client
+# and the server must have their own cert and
+# key file.  The server and all clients will
+# use the same ca file.
+#
+# See the &quot;easy-rsa&quot; directory for a series
+# of scripts for generating RSA certificates
+# and private keys.  Remember to use
+# a unique Common Name for the server
+# and each of the client certificates.
+#
+# Any X509 key management system can be used.
+# OpenVPN can also use a PKCS #12 formatted key file
+# (see &quot;pkcs12&quot; directive in man page).
+ca /etc/openvpn/ca.crt
+cert /etc/openvpn/server.crt
+key /etc/openvpn/server.key  # This file should be kept secret
+
+# Diffie hellman parameters.
+# Generate your own with:
+#   openssl dhparam -out dh2048.pem 2048
+dh /etc/openvpn/dh2048.pem
+
+# Network topology
+# Should be subnet (addressing via IP)
+# unless Windows clients v2.0.9 and lower have to
+# be supported (then net30, i.e. a /30 per client)
+# Defaults to net30 (not recommended)
+;topology subnet
+
+# Configure server mode and supply a VPN subnet
+# for OpenVPN to draw client addresses from.
+# The server will take 10.8.0.1 for itself,
+# the rest will be made available to clients.
+# Each client will be able to reach the server
+# on 10.8.0.1. Comment this line out if you are
+# ethernet bridging. See the man page for more info.
+server 192.168.1.0 255.255.255.0
+
+# Maintain a record of client &lt;-&gt; virtual IP address
+# associations in this file.  If OpenVPN goes down or
+# is restarted, reconnecting clients can be assigned
+# the same virtual IP address from the pool that was
+# previously assigned.
+ifconfig-pool-persist ipp.txt
+
+# Configure server mode for ethernet bridging.
+# You must first use your OS&#39;s bridging capability
+# to bridge the TAP interface with the ethernet
+# NIC interface.  Then you must manually set the
+# IP/netmask on the bridge interface, here we
+# assume 10.8.0.4/255.255.255.0.  Finally we
+# must set aside an IP range in this subnet
+# (start=10.8.0.50 end=10.8.0.100) to allocate
+# to connecting clients.  Leave this line commented
+# out unless you are ethernet bridging.
+;server-bridge 10.8.0.4 255.255.255.0 10.8.0.50 10.8.0.100
+
+# Configure server mode for ethernet bridging
+# using a DHCP-proxy, where clients talk
+# to the OpenVPN server-side DHCP server
+# to receive their IP address allocation
+# and DNS server addresses.  You must first use
+# your OS&#39;s bridging capability to bridge the TAP
+# interface with the ethernet NIC interface.
+# Note: this mode only works on clients (such as
+# Windows), where the client-side TAP adapter is
+# bound to a DHCP client.
+;server-bridge
+
+# Push routes to the client to allow it
+# to reach other private subnets behind
+# the server.  Remember that these
+# private subnets will also need
+# to know to route the OpenVPN client
+# address pool (10.8.0.0/255.255.255.0)
+# back to the OpenVPN server.
+;push &quot;route 192.168.10.0 255.255.255.0&quot;
+;push &quot;route 192.168.20.0 255.255.255.0&quot;
+
+# To assign specific IP addresses to specific
+# clients or if a connecting client has a private
+# subnet behind it that should also have VPN access,
+# use the subdirectory &quot;ccd&quot; for client-specific
+# configuration files (see man page for more info).
+
+# EXAMPLE: Suppose the client
+# having the certificate common name &quot;Thelonious&quot;
+# also has a small subnet behind his connecting
+# machine, such as 192.168.40.128/255.255.255.248.
+# First, uncomment out these lines:
+;client-config-dir ccd
+;route 192.168.40.128 255.255.255.248
+# Then create a file ccd/Thelonious with this line:
+#   iroute 192.168.40.128 255.255.255.248
+# This will allow Thelonious&#39; private subnet to
+# access the VPN.  This example will only work
+# if you are routing, not bridging, i.e. you are
+# using &quot;dev tun&quot; and &quot;server&quot; directives.
+
+# EXAMPLE: Suppose you want to give
+# Thelonious a fixed VPN IP address of 10.9.0.1.
+# First uncomment out these lines:
+;client-config-dir ccd
+;route 10.9.0.0 255.255.255.252
+# Then add this line to ccd/Thelonious:
+#   ifconfig-push 10.9.0.1 10.9.0.2
+
+# Suppose that you want to enable different
+# firewall access policies for different groups
+# of clients.  There are two methods:
+# (1) Run multiple OpenVPN daemons, one for each
+#     group, and firewall the TUN/TAP interface
+#     for each group/daemon appropriately.
+# (2) (Advanced) Create a script to dynamically
+#     modify the firewall in response to access
+#     from different clients.  See man
+#     page for more info on learn-address script.
+;learn-address ./script
+
+# If enabled, this directive will configure
+# all clients to redirect their default
+# network gateway through the VPN, causing
+# all IP traffic such as web browsing and
+# and DNS lookups to go through the VPN
+# (The OpenVPN server machine may need to NAT
+# or bridge the TUN/TAP interface to the internet
+# in order for this to work properly).
+push &quot;redirect-gateway def1 bypass-dhcp&quot;
+
+# Certain Windows-specific network settings
+# can be pushed to clients, such as DNS
+# or WINS server addresses.  CAVEAT:
+# http://openvpn.net/faq.html#dhcpcaveats
+# The addresses below refer to the public
+# DNS servers provided by opendns.com.
+push &quot;dhcp-option DNS 114.114.114.114&quot;
+push &quot;dhcp-option DNS 8.8.8.8&quot;
+
+# Uncomment this directive to allow different
+# clients to be able to &quot;see&quot; each other.
+# By default, clients will only see the server.
+# To force clients to only see the server, you
+# will also need to appropriately firewall the
+# server&#39;s TUN/TAP interface.
+client-to-client
+
+# Uncomment this directive if multiple clients
+# might connect with the same certificate/key
+# files or common names.  This is recommended
+# only for testing purposes.  For production use,
+# each client should have its own certificate/key
+# pair.
+#
+# IF YOU HAVE NOT GENERATED INDIVIDUAL
+# CERTIFICATE/KEY PAIRS FOR EACH CLIENT,
+# EACH HAVING ITS OWN UNIQUE &quot;COMMON NAME&quot;,
+# UNCOMMENT THIS LINE OUT.
+duplicate-cn
+
+# The keepalive directive causes ping-like
+# messages to be sent back and forth over
+# the link so that each side knows when
+# the other side has gone down.
+# Ping every 10 seconds, assume that remote
+# peer is down if no ping received during
+# a 120 second time period.
+keepalive 10 120
+
+# For extra security beyond that provided
+# by SSL/TLS, create an &quot;HMAC firewall&quot;
+# to help block DoS attacks and UDP port flooding.
+#
+# Generate with:
+#   openvpn --genkey --secret ta.key
+#
+# The server and each client must have
+# a copy of this key.
+# The second parameter should be &#39;0&#39;
+# on the server and &#39;1&#39; on the clients.
+;tls-auth ta.key 0 # This file is secret
+
+# Select a cryptographic cipher.
+# This config item must be copied to
+# the client config file as well.
+;cipher BF-CBC        # Blowfish (default)
+;cipher AES-128-CBC   # AES
+;cipher DES-EDE3-CBC  # Triple-DES
+
+# Enable compression on the VPN link.
+# If you enable it here, you must also
+# enable it in the client config file.
+comp-lzo
+
+# The maximum number of concurrently connected
+# clients we want to allow.
+;max-clients 100
+
+# It&#39;s a good idea to reduce the OpenVPN
+# daemon&#39;s privileges after initialization.
+#
+# You can uncomment this out on
+# non-Windows systems.
+user nobody
+group nogroup
+
+# The persist options will try to avoid
+# accessing certain resources on restart
+# that may no longer be accessible because
+# of the privilege downgrade.
+persist-key
+persist-tun
+
+# Output a short status file showing
+# current connections, truncated
+# and rewritten every minute.
+status openvpn-status.log
+
+# By default, log messages will go to the syslog (or
+# on Windows, if running as a service, they will go to
+# the &quot;\Program Files\OpenVPN\log&quot; directory).
+# Use log or log-append to override this default.
+# &quot;log&quot; will truncate the log file on OpenVPN startup,
+# while &quot;log-append&quot; will append to it.  Use one
+# or the other (but not both).
+log         /var/log/openvpn.log
+log-append  /var/log/openvpn.log
+
+# Set the appropriate level of log
+# file verbosity.
+#
+# 0 is silent, except for fatal errors
+# 4 is reasonable for general usage
+# 5 and 6 can help to debug connection problems
+# 9 is extremely verbose
+verb 3
+
+# Silence repeating messages.  At most 20
+# sequential messages of the same message
+# category will be output to the log.
+;mute 20
+</code></pre>
+<blockquote>
+<p>server 192.168.1.0 255.255.255.0</p>
+</blockquote>
+<p>这行可以根据期望分配的ip段进行相应修改。</p>
+<h2 id="0x03-开启iptables的NAT功能"><a href="#0x03-开启iptables的NAT功能" class="headerlink" title="0x03 开启iptables的NAT功能"></a>0x03 开启iptables的NAT功能</h2><h3 id="开启ip数据包转发"><a href="#开启ip数据包转发" class="headerlink" title="开启ip数据包转发"></a>开启ip数据包转发</h3><p>修改&#x2F;etc&#x2F;sysctl.conf文件，去掉<code>#net.ipv4.ip_forward=1</code>前面的<code>#</code>，并保存</p>
+<blockquote>
+<p>sysctl –p</p>
+</blockquote>
+<p>这样就开启了ip数据包转发功能，从而支持在多个网卡间转发数据。</p>
+<h3 id="配置NAT转发规则"><a href="#配置NAT转发规则" class="headerlink" title="配置NAT转发规则"></a>配置NAT转发规则</h3><blockquote>
+<p>iptables -t nat -A POSTROUTING -s 192.168.1.0&#x2F;24 -o eth0 -j MASQUERADE</p>
+</blockquote>
+<p>将所有来自VPN网段的数据都转发到eth0网卡，并修改源ip为eth0的网卡ip。</p>
+<h3 id="开启防火墙策略"><a href="#开启防火墙策略" class="headerlink" title="开启防火墙策略"></a>开启防火墙策略</h3><blockquote>
+<p>iptables -A INPUT -p UDP –dport 1194 -j ACCEPT</p>
+</blockquote>
+<p>此外，还要在腾讯云的云主机控制台中增加入站规则。</p>
+<h2 id="0x04-开启服务"><a href="#0x04-开启服务" class="headerlink" title="0x04 开启服务"></a>0x04 开启服务</h2><blockquote>
+<p>systemctl start openvpn@server<br>systemctl enable openvpn@server</p>
+</blockquote>
+<h2 id="0x05-测试OpenVPN客户端"><a href="#0x05-测试OpenVPN客户端" class="headerlink" title="0x05 测试OpenVPN客户端"></a>0x05 测试OpenVPN客户端</h2><p>下载Windows版的OpenVPN安装程序，安装到系统中。</p>
+<p>将前面生成的ca.crt、client.crt、client.key三个文件拷贝到电脑中，如：D:\openvpn目录。</p>
+<p>将安装目录下sample-config目录中的client.ovpn文件拷贝到config目录下，并修改服务端ip和证书路径配置。</p>
+<p>修改后的client.ovpn内容如下：</p>
+<pre><code>##############################################
+# Sample client-side OpenVPN 2.0 config file #
+# for connecting to multi-client server.     #
+#                                            #
+# This configuration can be used by multiple #
+# clients, however each client should have   #
+# its own cert and key files.                #
+#                                            #
+# On Windows, you might want to rename this  #
+# file so it has a .ovpn extension           #
+##############################################
+
+# Specify that we are a client and that we
+# will be pulling certain config file directives
+# from the server.
+client
+
+# Use the same setting as you are using on
+# the server.
+# On most systems, the VPN will not function
+# unless you partially or fully disable
+# the firewall for the TUN/TAP interface.
+;dev tap
+dev tun
+
+# Windows needs the TAP-Win32 adapter name
+# from the Network Connections panel
+# if you have more than one.  On XP SP2,
+# you may need to disable the firewall
+# for the TAP adapter.
+;dev-node MyTap
+
+# Are we connecting to a TCP or
+# UDP server?  Use the same setting as
+# on the server.
+;proto tcp
+proto udp
+
+# The hostname/IP and port of the server.
+# You can have multiple remote entries
+# to load balance between the servers.
+remote 1.2.3.4 1194
+;remote my-server-2 1194
+
+# Choose a random host from the remote
+# list for load-balancing.  Otherwise
+# try hosts in the order specified.
+;remote-random
+
+# Keep trying indefinitely to resolve the
+# host name of the OpenVPN server.  Very useful
+# on machines which are not permanently connected
+# to the internet such as laptops.
+resolv-retry infinite
+
+# Most clients don&#39;t need to bind to
+# a specific local port number.
+nobind
+
+# Downgrade privileges after initialization (non-Windows only)
+;user nobody
+;group nobody
+
+# Try to preserve some state across restarts.
+persist-key
+persist-tun
+
+# If you are connecting through an
+# HTTP proxy to reach the actual OpenVPN
+# server, put the proxy server/IP and
+# port number here.  See the man page
+# if your proxy server requires
+# authentication.
+;http-proxy-retry # retry on connection failures
+;http-proxy [proxy server] [proxy port #]
+
+# Wireless networks often produce a lot
+# of duplicate packets.  Set this flag
+# to silence duplicate packet warnings.
+;mute-replay-warnings
+
+# SSL/TLS parms.
+# See the server config file for more
+# description.  It&#39;s best to use
+# a separate .crt/.key file pair
+# for each client.  A single ca
+# file can be used for all clients.
+ca D:\\openvpn\\ca.crt
+cert D:\\openvpn\\client.crt
+key D:\\openvpn\\client.key
+
+# Verify server certificate by checking that the
+# certicate has the correct key usage set.
+# This is an important precaution to protect against
+# a potential attack discussed here:
+#  http://openvpn.net/howto.html#mitm
+#
+# To use this feature, you will need to generate
+# your server certificates with the keyUsage set to
+#   digitalSignature, keyEncipherment
+# and the extendedKeyUsage to
+#   serverAuth
+# EasyRSA can do this for you.
+remote-cert-tls server
+
+# If a tls-auth key is used on the server
+# then every client must also have the key.
+;tls-auth ta.key 1
+
+# Select a cryptographic cipher.
+# If the cipher option is used on the server
+# then you must also specify it here.
+;cipher x
+
+# Enable compression on the VPN link.
+# Don&#39;t enable this unless it is also
+# enabled in the server config file.
+comp-lzo
+
+# Set log file verbosity.
+verb 3
+
+# Silence repeating messages
+;mute 20
+</code></pre>
+<p>还有一种把证书插入到ovpn文件中的写法，这样可以不用额外提供三个证书文件。</p>
+<p>去掉client.ovpn文件中的以下三行：</p>
+<blockquote>
+<p>ca D:\openvpn\ca.crt<br>cert D:\openvpn\client.crt<br>key D:\openvpn\client.key</p>
+</blockquote>
+<p>并在文件末尾加入以下内容：</p>
+<pre><code>###############################################################################
+# The certificate file of the destination VPN Server.
+# 
+# The CA certificate file is embedded in the inline format.
+# You can replace this CA contents if necessary.
+# Please note that if the server certificate is not a self-signed, you have to
+# specify the signer&#39;s root certificate (CA) here.
+
+&lt;ca&gt;
+-----BEGIN CERTIFICATE-----
+MIIDAzCCAeugAwIBAgIEEUA4CTANBgkqhkiG9w0BAQsFADA5MRMwEQYDVQQDDAo0
+NzFiY2p5LmpwMRUwEwYDVQQKDAxudTU4NW92IHIxaGwxCzAJBgNVBAYTAlVTMB4X
+DTE2MDIyOTAyNDQxNloXDTIzMDQyMDAyNDQxNlowOTETMBEGA1UEAwwKNDcxYmNq
+eS5qcDEVMBMGA1UECgwMbnU1ODVvdiByMWhsMQswCQYDVQQGEwJVUzCCASIwDQYJ
+KoZIhvcNAQEBBQADggEPADCCAQoCggEBAPLuy9Hppm1GGFOtpuMJ3fcj1RsHxoMc
+Enr721gq8eYOsddULlMRv5IJMIQZb+8g0mmcZAw4x7Rl3YCptopjrVDDYDl4Ul3y
+OwG1EfKJiqGlXM5asdMgk6tU/oB7RMGtjLzVcNSOge24+PigrsRQLS3WcEHX0q6F
+WdsvPVnbUzceoug/l+zkA8IVf2eFna9x0WldwjLqJAbcL6YILSKHTpHw40yl44+R
+/LBNNVvuUWyVm8FReMbQf0tkRqvl+ZRlpnb3pQ68FWhXfwE9nZD/hbbjcmgf9bMg
+cEDI72pCqlw00QodnhwPQJVnhRFQr1u7aMEdXyBzGpdfdOY8GAPP2KkCAwEAAaMT
+MBEwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAOG1qYZLpLhmr
+WJMMht7ktkWtLD33DUjimS0hj3Z90JsHE/Vwlqi4c+AQUtw2dX/ZfGTRj83aK/cA
+GGQ5lW4HudNi6yCr40Ekl7EVeNAUQ+DM8TpAgYq8Hr/qVDGZDCxu61iaR/Qugh4P
+qM4YHLlJO140WXto0w3T4SkDGbIsiJnCsUOMzjStRIhKyXl+K62ozuuZAAW6vRTe
+kxz9+IHYc/kbAwoU009u+V11mtIzGvJaXhx95YaZX1nkqbH03pdgb4TcG41nXEmE
+t7BXXGira4UJmLD8t7VK0LRlmZ+9X2NB5URima6yB23UAILDIX4371QFDvbo8px5
+Cym58IyGLA==
+-----END CERTIFICATE-----
+
+&lt;/ca&gt;
+
+
+###############################################################################
+# The client certificate file (dummy).
+# 
+# In some implementations of OpenVPN Client software
+# (for example: OpenVPN Client for iOS),
+# a pair of client certificate and private key must be included on the
+# configuration file due to the limitation of the client.
+# So this sample configuration file has a dummy pair of client certificate
+# and private key as follows.
+
+&lt;cert&gt;
+-----BEGIN CERTIFICATE-----
+MIICxjCCAa4CAQAwDQYJKoZIhvcNAQEFBQAwKTEaMBgGA1UEAxMRVlBOR2F0ZUNs
+aWVudENlcnQxCzAJBgNVBAYTAkpQMB4XDTEzMDIxMTAzNDk0OVoXDTM3MDExOTAz
+MTQwN1owKTEaMBgGA1UEAxMRVlBOR2F0ZUNsaWVudENlcnQxCzAJBgNVBAYTAkpQ
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5h2lgQQYUjwoKYJbzVZA
+5VcIGd5otPc/qZRMt0KItCFA0s9RwReNVa9fDRFLRBhcITOlv3FBcW3E8h1Us7RD
+4W8GmJe8zapJnLsD39OSMRCzZJnczW4OCH1PZRZWKqDtjlNca9AF8a65jTmlDxCQ
+CjntLIWk5OLLVkFt9/tScc1GDtci55ofhaNAYMPiH7V8+1g66pGHXAoWK6AQVH67
+XCKJnGB5nlQ+HsMYPV/O49Ld91ZN/2tHkcaLLyNtywxVPRSsRh480jju0fcCsv6h
+p/0yXnTB//mWutBGpdUlIbwiITbAmrsbYnjigRvnPqX1RNJUbi9Fp6C2c/HIFJGD
+ywIDAQABMA0GCSqGSIb3DQEBBQUAA4IBAQChO5hgcw/4oWfoEFLu9kBa1B//kxH8
+hQkChVNn8BRC7Y0URQitPl3DKEed9URBDdg2KOAz77bb6ENPiliD+a38UJHIRMqe
+UBHhllOHIzvDhHFbaovALBQceeBzdkQxsKQESKmQmR832950UCovoyRB61UyAV7h
++mZhYPGRKXKSJI6s0Egg/Cri+Cwk4bjJfrb5hVse11yh4D9MHhwSfCOH+0z4hPUT
+Fku7dGavURO5SVxMn/sL6En5D+oSeXkadHpDs+Airym2YHh15h0+jPSOoR6yiVp/
+6zZeZkrN43kuS73KpKDFjfFPh8t4r1gOIjttkNcQqBccusnplQ7HJpsk
+-----END CERTIFICATE-----
+
+&lt;/cert&gt;
+
+&lt;key&gt;
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA5h2lgQQYUjwoKYJbzVZA5VcIGd5otPc/qZRMt0KItCFA0s9R
+wReNVa9fDRFLRBhcITOlv3FBcW3E8h1Us7RD4W8GmJe8zapJnLsD39OSMRCzZJnc
+zW4OCH1PZRZWKqDtjlNca9AF8a65jTmlDxCQCjntLIWk5OLLVkFt9/tScc1GDtci
+55ofhaNAYMPiH7V8+1g66pGHXAoWK6AQVH67XCKJnGB5nlQ+HsMYPV/O49Ld91ZN
+/2tHkcaLLyNtywxVPRSsRh480jju0fcCsv6hp/0yXnTB//mWutBGpdUlIbwiITbA
+mrsbYnjigRvnPqX1RNJUbi9Fp6C2c/HIFJGDywIDAQABAoIBAERV7X5AvxA8uRiK
+k8SIpsD0dX1pJOMIwakUVyvc4EfN0DhKRNb4rYoSiEGTLyzLpyBc/A28Dlkm5eOY
+fjzXfYkGtYi/Ftxkg3O9vcrMQ4+6i+uGHaIL2rL+s4MrfO8v1xv6+Wky33EEGCou
+QiwVGRFQXnRoQ62NBCFbUNLhmXwdj1akZzLU4p5R4zA3QhdxwEIatVLt0+7owLQ3
+lP8sfXhppPOXjTqMD4QkYwzPAa8/zF7acn4kryrUP7Q6PAfd0zEVqNy9ZCZ9ffho
+zXedFj486IFoc5gnTp2N6jsnVj4LCGIhlVHlYGozKKFqJcQVGsHCqq1oz2zjW6LS
+oRYIHgECgYEA8zZrkCwNYSXJuODJ3m/hOLVxcxgJuwXoiErWd0E42vPanjjVMhnt
+KY5l8qGMJ6FhK9LYx2qCrf/E0XtUAZ2wVq3ORTyGnsMWre9tLYs55X+ZN10Tc75z
+4hacbU0hqKN1HiDmsMRY3/2NaZHoy7MKnwJJBaG48l9CCTlVwMHocIECgYEA8jby
+dGjxTH+6XHWNizb5SRbZxAnyEeJeRwTMh0gGzwGPpH/sZYGzyu0SySXWCnZh3Rgq
+5uLlNxtrXrljZlyi2nQdQgsq2YrWUs0+zgU+22uQsZpSAftmhVrtvet6MjVjbByY
+DADciEVUdJYIXk+qnFUJyeroLIkTj7WYKZ6RjksCgYBoCFIwRDeg42oK89RFmnOr
+LymNAq4+2oMhsWlVb4ejWIWeAk9nc+GXUfrXszRhS01mUnU5r5ygUvRcarV/T3U7
+TnMZ+I7Y4DgWRIDd51znhxIBtYV5j/C/t85HjqOkH+8b6RTkbchaX3mau7fpUfds
+Fq0nhIq42fhEO8srfYYwgQKBgQCyhi1N/8taRwpk+3/IDEzQwjbfdzUkWWSDk9Xs
+H/pkuRHWfTMP3flWqEYgW/LW40peW2HDq5imdV8+AgZxe/XMbaji9Lgwf1RY005n
+KxaZQz7yqHupWlLGF68DPHxkZVVSagDnV/sztWX6SFsCqFVnxIXifXGC4cW5Nm9g
+va8q4QKBgQCEhLVeUfdwKvkZ94g/GFz731Z2hrdVhgMZaU/u6t0V95+YezPNCQZB
+wmE9Mmlbq1emDeROivjCfoGhR3kZXW1pTKlLh6ZMUQUOpptdXva8XxfoqQwa3enA
+M7muBbF0XN7VO80iJPv+PmIZdEIAkpwKfi201YB+BafCIuGxIF50Vg==
+-----END RSA PRIVATE KEY-----
+
+&lt;/key&gt;
+</code></pre>
+<p>请根据具体服务器配置修改对应的内容。</p>
+<p>打开OpenVPN GUI，选择刚才添加的配置项，进行连接。连接成功后，图标会从灰色变成绿色。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>drunkdream
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2017/12/16/install-openvpn-server/" title="Ubuntu部署OpenVPN服务">https://www.drunkdream.com/2017/12/16/install-openvpn-server/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/OpenVPN/" rel="tag"># OpenVPN</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/12/06/build-android-emulator-kernel/" rel="prev" title="编译可用的Android模拟器ranchu内核">
+                  <i class="fa fa-angle-left"></i> 编译可用的Android模拟器ranchu内核
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/12/19/build-openvpn-for-android/" rel="next" title="编译Android版本的OpenVPN">
+                  编译Android版本的OpenVPN <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2017 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">drunkdream</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"drunkdream","repo":"drunkdream.github.io","client_id":"b6aad8c93b6aadccfcc8","client_secret":"88b3043a118f3e6db76f75bdb9257228db104949","admin_user":"drunkdream","distraction_free_mode":true,"proxy":"/github/login/oauth/access_token","language":"zh-CN","body":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"359fbcf8ddc07b9019d731bc05d2c542","path":"/2017/12/16/install-openvpn-server/"}</script>
+<script src="/js/third-party/comments/gitalk.js" defer></script>
+
+</body>
+</html>

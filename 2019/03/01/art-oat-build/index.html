@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/purple/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.drunkdream.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"rights","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"xcode","dark":"github-dark-dimmed"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="0x00 缘起最近在使用一款Art Hook框架对应用进行Hook的时候发现，函数Hook之后却总是没有被触发，于是怀疑是被dex2oat做了Inline处理。 以下环境以Android 5.0 x86 为例。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次Art Hook失败问题的跟进">
+<meta property="og:url" content="https://www.drunkdream.com/2019/03/01/art-oat-build/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 缘起最近在使用一款Art Hook框架对应用进行Hook的时候发现，函数Hook之后却总是没有被触发，于是怀疑是被dex2oat做了Inline处理。 以下环境以Android 5.0 x86 为例。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-03-01T06:05:09.000Z">
+<meta property="article:modified_time" content="2026-02-23T06:02:24.951Z">
+<meta property="article:author" content="drunkdream">
+<meta property="article:tag" content="hook">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.drunkdream.com/2019/03/01/art-oat-build/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.drunkdream.com/2019/03/01/art-oat-build/","path":"2019/03/01/art-oat-build/","title":"一次Art Hook失败问题的跟进"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>一次Art Hook失败问题的跟进 | 醉梦轩</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">醉梦轩</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉中无日月，梦里有乾坤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E7%BC%98%E8%B5%B7"><span class="nav-number">1.</span> <span class="nav-text">0x00 缘起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E8%BF%B7%E9%80%94"><span class="nav-number">2.</span> <span class="nav-text">0x01 迷途</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E6%98%8E%E5%BF%83"><span class="nav-number">3.</span> <span class="nav-text">0x02 明心</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E8%A7%81%E6%80%A7"><span class="nav-number">4.</span> <span class="nav-text">0x03 见性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E7%BC%98%E7%81%AD"><span class="nav-number">5.</span> <span class="nav-text">0x04 缘灭</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="drunkdream"
+      src="/images/logo.gif">
+  <p class="site-author-name" itemprop="name">drunkdream</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">69</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2019/03/01/art-oat-build/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.gif">
+      <meta itemprop="name" content="drunkdream">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="一次Art Hook失败问题的跟进 | 醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一次Art Hook失败问题的跟进
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-03-01 14:05:09" itemprop="dateCreated datePublished" datetime="2019-03-01T14:05:09+08:00">2019-03-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-23 14:02:24" itemprop="dateModified" datetime="2026-02-23T14:02:24+08:00">2026-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="0x00-缘起"><a href="#0x00-缘起" class="headerlink" title="0x00 缘起"></a>0x00 缘起</h2><p>最近在使用一款Art Hook框架对应用进行Hook的时候发现，函数Hook之后却总是没有被触发，于是怀疑是被<code>dex2oat</code>做了<code>Inline</code>处理。</p>
+<p>以下环境以Android 5.0 x86 为例。</p>
+<span id="more"></span>
+
+<h2 id="0x01-迷途"><a href="#0x01-迷途" class="headerlink" title="0x01 迷途"></a>0x01 迷途</h2><p>使用<code>oatdump --oat-file=oat_path</code>命令进行dump，却发现几乎所有的函数都无法看到汇编代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">OatMethodOffsets (offset=0x00000000)</span><br><span class="line"></span><br><span class="line">  code_offset: 0x00000000 </span><br><span class="line"></span><br><span class="line">  gc_map: (offset=0x00000000)</span><br><span class="line"></span><br><span class="line">OatQuickMethodHeader (offset=0x00000000)</span><br><span class="line"></span><br><span class="line">  mapping_table: (offset=0x00000000)</span><br><span class="line"></span><br><span class="line">  vmap_table: (offset=0x00000000)</span><br><span class="line"></span><br><span class="line">QuickMethodFrameInfo</span><br><span class="line"></span><br><span class="line">  frame_size_in_bytes: 0</span><br><span class="line"></span><br><span class="line">  core_spill_mask: 0x00000000 </span><br><span class="line"></span><br><span class="line">  fp_spill_mask: 0x00000000 </span><br><span class="line"></span><br><span class="line">CODE: (code_offset=0x00000000 size_offset=0x00000000 size=0)</span><br><span class="line"></span><br><span class="line">  NO CODE!</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>看起来像是没有进行<code>oat</code>，但是dump的文件却真真实实是一个<code>oat</code>文件啊。不是说Android 5.0都是进行oat编译的吗，总不会是<code>oatdump</code>有问题吧！</p>
+<h2 id="0x02-明心"><a href="#0x02-明心" class="headerlink" title="0x02 明心"></a>0x02 明心</h2><p>于是，又重新安装了一次，抓<code>logcat</code>看了以下，发现以下日志很可疑：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">I/PackageManager( 1546): Running dexopt on: /data/app/com.autonavi.minimap-1/base.apk pkg=com.autonavi.minimap isa=x86 vmSafeMode=true</span><br><span class="line"></span><br><span class="line">I/dex2oat ( 3779): /system/bin/dex2oat --zip-fd=5 --zip-location=/data/app/com.autonavi.minimap-1/base.apk --oat-fd=6 --oat-location=/data/dalvik-cache/x86/data@app@com.autonavi.minimap-1@base.apk@classes.dex --instruction-set=x86 --instruction-set-features=default --runtime-arg -Xms64m --runtime-arg -Xmx512m --compiler-filter=interpret-only</span><br></pre></td></tr></table></figure>
+
+<p>看起来是<code>interpret-only</code>导致使用了解释方式编译。虽然不确定是不是因为<code>interpret</code>导致Hook不生效，但是看不到汇编代码，心里总是没有底。</p>
+<p>所以，现在就要将编译模式改成非解释方式。</p>
+<p>在<code>/frameworks/native/cmds/installd/commands.c</code>文件的<code>run_dex2oat</code>函数中找到了如下代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (skip_compilation) &#123;</span><br><span class="line">    <span class="built_in">strcpy</span>(dex2oat_compiler_filter_arg, <span class="string">&quot;--compiler-filter=verify-none&quot;</span>);</span><br><span class="line">    have_dex2oat_compiler_filter_flag = <span class="literal">true</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (vm_safe_mode) &#123;</span><br><span class="line">    <span class="built_in">strcpy</span>(dex2oat_compiler_filter_arg, <span class="string">&quot;--compiler-filter=interpret-only&quot;</span>);</span><br><span class="line">    have_dex2oat_compiler_filter_flag = <span class="literal">true</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (have_dex2oat_compiler_filter_flag) &#123;</span><br><span class="line">    <span class="built_in">sprintf</span>(dex2oat_compiler_filter_arg, <span class="string">&quot;--compiler-filter=%s&quot;</span>, dex2oat_compiler_filter_flag);</span><br></pre></td></tr></table></figure>
+
+<p>看来就是这个<code>vm_safe_mode</code>导致使用了<code>interpret-only</code>模式，而上面<code>logcat</code>日志显示：<code>vm_safe_mode</code>的值是<code>true</code>。</p>
+<p>顺便提一句，当<code>vm_safe_mode</code>为<code>false</code>时，系统会使用<code>dex2oat_compiler_filter_flag</code>的值作为编译类型。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> dex2oat_compiler_filter_flag[PROPERTY_VALUE_MAX];</span><br><span class="line"><span class="type">bool</span> have_dex2oat_compiler_filter_flag = property_get(<span class="string">&quot;dalvik.vm.dex2oat-filter&quot;</span>, dex2oat_compiler_filter_flag, <span class="literal">NULL</span>) &gt; <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的代码可以看出，<code>dex2oat_compiler_filter_flag</code>的值是取自<code>dalvik.vm.dex2oat-filter</code>这个系统属性。</p>
+<p>可选的值有：<code>verify-none | interpret-only | space | balanced | speed | everything</code> 。而系统默认是没有设置这个属性的，如果我们想设置默认的编译类型，可以修改<code>/system/build.prop</code>文件，添加<code>dalvik.vm.dex2oat-filter=interpret-only</code>，保存文件并重启手机，但是这步操作需要<code>root</code>权限。</p>
+<p>系统默认使用的编译类型设置如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  UsageError(<span class="string">&quot;  --compiler-filter=(verify-none|interpret-only|space|balanced|speed|everything):&quot;</span>);</span><br><span class="line">  UsageError(<span class="string">&quot;      select compiler filter.&quot;</span>);</span><br><span class="line">  UsageError(<span class="string">&quot;      Example: --compiler-filter=everything&quot;</span>);</span><br><span class="line">#<span class="keyword">if</span> ART_SMALL_MODE</span><br><span class="line">  <span class="title function_">UsageError</span><span class="params">(<span class="string">&quot;      Default: interpret-only&quot;</span>)</span>;</span><br><span class="line">#<span class="keyword">else</span></span><br><span class="line">  UsageError(<span class="string">&quot;      Default: speed&quot;</span>);</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+
+<p>因此， 在应用没有设置<code>vm_safe_mode</code>，并且系统没有设置<code>dalvik.vm.dex2oat-filter</code>属性时，就会使用<code>speed</code>模式。</p>
+<h2 id="0x03-见性"><a href="#0x03-见性" class="headerlink" title="0x03 见性"></a>0x03 见性</h2><p>下面来看<code>vm_safe_mode</code>是怎么设置的。</p>
+<p><code>/frameworks/native/cmds/installd/commands.c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">dexopt</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *apk_path, <span class="type">uid_t</span> uid, <span class="type">bool</span> is_public,</span></span><br><span class="line"><span class="params">           <span class="type">const</span> <span class="type">char</span> *pkgname, <span class="type">const</span> <span class="type">char</span> *instruction_set,</span></span><br><span class="line"><span class="params">           <span class="type">bool</span> vm_safe_mode, <span class="type">bool</span> is_patchoat)</span>&#123;</span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">    run_dex2oat(input_fd, out_fd, input_file, out_path, pkgname, instruction_set, vm_safe_mode);</span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一路向上，找到<code>/frameworks/base/services/core/java/com/android/server/pm/PackageManagerService.java</code>中的<code>performDexOptLI</code>函数，里面包含如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">boolean</span> <span class="variable">vmSafeMode</span> <span class="operator">=</span> (pkg.applicationInfo.flags &amp; ApplicationInfo.FLAG_VM_SAFE_MODE) != <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">Log.i(TAG, <span class="string">&quot;Running dexopt on: &quot;</span> + path + <span class="string">&quot; pkg=&quot;</span></span><br><span class="line">                                + pkg.applicationInfo.packageName + <span class="string">&quot; isa=&quot;</span> + dexCodeInstructionSet</span><br><span class="line">                                + <span class="string">&quot; vmSafeMode=&quot;</span> + vmSafeMode);</span><br><span class="line"></span><br><span class="line"><span class="keyword">final</span> <span class="type">int</span> <span class="variable">ret</span> <span class="operator">=</span> mInstaller.dexopt(path, sharedGid, !isForwardLocked(pkg),</span><br><span class="line">                                pkg.packageName, dexCodeInstructionSet, vmSafeMode);</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，<code>vmSafeMode</code>是从应用信息里读出来的，最终在反编译出来的<code>AndroidManifest.xml</code>里，我们找到了以下配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">application</span> <span class="attr">android:allowBackup</span>=<span class="string">&quot;false&quot;</span> <span class="attr">android:hardwareAccelerated</span>=<span class="string">&quot;true&quot;</span> <span class="attr">android:icon</span>=<span class="string">&quot;@0x7f0213b0&quot;</span> <span class="attr">android:label</span>=<span class="string">&quot;@0x7f090000&quot;</span> <span class="attr">android:largeHeap</span>=<span class="string">&quot;true&quot;</span> <span class="attr">android:name</span>=<span class="string">&quot;com.autonavi.minimap.MapApplication&quot;</span> <span class="attr">android:resizeableActivity</span>=<span class="string">&quot;false&quot;</span> <span class="attr">android:roundIcon</span>=<span class="string">&quot;@0x7f0213b0&quot;</span> <span class="attr">android:supportsRtl</span>=<span class="string">&quot;true&quot;</span> <span class="attr">android:theme</span>=<span class="string">&quot;@0x7f0b0065&quot;</span> <span class="attr">android:vmSafeMode</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="0x04-缘灭"><a href="#0x04-缘灭" class="headerlink" title="0x04 缘灭"></a>0x04 缘灭</h2><p>解决方法就是，将<code>android:vmSafeMode</code>字段设为<code>false</code>，重打包应用，然后安装。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">I/PackageManager( 1546): Running dexopt on: /data/app/com.autonavi.minimap-1/base.apk pkg=com.autonavi.minimap isa=x86 vmSafeMode=false</span><br></pre></td></tr></table></figure>
+
+<p><code>vmSafeMode</code>已经被成功修改成<code>false</code>了。</p>
+<p>使用<code>oatduump</code>命令查看oat信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">OatMethodOffsets (offset=0x0282dfa0)</span><br><span class="line"></span><br><span class="line">  code_offset: 0x0520ff08 </span><br><span class="line"></span><br><span class="line">  gc_map: (offset=0x02c554ba)</span><br><span class="line"></span><br><span class="line">OatQuickMethodHeader (offset=0x0520fef0)</span><br><span class="line"></span><br><span class="line">  mapping_table: (offset=0x03202b8b)</span><br><span class="line"></span><br><span class="line">  vmap_table: (offset=0x034095d5)</span><br><span class="line"></span><br><span class="line">  v65534/r5, v2/r6, v0/r7, v65535/r16</span><br><span class="line"></span><br><span class="line">QuickMethodFrameInfo</span><br><span class="line"></span><br><span class="line">  frame_size_in_bytes: 48</span><br><span class="line"></span><br><span class="line">  core_spill_mask: 0x000100e0 (r5, r6, r7, r16)</span><br><span class="line"></span><br><span class="line">  fp_spill_mask: 0x00000000 </span><br><span class="line"></span><br><span class="line">CODE: (code_offset=0x0520ff08 size_offset=0x0520ff04 size=192)...</span><br><span class="line"></span><br><span class="line">  0x0520ff08:         85842400E0FFFF    	test    eax, [esp + -8192]</span><br><span class="line"></span><br><span class="line">  suspend point dex PC: 0x0000</span><br><span class="line"></span><br><span class="line">  GC map objects:  v2 (r6)</span><br><span class="line"></span><br><span class="line">  0x0520ff0f:                 83EC2C    	sub     esp, 44</span><br><span class="line"></span><br><span class="line">  0x0520ff12:               896C2420    	mov     [esp + 32], ebp</span><br><span class="line"></span><br><span class="line">  0x0520ff16:               89742424    	mov     [esp + 36], esi</span><br><span class="line"></span><br><span class="line">  0x0520ff1a:               897C2428    	mov     [esp + 40], edi</span><br><span class="line"></span><br><span class="line">  0x0520ff1e:                   8BE8    	mov     ebp, eax</span><br><span class="line"></span><br><span class="line">  0x0520ff20:                 890424    	mov     [esp], eax</span><br><span class="line"></span><br><span class="line">  0x0520ff23:                   8BF1    	mov     esi, ecx</span><br><span class="line"></span><br><span class="line">  0x0520ff25:                 8B4514    	mov     eax, [ebp + 20]</span><br><span class="line"></span><br><span class="line">  0x0520ff28:           8B80D4AC0100    	mov     eax, [eax + 109780]</span><br><span class="line"></span><br><span class="line">  0x0520ff2e:                   85C0    	test    eax, eax</span><br><span class="line"></span><br><span class="line">  0x0520ff30:                   746A    	jz/eq   +106 (0x0520ff9c)</span><br><span class="line"></span><br><span class="line">  0x0520ff32:                   8BF8    	mov     edi, eax</span><br><span class="line"></span><br><span class="line">  0x0520ff34:                 8B4514    	mov     eax, [ebp + 20]</span><br><span class="line"></span><br><span class="line">  0x0520ff37:           8B805C7C0000    	mov     eax, [eax + 31836]</span><br></pre></td></tr></table></figure>
+
+<p>汇编指令也可以正常显示了。</p>
+<p>经过测试，Hook也被正常调用了。所以，应该是该Hook框架还不支持解释模式编译的应用。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>drunkdream
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2019/03/01/art-oat-build/" title="一次Art Hook失败问题的跟进">https://www.drunkdream.com/2019/03/01/art-oat-build/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/hook/" rel="tag"># hook</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/01/28/install-squid-server/" rel="prev" title="Ubuntu部署squid代理服务器">
+                  <i class="fa fa-angle-left"></i> Ubuntu部署squid代理服务器
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/03/14/qt4a-repack-implementation/" rel="next" title="QT4A重打包实现原理">
+                  QT4A重打包实现原理 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2017 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">drunkdream</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"drunkdream","repo":"drunkdream.github.io","client_id":"b6aad8c93b6aadccfcc8","client_secret":"88b3043a118f3e6db76f75bdb9257228db104949","admin_user":"drunkdream","distraction_free_mode":true,"proxy":"/github/login/oauth/access_token","language":"zh-CN","body":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"284f24eb3c79ae563abaac47fce6d756","path":"/2019/03/01/art-oat-build/"}</script>
+<script src="/js/third-party/comments/gitalk.js" defer></script>
+
+</body>
+</html>

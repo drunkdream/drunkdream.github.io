@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/purple/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.drunkdream.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"rights","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"xcode","dark":"github-dark-dimmed"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="0x00 背景以前研究过一次在iPad上安装Linux系统，当时的方案是：AltStore + UTM，由于没有硬件虚拟化，性能非常差，只能安装服务器版Linux，而且UTM由于签名问题需要每7天续签一次，几乎不具有可玩性。 最近看到有帖子说UTM支持硬件虚拟化了，于是稍微研究了一下，上面的两个问题也都解决了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iPad上使用UTM安装Linux arm64系统">
+<meta property="og:url" content="https://www.drunkdream.com/2024/01/05/ipad-install-linux/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 背景以前研究过一次在iPad上安装Linux系统，当时的方案是：AltStore + UTM，由于没有硬件虚拟化，性能非常差，只能安装服务器版Linux，而且UTM由于签名问题需要每7天续签一次，几乎不具有可玩性。 最近看到有帖子说UTM支持硬件虚拟化了，于是稍微研究了一下，上面的两个问题也都解决了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sideloadly.io/screenshots/sideloadlylogs.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/misaka.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/install-trollstore1.jpg">
+<meta property="og:image" content="https://www.drunkdream.com/images/trollstore.jpg">
+<meta property="og:image" content="https://www.drunkdream.com/images/utm-1.png">
+<meta property="og:image" content="https://www.drunkdream.com/images/utm-ubuntu.png">
+<meta property="article:published_time" content="2024-01-05T15:32:23.000Z">
+<meta property="article:modified_time" content="2026-02-23T06:02:24.954Z">
+<meta property="article:author" content="drunkdream">
+<meta property="article:tag" content="ipad">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sideloadly.io/screenshots/sideloadlylogs.png">
+
+
+<link rel="canonical" href="https://www.drunkdream.com/2024/01/05/ipad-install-linux/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.drunkdream.com/2024/01/05/ipad-install-linux/","path":"2024/01/05/ipad-install-linux/","title":"iPad上使用UTM安装Linux arm64系统"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>iPad上使用UTM安装Linux arm64系统 | 醉梦轩</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">醉梦轩</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉中无日月，梦里有乾坤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">0x00 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">0x01 基本原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">0x02 准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E5%AE%89%E8%A3%85Trollstore%E5%BA%94%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">0x03 安装Trollstore应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Sideloadly%E5%AE%89%E8%A3%85Misaka"><span class="nav-number">4.1.</span> <span class="nav-text">使用Sideloadly安装Misaka</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Misaka%E6%B3%A8%E5%85%A5%E6%8F%90%E7%A4%BA%E5%BA%94%E7%94%A8"><span class="nav-number">4.2.</span> <span class="nav-text">使用Misaka注入提示应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E5%BC%80%E6%8F%90%E7%A4%BA%E5%BA%94%E7%94%A8%EF%BC%8C%E5%AE%89%E8%A3%85Trollstore"><span class="nav-number">4.3.</span> <span class="nav-text">打开提示应用，安装Trollstore</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E5%AE%89%E8%A3%85UTM%E5%BA%94%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">0x04 安装UTM应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-%E5%AE%89%E8%A3%85Ubuntu-22-04-arm64%E6%A1%8C%E9%9D%A2%E7%89%88"><span class="nav-number">6.</span> <span class="nav-text">0x05 安装Ubuntu 22.04 arm64桌面版</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">0x06 总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">8.</span> <span class="nav-text">0x07 参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="drunkdream"
+      src="/images/logo.gif">
+  <p class="site-author-name" itemprop="name">drunkdream</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">69</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2024/01/05/ipad-install-linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.gif">
+      <meta itemprop="name" content="drunkdream">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="iPad上使用UTM安装Linux arm64系统 | 醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iPad上使用UTM安装Linux arm64系统
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-01-05 23:32:23" itemprop="dateCreated datePublished" datetime="2024-01-05T23:32:23+08:00">2024-01-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-23 14:02:24" itemprop="dateModified" datetime="2026-02-23T14:02:24+08:00">2026-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="0x00-背景"><a href="#0x00-背景" class="headerlink" title="0x00 背景"></a>0x00 背景</h2><p>以前研究过一次在iPad上安装Linux系统，当时的方案是：<a href="https://altstore.io/">AltStore</a> + <a href="https://github.com/utmapp/UTM">UTM</a>，由于没有硬件虚拟化，性能非常差，只能安装服务器版Linux，而且UTM由于签名问题需要每7天续签一次，几乎不具有可玩性。</p>
+<p>最近看到有帖子说UTM支持硬件虚拟化了，于是稍微研究了一下，上面的两个问题也都解决了。</p>
+<span id="more"></span>
+
+<h2 id="0x01-基本原理"><a href="#0x01-基本原理" class="headerlink" title="0x01 基本原理"></a>0x01 基本原理</h2><p>解决这两个问题的关键都在一个叫：<a href="https://trollstore.app/">Trollstore(巨魔)</a>的工具。这个工具最强大的地方在于，可以免越狱安装未签名的应用，其原理是利用了iOS系统的一些安全漏洞，因此，这个工具会iOS版本有要求。例如：Trollstore1只支持<code>14.0 ~ 15.4.1 、15.5 Beta 4</code>版本；Trollstore2支持<code>14 - 16.5</code>（具体支持的系统版本可以看官网介绍）。因此，只要不是太新的系统，都是可以支持的。</p>
+<p>现在的问题变成了如何将这个工具安装到设备中，下面以iPad Pro 第三代(系统版本:<code>16.2</code>)为例进行介绍。</p>
+<p>基本流程是按照<a href="https://trollstore.app/installing-trollhelper-misaka/">官方文档</a>进行操作。</p>
+<h2 id="0x02-准备工作"><a href="#0x02-准备工作" class="headerlink" title="0x02 准备工作"></a>0x02 准备工作</h2><ul>
+<li>将<code>Tips(提示)</code>应用安装到设备中</li>
+<li>最新版本的<a href="https://sideloadly.io/">Sideloadly</a></li>
+<li>最新版本的<a href="https://www.apple.com/itunes/download/win32">iTunes</a>（Windows端）</li>
+<li>最新版本的<a href="https://github.com/straight-tamago/misaka/releases/latest">Misaka</a></li>
+</ul>
+<p><code>Sideloadly</code>是用来通过<code>侧载</code>方式安装<code>Misaka</code>；而<code>Misaka</code>用来溢出并注入<code>Tips</code>应用，最后打开提示应用，界面就变成了安装<code>Trollstore</code>的界面，点击安装就可以了。</p>
+<p>推荐还是使用Mac系统来操作，Windows上可能会有些问题。</p>
+<h2 id="0x03-安装Trollstore应用"><a href="#0x03-安装Trollstore应用" class="headerlink" title="0x03 安装Trollstore应用"></a>0x03 安装Trollstore应用</h2><p><code>侧载</code>是指不通过AppStore来安装应用的方式，一般是使用企业证书或开发者证书对ipa文件进行签名，然后进行安装。</p>
+<h3 id="使用Sideloadly安装Misaka"><a href="#使用Sideloadly安装Misaka" class="headerlink" title="使用Sideloadly安装Misaka"></a>使用Sideloadly安装Misaka</h3><p>在电脑端下载并安装<a href="https://sideloadly.io/#download">Sideloadly</a>，并将最新版本的<a href="https://github.com/straight-tamago/misaka/releases/latest">Misaka</a>ipa文件下载到本地。</p>
+<p><img src="https://sideloadly.io/screenshots/sideloadlylogs.png" alt="sideloadly安装ipa示例"></p>
+<p>拖入Misaka的ipa文件，输入苹果帐号，然后点击<code>Start</code>，第一次会提示输入帐号密码，完成后Misaka就安装到设备上了。图标如下：</p>
+<p><img src="/images/misaka.png"></p>
+<p>侧载类应用除了sideloadly，还有前面提到的<code>AltStore</code>，以及爱思助手之类的。它们都有一个共同的缺点，就是每7天需要续签一次，基本只能用作开发调试场景。</p>
+<h3 id="使用Misaka注入提示应用"><a href="#使用Misaka注入提示应用" class="headerlink" title="使用Misaka注入提示应用"></a>使用Misaka注入提示应用</h3><p>Misaka是一款免越狱就可以对iOS设备进行定制的应用，同时也提供了安装<code>Trollstore</code>的能力。</p>
+<p>下面是官方文档推荐的注入方法：</p>
+<p><img src="/images/install-trollstore1.jpg"></p>
+<p>在实际操作过程中遇到了以下两个问题：</p>
+<ul>
+<li>在上面的第三步操作后提示<code>Done</code>，但是打开<code>提示</code>应用Crash</li>
+<li>多操作几次后容易出现<code>Error, please restart your device and try again [A2]</code>报错，网上找到一个方案是安装<code>3.4.1</code>版本的Misaka</li>
+</ul>
+<p>这个步骤是整个安装过程中最花费时间的，重试了很多次，重启了很多次设备，最终采用的是以下方法搞定的：</p>
+<ol>
+<li>在<a href="https://github.com/opa334/TrollStore/releases">这里</a>下载最新版本的<code>PersistenceHelper_Embedded</code>，并拷贝到设备中</li>
+<li>点击Misaka底部的<code>FileManager</code>页面，打开到路径<code>/var/containers/Bundle/Application/com.apple.tips/Tips.app</code></li>
+<li>找到<code>Tips</code>文件，点击它，然后点击<code>File Overwrite</code>选项，导入<code>PersistenceHelper_Embedded</code>文件覆盖</li>
+<li>重启设备</li>
+</ol>
+<h3 id="打开提示应用，安装Trollstore"><a href="#打开提示应用，安装Trollstore" class="headerlink" title="打开提示应用，安装Trollstore"></a>打开提示应用，安装Trollstore</h3><p>打开<code>提示</code>应用，点击<code>Install Trollstore</code>进行安装，安装完成后，桌面上就会看到Trollstore的图标：</p>
+<p><img src="/images/trollstore.jpg"></p>
+<blockquote>
+<p>如果遇到打开<code>提示</code>应用Crash或是设备自动重启等问题，请卸载提示应用再重新安装，并再执行一次上面的步骤。</p>
+</blockquote>
+<h2 id="0x04-安装UTM应用"><a href="#0x04-安装UTM应用" class="headerlink" title="0x04 安装UTM应用"></a>0x04 安装UTM应用</h2><p><a href="https://docs.getutm.app/installation/ios/#summary">这里</a>展示了UTM的多个版本：</p>
+<ul>
+<li>UTM: 标准版，使用JIT方式，性能一般</li>
+<li>UTM HV: 开启<code>Hypervisor</code>的版本，支持硬件虚拟化，性能较高（需要是M1 iPad）</li>
+<li>UTM SE: 性能较差</li>
+</ul>
+<p>由于手上的这款是M1芯片，因此选择了<code>UTM HV</code>版本。</p>
+<ol>
+<li>将<code>UTM HV</code>版本的ipa文件拷贝到设备中</li>
+<li>打开Trollstore，选择右上角<code>+</code>号，选择<code>Install IPA File</code>，然后选择刚才拷贝的ipa文件</li>
+<li>在弹出的窗口中点击<code>Install</code>，很快就会安装完成</li>
+</ol>
+<h2 id="0x05-安装Ubuntu-22-04-arm64桌面版"><a href="#0x05-安装Ubuntu-22-04-arm64桌面版" class="headerlink" title="0x05 安装Ubuntu 22.04 arm64桌面版"></a>0x05 安装Ubuntu 22.04 arm64桌面版</h2><p>现在Linux系统的arm生态已经很健全了，基本上常见的应用都有提供对应的arm版本。这里选择了Ubuntu系统，除了生态考虑，还有性能因素，毕竟iPad才8G内存，如果系统本身占用了太多资源的话，留给应用的资源就很有限了。</p>
+<ol>
+<li>将<a href="https://cdimage.ubuntu.com/jammy/daily-live/current/jammy-desktop-arm64.iso">镜像ISO</a>文件下载到设备中</li>
+<li>打开UTM，点击<code>创建一个新虚拟机</code>，选择<code>虚拟化</code>（这种模式会开启硬件虚拟机）</li>
+</ol>
+<p><img src="/images/utm-1.png"></p>
+<ol start="3">
+<li>然后选择Linux，添加刚才拷贝进来的iso镜像文件，后面是一些CPU、内存等硬件相关的参数配置</li>
+<li>保存后启动虚拟机，开始进行安装，Ubuntu也支持Live方式使用，可以先体验一下</li>
+<li>安装完成后进入系统，可以做一些个性化界面优化(访问虚拟机需要外接<code>键盘</code>和<code>鼠标</code>才能操作)</li>
+</ol>
+<p><img src="/images/utm-ubuntu.png"></p>
+<p>至此，一个便携式Linux系统已经安装完成，系统操作还是非常流畅的，可以安装上vscode、git、docker等常用工具，轻量级开发也基本没啥问题。</p>
+<p>连接上外接显示器，系统操作起来会更加舒服。</p>
+<h2 id="0x06-总结"><a href="#0x06-总结" class="headerlink" title="0x06 总结"></a>0x06 总结</h2><p>iPad上通过免越狱实现硬件虚拟化，极大提升了虚拟机系统操作的流畅性，真正将桌面版系统运行起来。在此基础上，iPad才能真正变成一个开发工具。</p>
+<h2 id="0x07-参考链接"><a href="#0x07-参考链接" class="headerlink" title="0x07 参考链接"></a>0x07 参考链接</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/627103800">TrollStore巨魔商店永久安装APP，永不过期</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/574182220">【IOS】TrollStore 工具——应用免签&amp;&amp;微信双开</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/669206994">Trollstore2发布了，保姆安装教程~</a></li>
+<li><a href="https://www.ipapark.com/6688.html">TrollStore2 巨魔商店2 使用教程</a></li>
+<li><a href="https://sspai.com/post/62092">用 UTM 虚拟机在 iPad 上运行 Windows 和 Linux，拓展生产力新可能</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>drunkdream
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2024/01/05/ipad-install-linux/" title="iPad上使用UTM安装Linux arm64系统">https://www.drunkdream.com/2024/01/05/ipad-install-linux/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/ipad/" rel="tag"># ipad</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/07/08/kturtle/" rel="prev" title="KTurtle编程使用入门">
+                  <i class="fa fa-angle-left"></i> KTurtle编程使用入门
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/02/07/linux-binfmts/" rel="next" title="Linux中的binfmt-misc原理分析">
+                  Linux中的binfmt-misc原理分析 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2017 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">drunkdream</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"drunkdream","repo":"drunkdream.github.io","client_id":"b6aad8c93b6aadccfcc8","client_secret":"88b3043a118f3e6db76f75bdb9257228db104949","admin_user":"drunkdream","distraction_free_mode":true,"proxy":"/github/login/oauth/access_token","language":"zh-CN","body":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"147d810acc376c35b0a0bd87f86c7ead","path":"/2024/01/05/ipad-install-linux/"}</script>
+<script src="/js/third-party/comments/gitalk.js" defer></script>
+
+</body>
+</html>

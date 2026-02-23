@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/purple/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.drunkdream.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"rights","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"xcode","dark":"github-dark-dimmed"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="0x00 前言mongodb是一款基于分布式文件存储的数据库，具有高性能、可扩展、易部署、易使用等特点。官方也提供了丰富的命令行工具来操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mongodb常用操作命令">
+<meta property="og:url" content="https://www.drunkdream.com/2020/03/11/mongodb-command/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言mongodb是一款基于分布式文件存储的数据库，具有高性能、可扩展、易部署、易使用等特点。官方也提供了丰富的命令行工具来操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-11T06:21:08.000Z">
+<meta property="article:modified_time" content="2026-02-23T06:02:24.955Z">
+<meta property="article:author" content="drunkdream">
+<meta property="article:tag" content="mongodb">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.drunkdream.com/2020/03/11/mongodb-command/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.drunkdream.com/2020/03/11/mongodb-command/","path":"2020/03/11/mongodb-command/","title":"mongodb常用操作命令"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>mongodb常用操作命令 | 醉梦轩</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">醉梦轩</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉中无日月，梦里有乾坤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E9%83%A8%E7%BD%B2mongodb%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.</span> <span class="nav-text">0x01 部署mongodb服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E5%AE%89%E8%A3%85mongo%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">3.</span> <span class="nav-text">0x02 安装mongo客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E5%B8%B8%E7%94%A8mongo%E5%91%BD%E4%BB%A4"><span class="nav-number">4.</span> <span class="nav-text">0x03 常用mongo命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E5%85%B6%E5%AE%83mongo%E5%91%BD%E4%BB%A4"><span class="nav-number">5.</span> <span class="nav-text">0x04 其它mongo命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-%E8%BF%81%E7%A7%BB%E6%95%B0%E6%8D%AE"><span class="nav-number">6.</span> <span class="nav-text">0x05 迁移数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mongodump"><span class="nav-number">6.1.</span> <span class="nav-text">mongodump</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mongorestore"><span class="nav-number">6.2.</span> <span class="nav-text">mongorestore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E8%84%9A%E6%9C%AC"><span class="nav-number">6.3.</span> <span class="nav-text">迁移脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A2%9E%E9%87%8F%E5%A4%87%E4%BB%BD"><span class="nav-number">6.4.</span> <span class="nav-text">增量备份</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="drunkdream"
+      src="/images/logo.gif">
+  <p class="site-author-name" itemprop="name">drunkdream</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">69</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2020/03/11/mongodb-command/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.gif">
+      <meta itemprop="name" content="drunkdream">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="mongodb常用操作命令 | 醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          mongodb常用操作命令
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-11 14:21:08" itemprop="dateCreated datePublished" datetime="2020-03-11T14:21:08+08:00">2020-03-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-23 14:02:24" itemprop="dateModified" datetime="2026-02-23T14:02:24+08:00">2026-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>mongodb是一款基于分布式文件存储的数据库，具有高性能、可扩展、易部署、易使用等特点。官方也提供了丰富的命令行工具来操作。</p>
+<span id="more"></span>
+
+<h2 id="0x01-部署mongodb服务"><a href="#0x01-部署mongodb服务" class="headerlink" title="0x01 部署mongodb服务"></a>0x01 部署mongodb服务</h2><p>部署mongodb服务可以直接使用docker镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">$ docker search mongo</span><br><span class="line">NAME                                DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED</span><br><span class="line">mongo                               MongoDB document databases provide high avai…   6656                [OK]                </span><br><span class="line">mongo-express                       Web-based MongoDB admin interface, written w…   640                 [OK]                </span><br><span class="line">tutum/mongodb                       MongoDB Docker image – listens <span class="keyword">in</span> port 27017…   230                                     [OK]</span><br><span class="line">bitnami/mongodb                     Bitnami MongoDB Docker Image                    109                                     [OK]</span><br><span class="line">mongoclient/mongoclient             Official docker image <span class="keyword">for</span> Mongoclient, featu…   79                                      [OK]</span><br><span class="line">mongooseim/mongooseim               Small docker image <span class="keyword">for</span> MongooseIM - robust a…   19                                      </span><br><span class="line">frodenas/mongodb                    A Docker Image <span class="keyword">for</span> MongoDB                      18                                      [OK]</span><br><span class="line">cvallance/mongo-k8s-sidecar         Kubernetes side car to setup and maintain a …   14                                      [OK]</span><br><span class="line">centos/mongodb-32-centos7           MongoDB NoSQL database server                   8                                       </span><br><span class="line">circleci/mongo                      CircleCI images <span class="keyword">for</span> MongoDB                     8                                       [OK]</span><br><span class="line">arm64v8/mongo                       MongoDB document databases provide high avai…   7                                       </span><br><span class="line">istepanov/mongodump                 Docker image with mongodump running as a cro…   6                                       [OK]</span><br><span class="line">centos/mongodb-36-centos7           MongoDB NoSQL database server                   5                                       </span><br><span class="line">eses/mongodb_exporter               mongodb exporter <span class="keyword">for</span> prometheus                 5                                       [OK]</span><br><span class="line">centos/mongodb-26-centos7           MongoDB NoSQL database server                   5                                       </span><br><span class="line">webhippie/mongodb                   Docker images <span class="keyword">for</span> MongoDB                       4                                       [OK]</span><br><span class="line">requilence/mongodb-backup           mongo backup container                          4                                       [OK]</span><br><span class="line">centos/mongodb-34-centos7           MongoDB NoSQL database server                   3                                       </span><br><span class="line">neowaylabs/mongodb-mms-agent        This Docker image with MongoDB Monitoring Ag…   3                                       [OK]</span><br><span class="line">ansibleplaybookbundle/mongodb-apb   An APB to deploy MongoDB.                       1                                       [OK]</span><br><span class="line">ekesken/mongo                       docker image <span class="keyword">for</span> mongo that is configurable …   1                                       [OK]</span><br><span class="line">andreasleicher/mongo-azure-backup   a docker container to backup a mongodb using…   1                                       [OK]</span><br><span class="line">openshift/mongodb-24-centos7        DEPRECATED: A Centos7 based MongoDB v2.4 ima…   1                                       </span><br><span class="line">ccitest/mongo                       CircleCI <span class="built_in">test</span> images <span class="keyword">for</span> Mongo                  0                                       [OK]</span><br><span class="line">targetprocess/mongodb_exporter      MongoDB exporter <span class="keyword">for</span> prometheus                 0                                       [OK]</span><br><span class="line"></span><br><span class="line">$ docker pull mongo:latest</span><br><span class="line"></span><br><span class="line">$ docker run -itd --name mongo -p 27017:27017 mongo --auth</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>此时，mongodb服务已经正常运行起来了，还需要配置下账号。</p>
+<p>使用<code>docker exec -it mongo bash</code>命令进入到<code>shell</code>环境后，输入<code>mongo</code>命令进入交互式命令行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt; use admin</span><br><span class="line">switched to db admin</span><br><span class="line">&gt; db.createUser(&#123; user: &quot;root&quot;, pwd: &quot;root&quot;, roles: [&#123; role: &quot;root&quot;, db: &quot;admin&quot; &#125;] &#125;)</span><br><span class="line">Successfully added user: &#123;</span><br><span class="line">        &quot;user&quot; : &quot;root&quot;,</span><br><span class="line">        &quot;roles&quot; : [</span><br><span class="line">                &#123;</span><br><span class="line">                        &quot;role&quot; : &quot;root&quot;,</span><br><span class="line">                        &quot;db&quot; : &quot;admin&quot;</span><br><span class="line">                &#125;</span><br><span class="line">        ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>权限角色说明：</p>
+<p><code>Read</code>：允许用户读取指定数据库</p>
+<p><code>readWrite</code>：允许用户读写指定数据库</p>
+<p><code>dbAdmin</code>：允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile</p>
+<p><code>userAdmin</code>：允许用户向system.users集合写入，可以找指定数据库里创建、删除和管理用户</p>
+<p><code>clusterAdmin</code>：只在admin数据库中可用，赋予用户所有分片和复制集相关函数的管理权限</p>
+<p><code>readAnyDatabase</code>：只在admin数据库中可用，赋予用户所有数据库的读权限</p>
+<p><code>readWriteAnyDatabase</code>：只在admin数据库中可用，赋予用户所有数据库的读写权限</p>
+<p><code>userAdminAnyDatabase</code>：只在admin数据库中可用，赋予用户所有数据库的userAdmin权限</p>
+<p><code>dbAdminAnyDatabase</code>：只在admin数据库中可用，赋予用户所有数据库的dbAdmin权限</p>
+<p><code>root</code>：只在admin数据库中可用。超级账号，超级权限</p>
+<h2 id="0x02-安装mongo客户端"><a href="#0x02-安装mongo客户端" class="headerlink" title="0x02 安装mongo客户端"></a>0x02 安装mongo客户端</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ apt install mongodb-clients</span><br></pre></td></tr></table></figure>
+
+<p>进入mongo shell：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mongo $&#123;mongo_server&#125;:$&#123;mongo_port&#125; -u $&#123;username&#125; -p $&#123;password&#125; --authenticationDatabase admin</span><br></pre></td></tr></table></figure>
+
+<p>mongodb中分为不同的数据库，默认数据库为<code>test</code>，使用<code>use db</code>切换数据库时，如果数据库不存在会自动创建。</p>
+<h2 id="0x03-常用mongo命令"><a href="#0x03-常用mongo命令" class="headerlink" title="0x03 常用mongo命令"></a>0x03 常用mongo命令</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">&gt; show dbs</span><br><span class="line">admin   0.000GB</span><br><span class="line">config  0.000GB</span><br><span class="line">local   0.000GB</span><br><span class="line"></span><br><span class="line">&gt; use test</span><br><span class="line">switched to db test</span><br><span class="line"></span><br><span class="line">&gt; db</span><br><span class="line">test</span><br><span class="line"></span><br><span class="line">&gt; db.table.insert(&#123;&quot;title&quot;:&quot;drunkdream&quot;, &quot;body&quot;: &quot;Hello world&quot;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nInserted&quot; : 1 &#125;)</span><br><span class="line"></span><br><span class="line">&gt; db.table.count()</span><br><span class="line">1</span><br><span class="line"></span><br><span class="line">&gt; db.table.dataSize()</span><br><span class="line">66</span><br><span class="line"></span><br><span class="line">&gt; db.table.insert(&#123;&quot;title&quot;:&quot;drunkdream123&quot;, &quot;body&quot;: &quot;Test&quot;&#125;)</span><br><span class="line">WriteResult(&#123; &quot;nInserted&quot; : 1 &#125;)</span><br><span class="line"></span><br><span class="line">&gt; db.table.find().skip(1).limit(1)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;5e706e4651e5f0d32c1eb3e0&quot;), &quot;title&quot; : &quot;drunkdream123&quot;, &quot;body&quot; : &quot;Test&quot; &#125;</span><br><span class="line"></span><br><span class="line">&gt; db.table.find(&#123;title: /^drunkdream/&#125;)</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;5e706a7051e5f0d32c1eb3df&quot;), &quot;title&quot; : &quot;drunkdream&quot;, &quot;body&quot; : &quot;Hello world&quot; &#125;</span><br><span class="line">&#123; &quot;_id&quot; : ObjectId(&quot;5e706e4651e5f0d32c1eb3e0&quot;), &quot;title&quot; : &quot;drunkdream123&quot;, &quot;body&quot; : &quot;Test&quot; &#125;</span><br><span class="line"></span><br><span class="line">&gt; db.getCollectionNames()</span><br><span class="line">[ &quot;table&quot; ]</span><br><span class="line"></span><br><span class="line">&gt; db.printCollectionStats()</span><br><span class="line">table</span><br><span class="line">&#123;</span><br><span class="line">        &quot;ns&quot; : &quot;test.table&quot;,</span><br><span class="line">        &quot;size&quot; : 66,</span><br><span class="line">        &quot;count&quot; : 1,</span><br><span class="line">        &quot;avgObjSize&quot; : 66,</span><br><span class="line">        &quot;storageSize&quot; : 20480,</span><br><span class="line">        &quot;capped&quot; : false,</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&gt; db.stats()</span><br><span class="line">&#123;</span><br><span class="line">        &quot;db&quot; : &quot;test&quot;,</span><br><span class="line">        &quot;collections&quot; : 1,</span><br><span class="line">        &quot;views&quot; : 0,</span><br><span class="line">        &quot;objects&quot; : 1,</span><br><span class="line">        &quot;avgObjSize&quot; : 66,</span><br><span class="line">        &quot;dataSize&quot; : 66,</span><br><span class="line">        &quot;storageSize&quot; : 4096,</span><br><span class="line">        &quot;numExtents&quot; : 0,</span><br><span class="line">        &quot;indexes&quot; : 1,</span><br><span class="line">        &quot;indexSize&quot; : 4096,</span><br><span class="line">        &quot;scaleFactor&quot; : 1,</span><br><span class="line">        &quot;fsUsedSize&quot; : 34517733376,</span><br><span class="line">        &quot;fsTotalSize&quot; : 109059317760,</span><br><span class="line">        &quot;ok&quot; : 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>find</code>命令支持的查询条件：</p>
+<p><code>$gt</code>: &gt;</p>
+<p><code>$lt</code>: &lt;</p>
+<p><code>$gte</code>: &gt;&#x3D;</p>
+<p><code>$lte</code>: &lt;&#x3D;</p>
+<p><code>$ne</code>: !&#x3D;</p>
+<p>例如：<code>{age: {$gte: 23, $lte: 26}}</code></p>
+<h2 id="0x04-其它mongo命令"><a href="#0x04-其它mongo命令" class="headerlink" title="0x04 其它mongo命令"></a>0x04 其它mongo命令</h2><ul>
+<li><p><code>db.table.drop()</code> - 删除集合</p>
+</li>
+<li><p><code>db.dropDatabase()</code> - 删除当前数据库</p>
+</li>
+<li><p><code>db.repairDatabase()</code> - 修复数据库</p>
+</li>
+<li><p><code>db.getPrevError()</code> - 查询之前的错误信息</p>
+</li>
+</ul>
+<h2 id="0x05-迁移数据"><a href="#0x05-迁移数据" class="headerlink" title="0x05 迁移数据"></a>0x05 迁移数据</h2><h3 id="mongodump"><a href="#mongodump" class="headerlink" title="mongodump"></a>mongodump</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mongodump -h <span class="variable">$&#123;mongo_server&#125;</span> --port <span class="variable">$&#123;mongo_port&#125;</span> -d <span class="variable">$&#123;db_name&#125;</span> -o <span class="variable">$&#123;save_dir&#125;</span> -u <span class="variable">$&#123;username&#125;</span> -p <span class="variable">$&#123;password&#125;</span> --authenticationDatabase admin</span><br></pre></td></tr></table></figure>
+
+<p>该命令可以将整个数据库dump到本地，如果只需要dump其中的一个集合，可以使用以下参数：<code>--collection ${coll_name}</code>。</p>
+<h3 id="mongorestore"><a href="#mongorestore" class="headerlink" title="mongorestore"></a>mongorestore</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mongorestore -h <span class="variable">$&#123;mongo_server&#125;</span> --port <span class="variable">$&#123;mongo_port&#125;</span> -d <span class="variable">$&#123;db_name&#125;</span> <span class="variable">$&#123;save_dir&#125;</span>/<span class="variable">$&#123;db_name&#125;</span> -u <span class="variable">$&#123;username&#125;</span> -p <span class="variable">$&#123;password&#125;</span> --authenticationDatabase admin</span><br></pre></td></tr></table></figure>
+
+<p>该命令可以将备份下来的数据库还原到目标数据库中，修改<code>-d</code>参数可以修改目标数据库的名称。</p>
+<p>如果目标数据库存在，需要增加<code>--drop</code>参数进行还原，避免报错。</p>
+<h3 id="迁移脚本"><a href="#迁移脚本" class="headerlink" title="迁移脚本"></a>迁移脚本</h3><p>写了个简单的迁移脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> tempfile</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sync_mongo</span>(<span class="params">src_host, src_port, dst_host, dst_port, db, collection=<span class="literal">None</span>, username=<span class="string">&#x27;root&#x27;</span>, password=<span class="string">&#x27;root&#x27;</span>, drop=<span class="literal">False</span></span>):</span><br><span class="line">    time0 = time.time()</span><br><span class="line">    backup_dir = tempfile.mkdtemp(<span class="string">&#x27;.backup&#x27;</span>).split(os.path.sep)[-<span class="number">1</span>]</span><br><span class="line">    auth_cmdline = <span class="string">&#x27; -u %s -p %s --authenticationDatabase admin&#x27;</span> % (username, password)</span><br><span class="line">    cmdline = <span class="string">&#x27;mongodump -h %s --port=%d -d %s -o %s&#x27;</span> % (src_host, src_port, db, backup_dir)</span><br><span class="line">    <span class="keyword">if</span> collection:</span><br><span class="line">        cmdline += <span class="string">&#x27; --collection %s&#x27;</span> % collection</span><br><span class="line">    cmdline += auth_cmdline</span><br><span class="line">    <span class="built_in">print</span>(cmdline)</span><br><span class="line">    os.system(cmdline)</span><br><span class="line">    time1 = time.time()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;backup %s from %s complete, cost %fs\n&#x27;</span> % (db, src_host, time1 - time0))</span><br><span class="line"></span><br><span class="line">    cmdline = <span class="string">&#x27;mongorestore -h %s --port=%d -d %s %s/%s&#x27;</span> % (dst_host, dst_port, db, backup_dir, db)</span><br><span class="line">    <span class="keyword">if</span> drop:</span><br><span class="line">        cmdline += <span class="string">&#x27; --drop&#x27;</span></span><br><span class="line">    cmdline += auth_cmdline</span><br><span class="line">    <span class="built_in">print</span>(cmdline)</span><br><span class="line">    os.system(cmdline)</span><br><span class="line">    time1 = time.time()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;sync data from %s/%s to %s/%s complete, total cost %fs&#x27;</span> % (src_host, db, dst_host, db, time1 - time0))</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    parser = argparse.ArgumentParser(description=<span class="string">&#x27;Mongodb sync data script.&#x27;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&#x27;src_host&#x27;</span>, <span class="built_in">help</span>=<span class="string">&#x27;source host&#x27;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&#x27;dst_host&#x27;</span>, <span class="built_in">help</span>=<span class="string">&#x27;destination host&#x27;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&#x27;db_name&#x27;</span>, <span class="built_in">help</span>=<span class="string">&#x27;database name&#x27;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&#x27;--src-port&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">int</span>, <span class="built_in">help</span>=<span class="string">&#x27;source port&#x27;</span>, default=<span class="number">27017</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&#x27;--dst-port&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">int</span>, <span class="built_in">help</span>=<span class="string">&#x27;destination port&#x27;</span>, default=<span class="number">27017</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&#x27;--collection&#x27;</span>, <span class="built_in">help</span>=<span class="string">&#x27;collection to sync&#x27;</span>)</span><br><span class="line">    parser.add_argument(<span class="string">&#x27;--drop&#x27;</span>, <span class="built_in">help</span>=<span class="string">&#x27;drop collection before restore&#x27;</span>, default=<span class="literal">False</span>, action=<span class="string">&#x27;store_true&#x27;</span>)</span><br><span class="line">    </span><br><span class="line">    args = parser.parse_args()</span><br><span class="line">    sync_mongo(args.src_host, args.src_port, args.dst_host, args.dst_port, args.db_name, args.collection, drop=args.drop)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="增量备份"><a href="#增量备份" class="headerlink" title="增量备份"></a>增量备份</h3><p><code>oplog</code>是<code>local</code>数据库中的一个固定集合，<code>Secondary</code>就是通过查看<code>Primary</code>的oplog这个集合来进行复制的。每个节点都有oplog，记录这从主节点复制过来的信息，这样每个成员都可以作为同步源给其他节点。</p>
+<figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> mongo:<span class="number">3.6</span>.<span class="number">3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">printf</span> <span class="string">&quot;mongod --replSet rs0 &amp;\nsleep 2\nmongo local --eval \&quot;rs.initiate()\&quot;\nmongo local --eval \&quot;rs.conf()\&quot;\nsleep infinity&quot;</span> &gt; /usr/local/bin/init-mongo.sh</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> <span class="string">&quot;sh /usr/local/bin/init-mongo.sh&quot;</span></span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>可以使用上面的<code>Dockerfile</code>生成一个自动开启<code>oplog</code>的容器。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">rs0:PRIMARY&gt; use local</span><br><span class="line">switched to db local</span><br><span class="line">rs0:PRIMARY&gt; db.getCollectionNames()</span><br><span class="line">[</span><br><span class="line">        &quot;me&quot;,</span><br><span class="line">        &quot;oplog.rs&quot;,</span><br><span class="line">        &quot;replset.election&quot;,</span><br><span class="line">        &quot;replset.minvalid&quot;,</span><br><span class="line">        &quot;startup_log&quot;,</span><br><span class="line">        &quot;system.replset&quot;,</span><br><span class="line">        &quot;system.rollback.id&quot;</span><br><span class="line">]</span><br><span class="line">rs0:PRIMARY&gt; db.oplog.rs.find()</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972071, 1), &quot;h&quot; : NumberLong(&quot;7155205047322550757&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:11.490Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;initiating set&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972073, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;3098310879886849971&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:13.536Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;new primary&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972073, 2), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;7423790971296558722&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;c&quot;, &quot;ns&quot; : &quot;config.$cmd&quot;, &quot;ui&quot; : UUID(&quot;ac77fd00-b096-4062-b7ca-ac7f187c1fc7&quot;), &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:13.576Z&quot;), &quot;o&quot; : &#123; &quot;create&quot; : &quot;transactions&quot;, &quot;idIndex&quot; : &#123; &quot;v&quot; : 2, &quot;key&quot; : &#123; &quot;_id&quot; : 1 &#125;, &quot;name&quot; : &quot;_id_&quot;, &quot;ns&quot; : &quot;config.transactions&quot; &#125; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972073, 3), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-2051859930978240465&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;c&quot;, &quot;ns&quot; : &quot;admin.$cmd&quot;, &quot;ui&quot; : UUID(&quot;4a0104be-5d4f-49db-9204-d778d83c64dd&quot;), &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:13.606Z&quot;), &quot;o&quot; : &#123; &quot;create&quot; : &quot;system.keys&quot;, &quot;idIndex&quot; : &#123; &quot;v&quot; : 2, &quot;key&quot; : &#123; &quot;_id&quot; : 1 &#125;, &quot;name&quot; : &quot;_id_&quot;, &quot;ns&quot; : &quot;admin.system.keys&quot; &#125; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972073, 4), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-4130342990996856185&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;i&quot;, &quot;ns&quot; : &quot;admin.system.keys&quot;, &quot;ui&quot; : UUID(&quot;4a0104be-5d4f-49db-9204-d778d83c64dd&quot;), &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:13.606Z&quot;), &quot;o&quot; : &#123; &quot;_id&quot; : NumberLong(&quot;6807403218608324609&quot;), &quot;purpose&quot; : &quot;HMAC&quot;, &quot;key&quot; : BinData(0,&quot;h/kcD++ijF/AUzwUqqXHTKG4Jwk=&quot;), &quot;expiresAt&quot; : Timestamp(1592748073, 0) &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972073, 5), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;3814221418240704217&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;i&quot;, &quot;ns&quot; : &quot;admin.system.keys&quot;, &quot;ui&quot; : UUID(&quot;4a0104be-5d4f-49db-9204-d778d83c64dd&quot;), &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:13.606Z&quot;), &quot;o&quot; : &#123; &quot;_id&quot; : NumberLong(&quot;6807403218608324610&quot;), &quot;purpose&quot; : &quot;HMAC&quot;, &quot;key&quot; : BinData(0,&quot;4Ds1uk/bTNYytP0hMkXX9ilgz38=&quot;), &quot;expiresAt&quot; : Timestamp(1600524073, 0) &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972093, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;7954269847273383577&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:33.576Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972103, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;1461838052525134608&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:43.576Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972113, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-2878317090536866771&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:01:53.576Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972123, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;8386919002466516906&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:03.577Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972133, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;3752867656297542596&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:13.577Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972143, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-6914327186052916342&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:23.577Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972153, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;4905151581311694538&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:33.577Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972163, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;2195348018262890539&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:43.577Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972173, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-945081611143254792&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:02:53.577Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972183, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-8550993957527781683&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:03:03.577Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972193, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;2027336719720729041&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:03:13.578Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972203, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;8383046467552376073&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:03:23.578Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972213, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;-2718017147947765099&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:03:33.578Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">&#123; &quot;ts&quot; : Timestamp(1584972223, 1), &quot;t&quot; : NumberLong(1), &quot;h&quot; : NumberLong(&quot;4265940161146074795&quot;), &quot;v&quot; : 2, &quot;op&quot; : &quot;n&quot;, &quot;ns&quot; : &quot;&quot;, &quot;wall&quot; : ISODate(&quot;2020-03-23T14:03:43.578Z&quot;), &quot;o&quot; : &#123; &quot;msg&quot; : &quot;periodic noop&quot; &#125; &#125;</span><br><span class="line">Type &quot;it&quot; for more</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，<code>oplog.rs</code>集合里已经有数据了。</p>
+<p>备份数据命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mongodump -h <span class="variable">$&#123;mongo_server&#125;</span> --port <span class="variable">$&#123;mongo_port&#125;</span> -o <span class="variable">$&#123;save_dir&#125;</span> -u <span class="variable">$&#123;username&#125;</span> -p <span class="variable">$&#123;password&#125;</span> --authenticationDatabase admin --oplog</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>使用<code>--oplog</code>参数时不能指定数据库，只能全量备份</p>
+</blockquote>
+<p>还原数据命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mongorestore -h <span class="variable">$&#123;mongo_server&#125;</span> --port <span class="variable">$&#123;mongo_port&#125;</span> -u <span class="variable">$&#123;username&#125;</span> -p <span class="variable">$&#123;password&#125;</span> --authenticationDatabase admin --oplogReplay --<span class="built_in">dir</span> <span class="variable">$&#123;save_dir&#125;</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>drunkdream
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2020/03/11/mongodb-command/" title="mongodb常用操作命令">https://www.drunkdream.com/2020/03/11/mongodb-command/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/mongodb/" rel="tag"># mongodb</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/02/18/gevent/" rel="prev" title="gevent初探">
+                  <i class="fa fa-angle-left"></i> gevent初探
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/05/29/mixed-lang-script/" rel="next" title="多语言混编脚本">
+                  多语言混编脚本 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2017 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">drunkdream</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"drunkdream","repo":"drunkdream.github.io","client_id":"b6aad8c93b6aadccfcc8","client_secret":"88b3043a118f3e6db76f75bdb9257228db104949","admin_user":"drunkdream","distraction_free_mode":true,"proxy":"/github/login/oauth/access_token","language":"zh-CN","body":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"2bbd7d94d192cb1e14e92297f764db53","path":"/2020/03/11/mongodb-command/"}</script>
+<script src="/js/third-party/comments/gitalk.js" defer></script>
+
+</body>
+</html>

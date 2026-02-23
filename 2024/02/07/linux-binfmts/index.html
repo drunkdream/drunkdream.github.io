@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/purple/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.drunkdream.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"rights","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"xcode","dark":"github-dark-dimmed"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="0x00 什么是binfmt-miscbinfmt-misc(Miscellaneous Binary Format)是Linux内核提供的一种类似Windows上文件关联的功能，但比文件关联更强大的是，它不仅可以根据文件后缀名判断，还可以根据文件内容(Magic Bytes)使用不同的程序打开。一个典型的使用场景就是：使用qemu运行其它架构平台上的二进制文件。 本文以该场景为例，分析一下其具体">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux中的binfmt-misc原理分析">
+<meta property="og:url" content="https://www.drunkdream.com/2024/02/07/linux-binfmts/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 什么是binfmt-miscbinfmt-misc(Miscellaneous Binary Format)是Linux内核提供的一种类似Windows上文件关联的功能，但比文件关联更强大的是，它不仅可以根据文件后缀名判断，还可以根据文件内容(Magic Bytes)使用不同的程序打开。一个典型的使用场景就是：使用qemu运行其它架构平台上的二进制文件。 本文以该场景为例，分析一下其具体">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-02-07T14:13:37.000Z">
+<meta property="article:modified_time" content="2026-02-23T06:02:24.955Z">
+<meta property="article:author" content="drunkdream">
+<meta property="article:tag" content="binfmts">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.drunkdream.com/2024/02/07/linux-binfmts/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.drunkdream.com/2024/02/07/linux-binfmts/","path":"2024/02/07/linux-binfmts/","title":"Linux中的binfmt-misc原理分析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux中的binfmt-misc原理分析 | 醉梦轩</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">醉梦轩</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉中无日月，梦里有乾坤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E4%BB%80%E4%B9%88%E6%98%AFbinfmt-misc"><span class="nav-number">1.</span> <span class="nav-text">0x00 什么是binfmt-misc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E5%BC%80%E5%90%AFbinfmt-misc"><span class="nav-number">2.</span> <span class="nav-text">0x01 开启binfmt-misc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E5%9C%A8x86-64%E7%B3%BB%E7%BB%9F%E4%B8%AD%E8%BF%90%E8%A1%8Carm64%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">0x02 在x86_64系统中运行arm64应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-%E6%89%8B%E5%8A%A8%E5%88%9B%E5%BB%BA%E6%89%A7%E8%A1%8C%E8%A7%84%E5%88%99"><span class="nav-number">4.</span> <span class="nav-text">0x03 手动创建执行规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E5%9C%A8x86-64%E7%B3%BB%E7%BB%9F%E4%B8%AD%E8%BF%90%E8%A1%8Carm64%E6%9E%B6%E6%9E%84%E7%9A%84Docker%E9%95%9C%E5%83%8F"><span class="nav-number">5.</span> <span class="nav-text">0x04 在x86_64系统中运行arm64架构的Docker镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-%E8%B7%A8%E6%9E%B6%E6%9E%84%E7%BC%96%E8%AF%91Docker%E9%95%9C%E5%83%8F"><span class="nav-number">6.</span> <span class="nav-text">0x05 跨架构编译Docker镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-%E5%9C%A8Linux%E4%B8%8A%E8%BF%90%E8%A1%8CWindows%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6"><span class="nav-number">7.</span> <span class="nav-text">0x06 在Linux上运行Windows可执行文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">0x07 总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="drunkdream"
+      src="/images/logo.gif">
+  <p class="site-author-name" itemprop="name">drunkdream</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">69</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2024/02/07/linux-binfmts/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.gif">
+      <meta itemprop="name" content="drunkdream">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux中的binfmt-misc原理分析 | 醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux中的binfmt-misc原理分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-02-07 22:13:37" itemprop="dateCreated datePublished" datetime="2024-02-07T22:13:37+08:00">2024-02-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-23 14:02:24" itemprop="dateModified" datetime="2026-02-23T14:02:24+08:00">2026-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="0x00-什么是binfmt-misc"><a href="#0x00-什么是binfmt-misc" class="headerlink" title="0x00 什么是binfmt-misc"></a>0x00 什么是binfmt-misc</h2><p>binfmt-misc(Miscellaneous Binary Format)是Linux内核提供的一种类似Windows上文件关联的功能，但比文件关联更强大的是，它不仅可以根据文件后缀名判断，还可以根据文件内容(Magic Bytes)使用不同的程序打开。一个典型的使用场景就是：使用<code>qemu</code>运行其它架构平台上的二进制文件。</p>
+<p>本文以该场景为例，分析一下其具体的工作原理。</p>
+<span id="more"></span>
+
+<h2 id="0x01-开启binfmt-misc"><a href="#0x01-开启binfmt-misc" class="headerlink" title="0x01 开启binfmt-misc"></a>0x01 开启binfmt-misc</h2><p>临时开启可以使用以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">sudo</span> mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc</span><br></pre></td></tr></table></figure>
+
+<p>这种方式重启后会失效，如果想长期生效，可以在<code>/etc/fstab</code>文件中增加一行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">none  /proc/sys/fs/binfmt_misc binfmt_misc defaults 0 0</span><br></pre></td></tr></table></figure>
+
+<p>可以使用以下命令检查开启是否成功：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ mount | grep binfmt_misc</span><br><span class="line">binfmt_misc on /proc/sys/fs/binfmt_misc <span class="built_in">type</span> binfmt_misc (rw,relatime)</span><br><span class="line">$ <span class="built_in">ls</span> -l /proc/sys/fs/binfmt_misc</span><br><span class="line">总用量 0</span><br><span class="line">--w------- 1 root root 0 2月   5 22:55 register</span><br><span class="line">-rw-r--r-- 1 root root 0 2月   5 22:55 status</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x02-在x86-64系统中运行arm64应用"><a href="#0x02-在x86-64系统中运行arm64应用" class="headerlink" title="0x02 在x86_64系统中运行arm64应用"></a>0x02 在x86_64系统中运行arm64应用</h2><p>先准备一个arm64架构的程序(可以使用go跨平台编译生成一个)，执行后发现有报错：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash: ./go-test：无法执行二进制文件: 可执行文件格式错误</span><br></pre></td></tr></table></figure>
+
+<p>现在，我们执行一下<code>apt install qemu-user-binfmt</code>命令，然后再运行上面的arm64程序，发现能正常运行了。安装<code>qemu-user-binfmt</code>后，会在<code>/proc/sys/fs/binfmt_misc</code>目录下创建若干个文件，其中就有一个<code>qemu-aarch64</code>。来看一下这个文件的内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cat</span> /proc/sys/fs/binfmt_misc/qemu-aarch64</span><br><span class="line">enabled</span><br><span class="line">interpreter /usr/libexec/qemu-binfmt/aarch64-binfmt-P</span><br><span class="line">flags: POC</span><br><span class="line">offset 0</span><br><span class="line">magic 7f454c460201010000000000000000000200b700</span><br><span class="line">mask ffffffffffffff00fffffffffffffffffeffffff</span><br></pre></td></tr></table></figure>
+
+<p>这个文件描述的是规则文件，第一行<code>enabled</code>表示该规则启用；第二行<code>interpreter /usr/libexec/qemu-binfmt/aarch64-binfmt-P</code>表示使用<code>/usr/libexec/qemu-binfmt/aarch64-binfmt-P</code>来执行二进制文件；第三行<code>flags: POC</code>表示运行的标志位，具体含义如下：</p>
+<ul>
+<li><code>P</code>: 表示perserve-argv，这意味着在调用模拟器时，原始的参数（argv）将被保留。这对于某些程序在运行时需要知道它们自己的名称（即argv[0]）的情况很有用</li>
+<li><code>O</code>: 表示offset，这意味着在启动模拟器之前，需要从二进制文件中读取一个偏移量。这个偏移量将作为模拟器的一个参数</li>
+<li><code>C</code>: 表示credentials，这意味着模拟器将使用与原始程序相同的用户ID和组ID运行。这有助于确保模拟器在运行时具有与原始程序相同的权限</li>
+</ul>
+<p>第四行<code>offset 0</code>表示从<code>0</code>偏移值开始读取文件；第五行<code>magic 7f454c460201010000000000000000000200b700</code>表示要匹配的魔术字节；<code>mask ffffffffffffff00fffffffffffffffffeffffff</code>表示字节掩码，用来忽略掉文件中的一些不重要的字节。</p>
+<p>可以看出，这条规则会使用<code>/usr/libexec/qemu-binfmt/aarch64-binfmt-P</code>来执行arm64架构的二进制文件，而这个文件其实是一个软链，实际指向的是：<code>/usr/bin/qemu-aarch64</code>。</p>
+<h2 id="0x03-手动创建执行规则"><a href="#0x03-手动创建执行规则" class="headerlink" title="0x03 手动创建执行规则"></a>0x03 手动创建执行规则</h2><p>在上面的例子中，<code>/proc/sys/fs/binfmt_misc/qemu-aarch64</code>文件是在安装qemu库的时候自动安装进去的。如果想手动创建一条规则，该怎么操作呢？</p>
+<p>我们先将以下代码保存到文件<code>main.go</code>中：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Println(<span class="string">&quot;Program name:&quot;</span>, os.Args[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(os.Args) &gt; <span class="number">1</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;Arguments:&quot;</span>)</span><br><span class="line">		<span class="keyword">for</span> i, arg := <span class="keyword">range</span> os.Args[<span class="number">1</span>:] &#123;</span><br><span class="line">			fmt.Printf(<span class="string">&quot;Arg %d: %s\n&quot;</span>, i+<span class="number">1</span>, arg)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;No arguments provided.&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用命令：<code>go build -o fake-runner ./main.go</code>进行编译，并将编译出来的<code>fake-runner</code>拷贝到<code>/usr/local/bin</code>目录下。</p>
+<p>此时，我们需要向<code>/proc/sys/fs/binfmt_misc/register</code>中按照<code>:name:type:offset:magic:mask:interpreter:flags</code>的格式写入规则。</p>
+<ul>
+<li>name: 规则名</li>
+<li>type: 类型，取<code>E</code>(按扩展名匹配)或<code>M</code>(按文件魔术字节匹配)之一</li>
+<li>offset: 当<code>type</code>为<code>M</code>时生效，表示魔术字节的偏移值</li>
+<li>magic: 当<code>type</code>为<code>E</code>时，表示要匹配的后缀名；当<code>type</code>为<code>M</code>时，表示16进制的魔术字节</li>
+<li>mask: 当<code>type</code>为<code>M</code>时生效，表示魔术字节的掩码，与IP地址掩码类似</li>
+<li>interpreter: 解释器文件的绝对路径</li>
+<li>flags: 含义与上面的<code>flags</code>一致</li>
+</ul>
+<p>假设我们想用<code>fake-runner</code>打开以<code>12344578</code>开头的文件，可以执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># echo &#x27;:binfmt-test:M::12345678::/usr/local/bin/fake-runner:P&#x27; &gt; /proc/sys/fs/binfmt_misc/register</span></span><br><span class="line"><span class="comment"># cat /proc/sys/fs/binfmt_misc/binfmt-test enabled</span></span><br><span class="line">interpreter /usr/local/bin/fake-runner</span><br><span class="line">flags: P</span><br><span class="line">offset 0</span><br><span class="line">magic 3132333435363738</span><br></pre></td></tr></table></figure>
+
+<p>此命令需要在root权限下运行。</p>
+<p>然后使用命令生成目标文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">echo</span> 12345678 &gt; /tmp/test.txt</span><br><span class="line">$ <span class="built_in">chmod</span> 755 /tmp/test.txt</span><br><span class="line">$ /tmp/test.txt hello</span><br><span class="line">Program name: /usr/local/bin/fake-runner</span><br><span class="line">Arguments:</span><br><span class="line">Arg 1: /tmp/test.txt</span><br><span class="line">Arg 2: /tmp/test.txt</span><br><span class="line">Arg 3: hello</span><br></pre></td></tr></table></figure>
+
+<p>删除规则可以使用命令：<code>echo -1 &gt; /proc/sys/fs/binfmt_misc/binfmt-test</code></p>
+<h2 id="0x04-在x86-64系统中运行arm64架构的Docker镜像"><a href="#0x04-在x86-64系统中运行arm64架构的Docker镜像" class="headerlink" title="0x04 在x86_64系统中运行arm64架构的Docker镜像"></a>0x04 在x86_64系统中运行arm64架构的Docker镜像</h2><p>现在我们用docker命令运行一个arm64的镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -it arm64v8/ubuntu bash</span><br><span class="line">Unable to find image <span class="string">&#x27;arm64v8/ubuntu:latest&#x27;</span> locally</span><br><span class="line">latest: Pulling from arm64v8/ubuntu</span><br><span class="line">005e2837585d: Pull complete </span><br><span class="line">Digest: sha256:ba545858745d6307f0d1064d0d25365466f78d02f866cf4efb9e1326a4c196ca</span><br><span class="line">Status: Downloaded newer image <span class="keyword">for</span> arm64v8/ubuntu:latest</span><br><span class="line">standard_init_linux.go:207: <span class="built_in">exec</span> user process caused <span class="string">&quot;no such file or directory&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>通过一番探索之后，发现只要执行下命令：<code>apt install qemu-user-static</code>，再启动docker容器就正常了。执行这条命令会修改<code>/usr/libexec/qemu-binfmt/aarch64-binfmt-P</code>文件的软链到<code>/usr/bin/qemu-aarch64-static</code>。我们来看下<code>qemu-aarch64</code>和<code>qemu-aarch64-static</code>区别：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -d /usr/bin/qemu-aarch64</span><br><span class="line">Dynamic section at offset 0x3aee38 contains 37 entries:</span><br><span class="line">  标记        类型                         名称/值</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[libz.so.1]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[librt.so.1]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[libcapstone.so.4]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[libglib-2.0.so.0]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[libgnutls.so.30]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[libgmodule-2.0.so.0]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[libstdc++.so.6]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[libm.so.6]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[libgcc_s.so.1]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[libpthread.so.0]</span><br><span class="line"> 0x0000000000000001 (NEEDED)             共享库：[libc.so.6]</span><br><span class="line"> 0x000000000000000c (INIT)               0xab000</span><br><span class="line"> 0x000000000000000d (FINI)               0x2a83ec</span><br><span class="line"> 0x0000000000000019 (INIT_ARRAY)         0x35b8e0</span><br><span class="line"> 0x000000000000001b (INIT_ARRAYSZ)       248 (bytes)</span><br><span class="line"> 0x000000000000001a (FINI_ARRAY)         0x35b9d8</span><br><span class="line"> 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)</span><br><span class="line"> 0x000000006ffffef5 (GNU_HASH)           0x340</span><br><span class="line"> 0x0000000000000005 (STRTAB)             0x2a608</span><br><span class="line"> 0x0000000000000006 (SYMTAB)             0xa1f0</span><br><span class="line"> 0x000000000000000a (STRSZ)              122726 (bytes)</span><br><span class="line"> 0x000000000000000b (SYMENT)             24 (bytes)</span><br><span class="line"> 0x0000000000000015 (DEBUG)              0x0</span><br><span class="line"> 0x0000000000000003 (PLTGOT)             0x3b00c8</span><br><span class="line"> 0x0000000000000002 (PLTRELSZ)           11136 (bytes)</span><br><span class="line"> 0x0000000000000014 (PLTREL)             RELA</span><br><span class="line"> 0x0000000000000017 (JMPREL)             0xa7f68</span><br><span class="line"> 0x0000000000000007 (RELA)               0x4b2e0</span><br><span class="line"> 0x0000000000000008 (RELASZ)             380040 (bytes)</span><br><span class="line"> 0x0000000000000009 (RELAENT)            24 (bytes)</span><br><span class="line"> 0x000000000000001e (FLAGS)              BIND_NOW</span><br><span class="line"> 0x000000006ffffffb (FLAGS_1)            标志： NOW PIE</span><br><span class="line"> 0x000000006ffffffe (VERNEED)            0x4b070</span><br><span class="line"> 0x000000006fffffff (VERNEEDNUM)         7</span><br><span class="line"> 0x000000006ffffff0 (VERSYM)             0x4856e</span><br><span class="line"> 0x000000006ffffff9 (RELACOUNT)          15807</span><br><span class="line"> 0x0000000000000000 (NULL)               0x0</span><br><span class="line"></span><br><span class="line">$ readelf -d /usr/bin/qemu-aarch64-static</span><br><span class="line">There is no dynamic section <span class="keyword">in</span> this file.</span><br></pre></td></tr></table></figure>
+
+<p>可以看出，qemu-aarch64-static是没有动态库依赖的，也就是说，docker必须使用静态编译的<code>qemu</code>才能工作。通过这种方式，可以实现在x86_64机器上编译跨架构镜像的目的。</p>
+<h2 id="0x05-跨架构编译Docker镜像"><a href="#0x05-跨架构编译Docker镜像" class="headerlink" title="0x05 跨架构编译Docker镜像"></a>0x05 跨架构编译Docker镜像</h2><p>要支持多架构，需要开启Docker的实验功能，开启方式如下：</p>
+<p>在文件<code>/etc/docker/daemon.json</code>中添加如下配置</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;experimental&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后使用<code>sysemcrtl restart docker</code>命令重启Docker服务。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ docker info | grep -i <span class="string">&#x27;experimental&#x27;</span></span><br><span class="line"> Experimental: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>当看到以上输出时，就表示实验功能已开启。</p>
+<p>编写以下Dockerfile:</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> ubuntu:<span class="number">20.04</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> <span class="built_in">set</span> -ex &amp;&amp; apt update</span></span><br></pre></td></tr></table></figure>
+
+<p>然后使用以下命令编译arm64镜像</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">sudo</span> docker build --platform linux/arm64 -t ubuntu .</span><br><span class="line">$ <span class="built_in">sudo</span> docker run -it ubuntu bash</span><br><span class="line">root@616a3dd3a915:/# <span class="built_in">uname</span> -a</span><br><span class="line">Linux 616a3dd3a915 5.15.34-amd64-desktop <span class="comment">#2 SMP Mon May 16 16:31:30 CST 2022 aarch64 aarch64 aarch64 GNU/Linux</span></span><br></pre></td></tr></table></figure>
+
+<p>因此，使用<code>--platform linux/arm64</code>参数就可以编译出arm64架构的镜像。</p>
+<h2 id="0x06-在Linux上运行Windows可执行文件"><a href="#0x06-在Linux上运行Windows可执行文件" class="headerlink" title="0x06 在Linux上运行Windows可执行文件"></a>0x06 在Linux上运行Windows可执行文件</h2><p>使用<code>binfmt-misc</code>机制可以支持直接在Linux上运行Windows的exe文件，这是通过wine来实现的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cat</span> /proc/sys/fs/binfmt_misc/DOSWin</span><br><span class="line">enabled</span><br><span class="line">interpreter /usr/bin/wine</span><br><span class="line">flags: </span><br><span class="line">offset 0</span><br><span class="line">magic 4d5a</span><br><span class="line">$ <span class="built_in">ls</span> -l /usr/bin/wine</span><br><span class="line">lrwxrwxrwx 1 root root 19 10月  8 18:09 /usr/bin/wine -&gt; deepin-wine6-stable</span><br></pre></td></tr></table></figure>
+
+<p>deepin-wine6-stable其实是一个bash脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">name=<span class="variable">$&#123;0##*/&#125;</span></span><br><span class="line">bindir=/usr/lib/<span class="variable">$name</span></span><br><span class="line"></span><br><span class="line">wine32=/opt/<span class="variable">$name</span>/bin/wine</span><br><span class="line">wine64=/opt/<span class="variable">$name</span>/bin/wine64</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">test</span> -x <span class="variable">$wine32</span> -a <span class="string">&quot;<span class="variable">$WINEARCH</span>&quot;</span> != <span class="string">&quot;win64&quot;</span>; <span class="keyword">then</span></span><br><span class="line">    wine=<span class="variable">$wine32</span></span><br><span class="line"><span class="keyword">elif</span> <span class="built_in">test</span> -x <span class="variable">$wine64</span>; <span class="keyword">then</span></span><br><span class="line">    wine=<span class="variable">$wine64</span></span><br><span class="line">    <span class="keyword">if</span> [ <span class="string">&quot;<span class="subst">$(dpkg --print-architecture)</span>&quot;</span> = <span class="string">&quot;amd64&quot;</span> -a <span class="string">&quot;<span class="subst">$(dpkg --print-foreign-architectures | grep -cx <span class="string">&quot;i386&quot;</span>)</span>&quot;</span> -ne 1 ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;it looks like multiarch needs to be enabled.  as root, please&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;execute \&quot;dpkg --add-architecture i386 &amp;&amp; apt-get update &amp;&amp;&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;apt-get install <span class="subst">$(echo $name | sed s/wine/wine32/)</span>\&quot;&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;error: unable to find wine executable.  this shouldn&#x27;t happen.&quot;</span></span><br><span class="line">    <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">test</span> -z <span class="string">&quot;<span class="variable">$WINEPREFIX</span>&quot;</span>; <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">test</span> <span class="string">&quot;<span class="variable">$wine</span>&quot;</span> = <span class="string">&quot;<span class="variable">$wine64</span>&quot;</span>; <span class="keyword">then</span></span><br><span class="line">        wineprefix=<span class="variable">$HOME</span>/.wine64</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        wineprefix=<span class="variable">$HOME</span>/.wine</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    wineprefix=<span class="variable">$WINEPREFIX</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">test</span> -z <span class="string">&quot;<span class="variable">$WINELOADER</span>&quot;</span>; <span class="keyword">then</span></span><br><span class="line">    wineloader=<span class="variable">$wine</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    wineloader=<span class="variable">$WINELOADER</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">test</span> -z <span class="string">&quot;<span class="variable">$WINEDEBUG</span>&quot;</span>; <span class="keyword">then</span></span><br><span class="line">    winedebug=-all</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    winedebug=<span class="variable">$WINEDEBUG</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">runtime_path=/opt/deepinwine/runtime-i386</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=<span class="string">&quot;/opt/<span class="variable">$name</span>/lib:/opt/<span class="variable">$name</span>/lib64:<span class="variable">$LD_LIBRARY_PATH</span>&quot;</span></span><br><span class="line"><span class="built_in">export</span> WINEDLLPATH=/opt/<span class="variable">$name</span>/lib:/opt/<span class="variable">$name</span>/lib64</span><br><span class="line"></span><br><span class="line"><span class="comment"># 32位wine需要指定32位runtime的路径</span></span><br><span class="line"><span class="keyword">if</span> [ -f <span class="string">&quot;<span class="variable">$runtime_path</span>/init_runtime.sh&quot;</span> -a <span class="string">&quot;<span class="variable">$wine</span>&quot;</span> = <span class="string">&quot;<span class="variable">$wine32</span>&quot;</span> ];<span class="keyword">then</span></span><br><span class="line">    <span class="built_in">source</span> <span class="string">&quot;<span class="variable">$runtime_path</span>/init_runtime.sh&quot;</span></span><br><span class="line"></span><br><span class="line">    PE_FILE=<span class="string">&quot;<span class="variable">$1</span>&quot;</span></span><br><span class="line">    <span class="keyword">if</span> [[ <span class="string">&quot;<span class="variable">$1</span>&quot;</span> == *<span class="string">&quot;.exe&quot;</span> ]]; <span class="keyword">then</span></span><br><span class="line">        PE_FILE=<span class="variable">$&#123;PE_FILE//\\/\/&#125;</span></span><br><span class="line">        drive=<span class="variable">$&#123;PE_FILE:0:2&#125;</span></span><br><span class="line">        <span class="keyword">if</span> [[ <span class="variable">$&#123;drive&#125;</span> == <span class="string">&quot;c:&quot;</span>* || <span class="variable">$&#123;drive&#125;</span> == <span class="string">&quot;C:&quot;</span>* ]]; <span class="keyword">then</span></span><br><span class="line">            PE_FILE=<span class="variable">$&#123;wineprefix&#125;</span>/drive_c<span class="variable">$&#123;PE_FILE:2&#125;</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">    init_runtime</span><br><span class="line">    <span class="keyword">if</span> [ -f <span class="string">&quot;<span class="variable">$PE_FILE</span>&quot;</span> ];<span class="keyword">then</span></span><br><span class="line">        <span class="comment">#only 32 bit application need config this envs</span></span><br><span class="line">        <span class="keyword">if</span> file <span class="string">&quot;<span class="variable">$PE_FILE</span>&quot;</span> | grep -q -e <span class="string">&quot;PE32 &quot;</span>; <span class="keyword">then</span></span><br><span class="line">            init_32bit_config</span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="built_in">export</span> WINELOADERNOEXEC=1</span><br><span class="line">    winepreloader=/opt/<span class="variable">$name</span>/bin/wine-preloader</span><br><span class="line">    WINEPREFIX=<span class="variable">$wineprefix</span> WINELOADER=<span class="variable">$wineloader</span> WINEDEBUG=<span class="variable">$winedebug</span> <span class="variable">$winepreloader</span> <span class="variable">$wine</span> <span class="string">&quot;<span class="variable">$@</span>&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    WINEPREFIX=<span class="variable">$wineprefix</span> WINELOADER=<span class="variable">$wineloader</span> WINEDEBUG=<span class="variable">$winedebug</span> <span class="variable">$wine</span> <span class="string">&quot;<span class="variable">$@</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+<p>因此，直接在命令行中输入一个exe文件路径，例如扫雷游戏，就会看到系统打开了扫雷游戏界面。</p>
+<h2 id="0x07-总结"><a href="#0x07-总结" class="headerlink" title="0x07 总结"></a>0x07 总结</h2><p>binfmt-misc提供了灵活的文件关联机制，使得部分无法直接执行的程序可以像普通Linux程序一样直接运行起来（如：跨架构程序、Windows exe等）。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>drunkdream
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2024/02/07/linux-binfmts/" title="Linux中的binfmt-misc原理分析">https://www.drunkdream.com/2024/02/07/linux-binfmts/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/binfmts/" rel="tag"># binfmts</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/05/ipad-install-linux/" rel="prev" title="iPad上使用UTM安装Linux arm64系统">
+                  <i class="fa fa-angle-left"></i> iPad上使用UTM安装Linux arm64系统
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/03/06/scratch-clock/" rel="next" title="Scratch教程---开发一个时钟">
+                  Scratch教程---开发一个时钟 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2017 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">drunkdream</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"drunkdream","repo":"drunkdream.github.io","client_id":"b6aad8c93b6aadccfcc8","client_secret":"88b3043a118f3e6db76f75bdb9257228db104949","admin_user":"drunkdream","distraction_free_mode":true,"proxy":"/github/login/oauth/access_token","language":"zh-CN","body":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"867971636bbe93451654eb4b53474183","path":"/2024/02/07/linux-binfmts/"}</script>
+<script src="/js/third-party/comments/gitalk.js" defer></script>
+
+</body>
+</html>

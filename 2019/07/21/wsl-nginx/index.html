@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/purple/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.drunkdream.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"rights","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"xcode","dark":"github-dark-dimmed"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="0x00 前言自从有了WSL，在Windows上部署各种服务也变得更加方便。最近，遇到一个问题，本地调试一些Web服务的时候，必须要使用80端口，如果同时有两个服务都监听80端口必然会导致冲突。而且，在Linux中监听80端口需要使用root权限，每次启动的时候都要加上sudo也挺麻烦的。 因此，想到可以利用nginx的反向代理能力，在本地进行HTTP的转发，这样，每个服务就可以使用自己的端口了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WSL中部署nginx作为反向代理">
+<meta property="og:url" content="https://www.drunkdream.com/2019/07/21/wsl-nginx/index.html">
+<meta property="og:site_name" content="醉梦轩">
+<meta property="og:description" content="0x00 前言自从有了WSL，在Windows上部署各种服务也变得更加方便。最近，遇到一个问题，本地调试一些Web服务的时候，必须要使用80端口，如果同时有两个服务都监听80端口必然会导致冲突。而且，在Linux中监听80端口需要使用root权限，每次启动的时候都要加上sudo也挺麻烦的。 因此，想到可以利用nginx的反向代理能力，在本地进行HTTP的转发，这样，每个服务就可以使用自己的端口了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-21T05:43:05.000Z">
+<meta property="article:modified_time" content="2026-02-23T06:02:24.958Z">
+<meta property="article:author" content="drunkdream">
+<meta property="article:tag" content="WSL">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://www.drunkdream.com/2019/07/21/wsl-nginx/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.drunkdream.com/2019/07/21/wsl-nginx/","path":"2019/07/21/wsl-nginx/","title":"WSL中部署nginx作为反向代理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>WSL中部署nginx作为反向代理 | 醉梦轩</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">醉梦轩</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">醉中无日月，梦里有乾坤</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-%E9%83%A8%E7%BD%B2nginx"><span class="nav-number">2.</span> <span class="nav-text">0x01 部署nginx</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-%E6%B7%BB%E5%8A%A0%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">0x02 添加反向代理配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-nginx%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">0x03 nginx常用配置方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">0x04 总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="drunkdream"
+      src="/images/logo.gif">
+  <p class="site-author-name" itemprop="name">drunkdream</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">69</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.drunkdream.com/2019/07/21/wsl-nginx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.gif">
+      <meta itemprop="name" content="drunkdream">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="WSL中部署nginx作为反向代理 | 醉梦轩">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WSL中部署nginx作为反向代理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-21 13:43:05" itemprop="dateCreated datePublished" datetime="2019-07-21T13:43:05+08:00">2019-07-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-23 14:02:24" itemprop="dateModified" datetime="2026-02-23T14:02:24+08:00">2026-02-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>自从有了<code>WSL</code>，在Windows上部署各种服务也变得更加方便。最近，遇到一个问题，本地调试一些Web服务的时候，必须要使用<code>80</code>端口，如果同时有两个服务都监听<code>80</code>端口必然会导致冲突。而且，在<code>Linux</code>中监听<code>80</code>端口需要使用<code>root</code>权限，每次启动的时候都要加上<code>sudo</code>也挺麻烦的。</p>
+<p>因此，想到可以利用<code>nginx</code>的反向代理能力，在本地进行HTTP的转发，这样，每个服务就可以使用自己的端口了。</p>
+<span id="more"></span>
+
+<h2 id="0x01-部署nginx"><a href="#0x01-部署nginx" class="headerlink" title="0x01 部署nginx"></a>0x01 部署nginx</h2><p>在<code>WSL</code>上部署nginx，和<code>Linux</code>下上是基本一致的。</p>
+<p>我的<code>WSL</code>中安装的是<code>Ubuntu 18.04</code>，以下以该系统为例。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ apt install nginx -y</span><br></pre></td></tr></table></figure>
+
+<p>由于默认配置监听的是<code>0.0.0.0</code>地址，而我们只是本地使用，需要改成<code>127.0.0.1</code>。</p>
+<p>修改<code>/etc/nginx/sites-available/default</code>文件中的<code>listen 80 default_server;</code>为<code>listen 127.0.0.1:80 default_server;</code>，并注释掉<code>listen [::]:80 default_server;</code>（不需要开启ipv6）。</p>
+<p>启动nginx服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service nginx start</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：不能使用<code>systemctl</code>命令。</p>
+</blockquote>
+<h2 id="0x02-添加反向代理配置"><a href="#0x02-添加反向代理配置" class="headerlink" title="0x02 添加反向代理配置"></a>0x02 添加反向代理配置</h2><p>在<code>/etc/nginx/conf.d</code>目录中添加一个配置文件<code>service.conf</code>，内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">##</span><br><span class="line"># You should look at the following URL&#x27;s in order to grasp a solid understanding</span><br><span class="line"># of Nginx configuration files in order to fully unleash the power of Nginx.</span><br><span class="line"># https://www.nginx.com/resources/wiki/start/</span><br><span class="line"># https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/</span><br><span class="line"># https://wiki.debian.org/Nginx/DirectoryStructure</span><br><span class="line">#</span><br><span class="line"># In most cases, administrators will remove this file from sites-enabled/ and</span><br><span class="line"># leave it as reference inside of sites-available where it will continue to be</span><br><span class="line"># updated by the nginx packaging team.</span><br><span class="line">#</span><br><span class="line"># This file will automatically load configuration files provided by other</span><br><span class="line"># applications, such as Drupal or Wordpress. These applications will be made</span><br><span class="line"># available underneath a path with that package name, such as /drupal8.</span><br><span class="line">#</span><br><span class="line"># Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.</span><br><span class="line">##</span><br><span class="line"></span><br><span class="line"># Default server configuration</span><br><span class="line">#</span><br><span class="line">server &#123;</span><br><span class="line">	listen 127.0.0.1:80;</span><br><span class="line">	# listen [::]:80 default_server;</span><br><span class="line"></span><br><span class="line">	# SSL configuration</span><br><span class="line">	#</span><br><span class="line">	# listen 443 ssl default_server;</span><br><span class="line">	# listen [::]:443 ssl default_server;</span><br><span class="line">	#</span><br><span class="line">	# Note: You should disable gzip for SSL traffic.</span><br><span class="line">	# See: https://bugs.debian.org/773332</span><br><span class="line">	#</span><br><span class="line">	# Read up on ssl_ciphers to ensure a secure configuration.</span><br><span class="line">	# See: https://bugs.debian.org/765782</span><br><span class="line">	#</span><br><span class="line">	# Self signed certs generated by the ssl-cert package</span><br><span class="line">	# Don&#x27;t use them in a production server!</span><br><span class="line">	#</span><br><span class="line">	# include snippets/snakeoil.conf;</span><br><span class="line"></span><br><span class="line">	root /var/www/html;</span><br><span class="line"></span><br><span class="line">	# Add index.php to the list if you are using PHP</span><br><span class="line">	index index.html index.htm index.nginx-debian.html;</span><br><span class="line"></span><br><span class="line">	server_name service.com; # 此处替换为对应服务的域名，可以通过配置hosts文件来指向127.0.0.1</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://127.0.0.1:8000;</span><br><span class="line">	    proxy_set_header Host               $host;</span><br><span class="line">        proxy_set_header X-Real-IP          $remote_addr;</span><br><span class="line">        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;</span><br><span class="line">        proxy_set_header X-Forwarded-Proto  $scheme;</span><br><span class="line"> 	&#125;</span><br><span class="line"></span><br><span class="line">	# pass PHP scripts to FastCGI server</span><br><span class="line">	#</span><br><span class="line">	#location ~ \.php$ &#123;</span><br><span class="line">	#	include snippets/fastcgi-php.conf;</span><br><span class="line">	#</span><br><span class="line">	#	# With php-fpm (or other unix sockets):</span><br><span class="line">	#	fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;</span><br><span class="line">	#	# With php-cgi (or other tcp sockets):</span><br><span class="line">	#	fastcgi_pass 127.0.0.1:9000;</span><br><span class="line">	#&#125;</span><br><span class="line"></span><br><span class="line">	# deny access to .htaccess files, if Apache&#x27;s document root</span><br><span class="line">	# concurs with nginx&#x27;s one</span><br><span class="line">	#</span><br><span class="line">	#location ~ /\.ht &#123;</span><br><span class="line">	#	deny all;</span><br><span class="line">	#&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>每个服务添加一个对应的<code>.conf</code>文件，然后重新加载nginx服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ service nginx reload</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x03-nginx常用配置方法"><a href="#0x03-nginx常用配置方法" class="headerlink" title="0x03 nginx常用配置方法"></a>0x03 nginx常用配置方法</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">  location /api/ &#123;</span><br><span class="line">      proxy_pass http://127.0.0.1:8000;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种方法表示转发整个路径，如：<code>/api/test/</code>会转发到<code>http://127.0.0.1:8000/api/test/</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">  location /api/ &#123;</span><br><span class="line">      proxy_pass http://127.0.0.1:8000/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种方法表示转发<code>/api/</code>后的路径，如：<code>/api/test/</code>会转发到<code>http://127.0.0.1:8000/test/</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">location = / &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种表示完全匹配，具有最高优先级</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">location ^~ /images/ &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种表示匹配所有以<code>/images/</code>开头的url，优先级仅次于<code>=</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">location ~*.(gif|jpg|jpeg)$ &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用正则方式匹配，这里表示所有以<code>gif</code>、<code>jpg</code>、<code>jpeg</code>结尾的请求</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>匹配任意请求，优先级最低</p>
+<h2 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2><p><code>WSL</code>极大简化了在Windows上部署各种服务的流程，同时，也可以学习Linux上的常用操作，可谓一举两得。</p>
+<p>自从有了<code>WSL</code>，Windows也变得从未如此友好！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>drunkdream
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.drunkdream.com/2019/07/21/wsl-nginx/" title="WSL中部署nginx作为反向代理">https://www.drunkdream.com/2019/07/21/wsl-nginx/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/nginx/" rel="tag"># nginx</a>
+              <a href="/tags/WSL/" rel="tag"># WSL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/19/uiautomator-accessibilityservice/" rel="prev" title="UIAutomator2.0和AccessibilityService实现分析">
+                  <i class="fa fa-angle-left"></i> UIAutomator2.0和AccessibilityService实现分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/08/29/wsl-chrome-headless/" rel="next" title="WSL运行Chrome Headless模式">
+                  WSL运行Chrome Headless模式 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2017 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">drunkdream</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"drunkdream","repo":"drunkdream.github.io","client_id":"b6aad8c93b6aadccfcc8","client_secret":"88b3043a118f3e6db76f75bdb9257228db104949","admin_user":"drunkdream","distraction_free_mode":true,"proxy":"/github/login/oauth/access_token","language":"zh-CN","body":null,"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"06efbf580aa71a5d75c3e722598c1c81","path":"/2019/07/21/wsl-nginx/"}</script>
+<script src="/js/third-party/comments/gitalk.js" defer></script>
+
+</body>
+</html>
